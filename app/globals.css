@@ -491,6 +491,21 @@
     animation: pulse-soft 2.4s ease-in-out infinite;
   }
 
+  /* Subtle glow pulse for accent numbers */
+  @keyframes glow-pulse {
+    0%, 100% {
+      text-shadow: 0 0 0 transparent;
+    }
+    50% {
+      text-shadow:
+        0 0 14px rgba(0, 82, 255, 0.30),
+        0 0 28px rgba(0, 82, 255, 0.15);
+    }
+  }
+  .glow-pulse {
+    animation: glow-pulse 3.6s ease-in-out infinite;
+  }
+
   /* Subtle float for candlesticks */
   @keyframes float-stick {
     0%, 100% { transform: translateY(0); }
