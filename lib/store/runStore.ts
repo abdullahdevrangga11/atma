@@ -20,6 +20,12 @@ export type AgentStep = {
   reasoningHash: `0x${string}`;
 };
 
+export type DebateExchange = {
+  attempt: number;
+  vetoReason: string;
+  level: "warn" | "trigger";
+};
+
 export type OrchestrationRun = {
   id: string;
   startedAt: number;
@@ -29,6 +35,10 @@ export type OrchestrationRun = {
   risk: RiskSignal;
   report: WeeklyReport;
   steps: AgentStep[];
+  /** Empty if the first proposal was accepted; populated when Risk vetoed. */
+  debate?: DebateExchange[];
+  /** Total token cost rolled up across all agent steps. Optional for legacy runs. */
+  totalCostCents?: number;
 };
 
 const MAX_RUNS = 50;

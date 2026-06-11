@@ -34,7 +34,12 @@ import type {
   UserPolicy,
 } from "./types";
 import { readFeeds, type FeedSnapshot } from "@/lib/data/feeds";
-import { runStore, type AgentStep, type OrchestrationRun } from "@/lib/store/runStore";
+import {
+  runStore,
+  type AgentStep,
+  type OrchestrationRun,
+  type DebateExchange,
+} from "@/lib/store/runStore";
 
 // ───────────────────────────────────────────────────────────
 //  Vault state machine — mirrors AtmaVault.sol
@@ -137,6 +142,7 @@ export class Orchestrator {
     const runId = `run_${runStartedAt}_${Math.random().toString(36).slice(2, 8)}`;
     const feeds = input.feedsOverride ?? readFeeds();
     const steps: AgentStep[] = [];
+    const debate: DebateExchange[] = [];
     let totalInput = 0;
     let totalOutput = 0;
     let totalCostCents = 0;
@@ -227,6 +233,7 @@ export class Orchestrator {
         // Trigger on first attempt → veto + redraft.
         attempt += 1;
         riskVeto = `RiskAgent flagged ${risk.signal} (value ${risk.value}, threshold ${risk.threshold}). Reasoning: ${risk.reasoning}`;
+        debate.push({ attempt, vetoReason: riskVeto, level: risk.level });
         onEvent({ type: "veto", reason: riskVeto, level: risk.level, attempt });
         setState("Analyzing");
       }
@@ -291,6 +298,8 @@ export class Orchestrator {
         risk: finalRisk,
         report,
         steps,
+        debate: debate.length > 0 ? debate : undefined,
+        totalCostCents,
       };
       runStore.append(run);
       onEvent({ type: "done", run });

@@ -30,7 +30,10 @@ type WeekPoint = {
   costCents: number;
   durationMs: number;
   reasoningHashes: string[];
+  runId: string;
 };
+
+type AgentName = "AllocatorAgent" | "RiskAgent" | "ReporterAgent";
 
 type Summary = {
   finalNavATMA: number;
@@ -46,6 +49,9 @@ type Summary = {
 
 type BacktestEvent =
   | { type: "start"; weeks: number; entry: number }
+  | { type: "week-start"; weekIdx: number; weeksAgo: number }
+  | { type: "token"; weekIdx: number; agent: AgentName; chunk: string }
+  | { type: "agent-done"; weekIdx: number; agent: AgentName; durationMs: number }
   | { type: "week"; point: WeekPoint }
   | { type: "done"; summary: Summary }
   | { type: "error"; message: string };
@@ -68,12 +74,18 @@ export function BacktestRunner() {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [currentWeek, setCurrentWeek] = useState<number | null>(null);
+  const [currentAgent, setCurrentAgent] = useState<AgentName | null>(null);
+  const [liveTokens, setLiveTokens] = useState<string>("");
   const abortRef = useRef<AbortController | null>(null);
 
   function reset() {
     setPoints([]);
     setSummary(null);
     setError(null);
+    setCurrentWeek(null);
+    setCurrentAgent(null);
+    setLiveTokens("");
   }
 
   async function run() {
@@ -124,11 +136,29 @@ export function BacktestRunner() {
     switch (evt.type) {
       case "start":
         return;
+      case "week-start":
+        setCurrentWeek(evt.weekIdx);
+        setCurrentAgent("AllocatorAgent");
+        setLiveTokens("");
+        return;
+      case "token":
+        setCurrentAgent(evt.agent);
+        setLiveTokens((s) => {
+          const next = s + evt.chunk;
+          return next.length > 800 ? "…" + next.slice(-800) : next;
+        });
+        return;
+      case "agent-done":
+        // Reset reasoning buffer on agent boundary so each agent gets its own panel
+        setLiveTokens("");
+        return;
       case "week":
         setPoints((arr) => [...arr, evt.point]);
         return;
       case "done":
         setSummary(evt.summary);
+        setCurrentWeek(null);
+        setCurrentAgent(null);
         return;
       case "error":
         setError(evt.message);
@@ -233,6 +263,31 @@ export function BacktestRunner() {
           <CardContent>
             <BacktestChart points={points} entry={entry} weeks={weeks} />
             <Legend />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Live reasoning panel — only during streaming */}
+      {streaming && currentWeek !== null && currentAgent && (
+        <Card>
+          <CardContent className="!pt-4 !pb-4">
+            <div className="flex items-center justify-between mb-3">
+              <Badge variant="accent">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                week {currentWeek + 1} · {currentAgent}
+              </Badge>
+              <span className="font-mono text-[10px] text-[var(--color-text-muted)] uppercase tracking-[0.06em]">
+                claude is reasoning…
+              </span>
+            </div>
+            <div className="rounded-lg p-3 bg-[var(--color-bg-invert)] border border-[var(--color-bg-invert-soft)] max-h-[160px] overflow-y-auto">
+              <pre className="text-[10.5px] leading-[1.55] text-[var(--color-text-on-invert-soft)] font-mono whitespace-pre-wrap break-all">
+                {liveTokens || "…"}
+                {liveTokens.length > 0 && (
+                  <span className="inline-block w-1.5 h-3 bg-[var(--color-accent)] ml-0.5 align-[-2px] animate-pulse" />
+                )}
+              </pre>
+            </div>
           </CardContent>
         </Card>
       )}

@@ -255,8 +255,9 @@ export function ReportsDashboard() {
             {flattenSteps(runs)
               .slice(0, 15)
               .map((s, i, arr) => (
-                <div
+                <a
                   key={`${s.runId}-${s.idx}`}
+                  href={`/runs/${s.runId}`}
                   className={cn(
                     "grid grid-cols-[60px_1.4fr_1.2fr_1.4fr_2.2fr_0.6fr] px-5 py-3 items-center text-[12px] hover:bg-[var(--color-bg-soft)] transition-colors",
                     i < arr.length - 1 && "border-b border-[var(--color-border)]",
@@ -301,7 +302,7 @@ export function ReportsDashboard() {
                   <span className="font-mono text-[10px] text-[var(--color-text-muted)] tabular-nums text-right">
                     {s.durationMs}
                   </span>
-                </div>
+                </a>
               ))}
           </div>
 

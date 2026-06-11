@@ -6,7 +6,7 @@ import { readHistoricalFeeds } from "@/lib/data/feeds";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 300; // 5 min cap — 12 weeks × ~10s/week ≈ 2 min
+export const maxDuration = 300;
 
 const BodySchema = z
   .object({
@@ -17,22 +17,26 @@ const BodySchema = z
   .strict();
 
 type WeekPoint = {
-  weekIdx: number; // 0..weeks-1
-  weeksAgo: number; // weeks-1..0
+  weekIdx: number;
+  weeksAgo: number;
   apys: { usdy: number; mUsd: number; aaveSupply: number; mi4Yield: number };
   riskLevel: "ok" | "warn" | "trigger";
   weights: { usdyBps: number; mUsdBps: number; aaveBps: number; mi4Bps: number };
   expectedAPYBps: number;
-  realisedReturnBps: number; // simulated weekly return
-  navEnd: number; // dollar value (NAV) at end of this week
+  realisedReturnBps: number;
+  navEnd: number;
   baselineNav: { doNothing: number; aaveOnly: number; usdyOnly: number };
   costCents: number;
   durationMs: number;
   reasoningHashes: `0x${string}`[];
+  runId: string;
 };
 
 type Event =
   | { type: "start"; weeks: number; entry: number }
+  | { type: "week-start"; weekIdx: number; weeksAgo: number }
+  | { type: "token"; weekIdx: number; agent: "AllocatorAgent" | "RiskAgent" | "ReporterAgent"; chunk: string }
+  | { type: "agent-done"; weekIdx: number; agent: "AllocatorAgent" | "RiskAgent" | "ReporterAgent"; durationMs: number }
   | { type: "week"; point: WeekPoint }
   | {
       type: "done";
@@ -53,9 +57,9 @@ type Event =
 /**
  * POST /api/backtest/stream
  *
- * Runs N weekly orchestrations with historical feed snapshots and emits
- * per-week + summary events over SSE so the UI can render the chart and
- * the table progressively as Claude reasons.
+ * Streams N weekly orchestrations with live Claude reasoning per agent step.
+ * Each agent's token deltas surface in real time so the UI can render the
+ * model thinking even during a multi-minute replay.
  */
 export async function POST(req: NextRequest) {
   let raw: unknown = {};
@@ -70,7 +74,7 @@ export async function POST(req: NextRequest) {
     return errStream(`Schema: ${parsed.error.issues.map((i) => i.message).join(", ")}`);
   }
   const { weeks = 4, policy, targetAmountUsdc } = parsed.data;
-  const entry = Number(targetAmountUsdc ?? "10000000000") / 1_000_000; // dollar NAV
+  const entry = Number(targetAmountUsdc ?? "10000000000") / 1_000_000;
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -81,7 +85,6 @@ export async function POST(req: NextRequest) {
       send({ type: "start", weeks, entry });
 
       const orchestrator = new Orchestrator();
-      const points: WeekPoint[] = [];
       let nav = entry;
       let navDoNothing = entry;
       let navAaveOnly = entry;
@@ -90,58 +93,61 @@ export async function POST(req: NextRequest) {
       let defensiveExits = 0;
       let peak = entry;
       let maxDrawdown = 0;
+      const weeklyReturnsBps: number[] = [];
 
       try {
         for (let i = 0; i < weeks; i++) {
           const weeksAgo = weeks - 1 - i;
           const feeds = readHistoricalFeeds(weeksAgo);
           const weekStart = Date.now();
+          send({ type: "week-start", weekIdx: i, weeksAgo });
 
-          // Run the chain with historical feeds; ignore per-event token streams here.
-          let runDuration = 0;
-          let runCostCents = 0;
+          let weekCostCents = 0;
           const hashes: `0x${string}`[] = [];
-          let weightsForWeek = { usdyBps: 10_000, mUsdBps: 0, aaveBps: 0, mi4Bps: 0 };
-          let expectedAPYBps = 0;
-          let riskLevel: "ok" | "warn" | "trigger" = "ok";
 
-          const run = await orchestrator.run({
-            policy,
-            targetAmountUsdc,
-            entryNAV: targetAmountUsdc,
-            feedsOverride: feeds,
-          });
-          runDuration = run.finishedAt - run.startedAt;
-          weightsForWeek = run.proposal.weights;
-          expectedAPYBps = run.proposal.expectedAPYBps;
-          riskLevel = run.risk.level;
-          for (const s of run.steps) hashes.push(s.reasoningHash);
-          // The store cost lives on the agents themselves; sum what we can find by
-          // recomputing here is overkill — instead approximate from token counts
-          // baked into the run (steps array doesn't carry them). For now estimate.
-          // Cost was emitted during streaming; for backtest we run non-stream so
-          // we don't have it. Use a fixed estimate per run for the rollup.
-          runCostCents = 0.6; // ~$0.006/run nominal sonnet 4.5 mid-size prompt
+          // Use runStream so per-week reasoning streams through to the client.
+          const run = await orchestrator.runStream(
+            { policy, targetAmountUsdc, entryNAV: targetAmountUsdc, feedsOverride: feeds },
+            (evt) => {
+              if (evt.type === "token") {
+                send({ type: "token", weekIdx: i, agent: evt.agent, chunk: evt.chunk });
+              } else if (evt.type === "allocator" || evt.type === "risk" || evt.type === "reporter") {
+                const agent =
+                  evt.type === "allocator"
+                    ? "AllocatorAgent"
+                    : evt.type === "risk"
+                      ? "RiskAgent"
+                      : "ReporterAgent";
+                send({
+                  type: "agent-done",
+                  weekIdx: i,
+                  agent,
+                  durationMs: evt.step.durationMs,
+                });
+                hashes.push(evt.step.reasoningHash);
+              } else if (evt.type === "cost") {
+                weekCostCents = evt.total.costCents;
+              }
+            },
+          );
 
-          if (riskLevel === "trigger") defensiveExits += 1;
+          if (run.risk.level === "trigger") defensiveExits += 1;
 
-          // Realised return = weighted blend of asset APYs over 1 week.
-          // Cap MI4 to its actual feed APY so wild weeks don't bake unrealistic gains.
-          const w = weightsForWeek;
+          // Realised weekly return — weighted blend / 52 weeks
+          const w = run.proposal.weights;
           const weeklyBlend =
             (w.usdyBps * feeds.apys.usdy +
               w.mUsdBps * feeds.apys.mUsd +
               w.aaveBps * feeds.apys.aaveSupply +
               w.mi4Bps * feeds.apys.mi4Yield) /
             10_000;
-          // Annual APY → weekly = ÷ 52, defensive exit = take 0 yield + 5 bps gas hit
           let weeklyReturn = weeklyBlend / 52;
-          if (riskLevel === "trigger") weeklyReturn = -0.0005;
+          if (run.risk.level === "trigger") weeklyReturn = -0.0005;
           nav = nav * (1 + weeklyReturn);
 
           const realisedBps = Math.round(weeklyReturn * 10_000);
+          weeklyReturnsBps.push(realisedBps);
 
-          // Baselines this week
           navDoNothing = navDoNothing * 1.0;
           navAaveOnly = navAaveOnly * (1 + feeds.apys.aaveSupply / 52);
           navUsdyOnly = navUsdyOnly * (1 + feeds.apys.usdy / 52);
@@ -149,31 +155,37 @@ export async function POST(req: NextRequest) {
           peak = Math.max(peak, nav);
           const dd = ((peak - nav) / peak) * 10_000;
           if (dd > maxDrawdown) maxDrawdown = dd;
-          totalCost += runCostCents;
+          totalCost += weekCostCents;
 
-          const point: WeekPoint = {
-            weekIdx: i,
-            weeksAgo,
-            apys: feeds.apys,
-            riskLevel,
-            weights: weightsForWeek,
-            expectedAPYBps,
-            realisedReturnBps: realisedBps,
-            navEnd: nav,
-            baselineNav: {
-              doNothing: navDoNothing,
-              aaveOnly: navAaveOnly,
-              usdyOnly: navUsdyOnly,
+          send({
+            type: "week",
+            point: {
+              weekIdx: i,
+              weeksAgo,
+              apys: feeds.apys,
+              riskLevel: run.risk.level,
+              weights: run.proposal.weights,
+              expectedAPYBps: run.proposal.expectedAPYBps,
+              realisedReturnBps: realisedBps,
+              navEnd: nav,
+              baselineNav: {
+                doNothing: navDoNothing,
+                aaveOnly: navAaveOnly,
+                usdyOnly: navUsdyOnly,
+              },
+              costCents: weekCostCents,
+              durationMs: Date.now() - weekStart,
+              reasoningHashes: hashes,
+              runId: run.id,
             },
-            costCents: runCostCents,
-            durationMs: Date.now() - weekStart,
-            reasoningHashes: hashes,
-          };
-          points.push(point);
-          send({ type: "week", point });
+          });
         }
 
         const cumulativeReturnBps = Math.round(((nav - entry) / entry) * 10_000);
+        const avgWeeklyBps =
+          weeklyReturnsBps.length > 0
+            ? Math.round(weeklyReturnsBps.reduce((a, b) => a + b, 0) / weeklyReturnsBps.length)
+            : 0;
         send({
           type: "done",
           summary: {
@@ -182,10 +194,7 @@ export async function POST(req: NextRequest) {
             finalNavAaveOnly: navAaveOnly,
             finalNavUsdyOnly: navUsdyOnly,
             cumulativeReturnBps,
-            avgWeeklyBps:
-              points.length > 0
-                ? Math.round(points.reduce((a, p) => a + p.realisedReturnBps, 0) / points.length)
-                : 0,
+            avgWeeklyBps,
             maxDrawdownBps: Math.round(maxDrawdown),
             totalCostCents: totalCost,
             defensiveExits,

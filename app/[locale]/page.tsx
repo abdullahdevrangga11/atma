@@ -7,6 +7,7 @@ import { FeatureCards } from "@/components/landing/FeatureCards";
 import { StatCounters } from "@/components/landing/StatCounters";
 import { ProductSection } from "@/components/landing/ProductSection";
 import { LatestReleases } from "@/components/landing/LatestReleases";
+import { ArchitectureFlow } from "@/components/landing/ArchitectureFlow";
 import { BlueCTA } from "@/components/landing/BlueCTA";
 import { Footer } from "@/components/landing/Footer";
 
@@ -26,6 +27,11 @@ export default async function LandingPage({
         <Hero />
         <LogoStrip />
         <FeatureCards />
+        <section className="container-atma py-20 md:py-28">
+          <div className="max-w-[1100px] mx-auto">
+            <ArchitectureFlow />
+          </div>
+        </section>
         <StatCounters />
         <ProductSection />
         <LatestReleases />
