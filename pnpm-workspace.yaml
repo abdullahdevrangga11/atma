@@ -1,3 +1,6 @@
+packages:
+  - "."
+
 allowBuilds:
   '@parcel/watcher': set this to true or false
   '@reown/appkit': set this to true or false
@@ -8,3 +11,14 @@ allowBuilds:
   sharp: set this to true or false
   unrs-resolver: set this to true or false
   utf-8-validate: set this to true or false
+
+onlyBuiltDependencies:
+  - sharp
+  - "@swc/core"
+  - esbuild
+  - "@parcel/watcher"
+  - keccak
+  - bufferutil
+  - utf-8-validate
+  - unrs-resolver
+  - "@reown/appkit"

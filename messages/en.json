@@ -1,0 +1,70 @@
+{
+  "meta": {
+    "title": "ATMA — Treasury Orchestration for Mantle",
+    "description": "3 AI agents under a verifiable on-chain policy allocate idle stablecoins across Mantle's RWA stack."
+  },
+  "nav": {
+    "vault": "Vault",
+    "reports": "Reports",
+    "skills": "Skills",
+    "docs": "Docs",
+    "launchApp": "Launch App"
+  },
+  "hero": {
+    "eyebrow": "MANTLE TURING TEST HACKATHON 2026 · AI × RWA",
+    "title": "Treasury Orchestration for the Mantle RWA Stack",
+    "subtitleTyped": "3 agents. 4 assets. 1 verifiable on-chain policy.",
+    "subtitle": "ATMA composes Allocator, Risk, and Reporter agents under a Skills-First policy. Every decision is signed by an ERC-8004 agent identity NFT, recorded permanently on Mantle.",
+    "ctaPrimary": "Launch Vault",
+    "ctaSecondary": "View on GitHub",
+    "statTvl": "$1.07B+",
+    "statTvlLabel": "Mantle RWA TVL addressable",
+    "statBps": "463 bps",
+    "statBpsLabel": "Sample outperformance vs do-nothing",
+    "statAgents": "3 agents",
+    "statAgentsLabel": "ERC-8004 verifiable identities"
+  },
+  "features": {
+    "eyebrow": "// THREE AGENTS · ONE POLICY",
+    "title": "Composable. Auditable. Always-on.",
+    "allocator": {
+      "title": "Allocator Agent",
+      "body": "Reasons across USDY, mUSD, Aave V3 supply, and MI4 yields under your policy. Caps, risk tolerance, liquidity floors — all enforced before any tx."
+    },
+    "risk": {
+      "title": "Risk Agent",
+      "body": "Watches peg drift, oracle deviation, drawdown breach. Triggers defensive exit in ≤2 minutes — replicates March 10 wstETH glitch as a test case."
+    },
+    "reporter": {
+      "title": "Reporter Agent",
+      "body": "Weekly P&L vs do-nothing baseline. Outperformance in basis points. Compliance CSV export. Every decision attested on ERC-8004."
+    }
+  },
+  "howItWorks": {
+    "eyebrow": "// HOW IT WORKS",
+    "title": "From deposit to allocated in 30 seconds.",
+    "step1Title": "Deposit USDC",
+    "step1Body": "Embedded wallet via Privy. No MetaMask popup. Email + social login welcome.",
+    "step2Title": "Agent reasons",
+    "step2Body": "Allocator reads live APYs, applies your policy, proposes weights with on-chain reasoning hash.",
+    "step3Title": "Signed + executed",
+    "step3Body": "You sign once. Vault routes across 4 Mantle assets. ERC-8004 attestation emitted."
+  },
+  "counters": {
+    "title": "Built on Mantle's $4B+ RWA Stack.",
+    "subtitle": "ATMA composes the primitives that already work."
+  },
+  "marquee": {
+    "label": "Powered by"
+  },
+  "footer": {
+    "tagline": "Treasury orchestration as a primitive, not a dashboard.",
+    "builtBy": "Built by Devrangga Hazza Mahiswara · UGM '23 · Yogyakarta, Indonesia",
+    "hackathon": "Mantle Turing Test Hackathon 2026 · AI × RWA Track",
+    "sections": {
+      "product": "Product",
+      "resources": "Resources",
+      "social": "Social"
+    }
+  }
+}
