@@ -9,12 +9,6 @@ type DropdownItem = {
   desc: string;
   href: string;
   Icon: () => React.ReactElement;
-  /**
-   * Visual tone for the icon container. base.org-style: the "headline" item
-   * in each dropdown gets a permanent violet wash; everything else stays
-   * neutral and warms into violet on hover.
-   */
-  tone?: "primary" | "neutral";
 };
 
 type NavItem = {
@@ -184,7 +178,7 @@ const NAV: NavItem[] = [
   {
     label: "Product",
     items: [
-      { name: "Vault", desc: "Live multi-agent orchestration", href: "/vault", Icon: IconVault, tone: "primary" },
+      { name: "Vault", desc: "Live multi-agent orchestration", href: "/vault", Icon: IconVault },
       { name: "Backtest", desc: "Replay N weeks vs 3 baselines", href: "/backtest", Icon: IconChartUp },
       { name: "Compare", desc: "3 policies, parallel reasoning", href: "/compare", Icon: IconBalance },
       { name: "Anomaly", desc: "Stress-test the RiskAgent", href: "/anomaly", Icon: IconShield },
@@ -193,7 +187,7 @@ const NAV: NavItem[] = [
   {
     label: "Agents",
     items: [
-      { name: "AllocatorAgent", desc: "Treasury allocation under policy", href: "/agents/allocator", Icon: IconAgent, tone: "primary" },
+      { name: "AllocatorAgent", desc: "Treasury allocation under policy", href: "/agents/allocator", Icon: IconAgent },
       { name: "RiskAgent", desc: "Veto authority + defensive exit", href: "/agents/risk", Icon: IconShield },
       { name: "ReporterAgent", desc: "P&L attestation, 3 baselines", href: "/agents/reporter", Icon: IconReport },
       { name: "Reports", desc: "Real attestation history", href: "/reports", Icon: IconReport },
@@ -202,7 +196,7 @@ const NAV: NavItem[] = [
   {
     label: "Policy",
     items: [
-      { name: "Skills", desc: "Edit markdown, see diff", href: "/skills", Icon: IconSkills, tone: "primary" },
+      { name: "Skills", desc: "Edit markdown, see diff", href: "/skills", Icon: IconSkills },
       { name: "A/B test", desc: "Prove a policy change pays off", href: "/ab-test", Icon: IconBeaker },
       { name: "Network", desc: "Cumulative network stats", href: "/network", Icon: IconNetwork },
     ],
@@ -350,9 +344,7 @@ export function Navbar() {
               {openIdx === i && (
                 <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
                   <div className="w-[340px] bg-white border border-[var(--color-border)] rounded-2xl shadow-[0_18px_56px_rgba(91,61,240,0.10),0_4px_16px_rgba(0,0,0,0.04)] p-2">
-                    {item.items.map((sub) => {
-                      const isPrimary = sub.tone === "primary";
-                      return (
+                    {item.items.map((sub) => (
                       <a
                         key={sub.name}
                         href={sub.href}
@@ -362,26 +354,18 @@ export function Navbar() {
                       >
                         <span
                           className={cn(
-                            "block w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300",
-                            // Default: primary items stay violet, others stay neutral
-                            isPrimary
-                              ? "bg-[var(--color-primary-tint)] text-[var(--color-primary)]"
-                              : "bg-[var(--color-bg-soft)] text-[var(--color-text)]",
-                            // Hover: everyone goes violet
+                            "block w-9 h-9 rounded-lg flex items-center justify-center shrink-0",
+                            // Default: neutral gray container, ink icon.
+                            "bg-[var(--color-bg-soft)] text-[var(--color-text)]",
+                            // Hover: white card with violet icon + soft violet shadow.
                             "group-hover/item:bg-white group-hover/item:text-[var(--color-primary)] group-hover/item:shadow-[0_2px_8px_rgba(91,61,240,0.10)]",
+                            "transition-all duration-300",
                           )}
                         >
                           <sub.Icon />
                         </span>
                         <span className="flex-1 min-w-0">
-                          <p
-                            className={cn(
-                              "text-[14px] font-medium leading-tight transition-colors duration-200",
-                              isPrimary
-                                ? "text-[var(--color-primary)]"
-                                : "text-[var(--color-text)] group-hover/item:text-[var(--color-primary)]",
-                            )}
-                          >
+                          <p className="text-[14px] font-medium leading-tight text-[var(--color-text)] group-hover/item:text-[var(--color-primary)] transition-colors duration-200">
                             {sub.name}
                           </p>
                           <p className="text-[12px] text-[var(--color-text-muted)] mt-1 leading-snug group-hover/item:text-[var(--color-text-secondary)] transition-colors duration-200">
@@ -389,8 +373,7 @@ export function Navbar() {
                           </p>
                         </span>
                       </a>
-                      );
-                    })}
+                    ))}
                   </div>
                 </div>
               )}
