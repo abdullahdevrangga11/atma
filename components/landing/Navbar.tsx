@@ -342,23 +342,23 @@ export function Navbar() {
               </button>
 
               {openIdx === i && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
-                  <div className="w-[340px] bg-white border border-[var(--color-border)] rounded-2xl shadow-[0_18px_56px_rgba(91,61,240,0.10),0_4px_16px_rgba(0,0,0,0.04)] p-2">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
+                  <div className="w-[360px] bg-white border border-[var(--color-border)] rounded-2xl shadow-[0_18px_56px_rgba(91,61,240,0.10),0_4px_16px_rgba(0,0,0,0.04)] p-1.5">
                     {item.items.map((sub) => (
                       <a
                         key={sub.name}
                         href={sub.href}
                         target={sub.href.startsWith("http") ? "_blank" : undefined}
                         rel={sub.href.startsWith("http") ? "noreferrer" : undefined}
-                        className="group/item flex items-start gap-3 p-3 rounded-xl hover:bg-[var(--color-primary-tint)] transition-colors duration-200"
+                        className="group/item flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[var(--color-primary-tint)] transition-colors duration-200"
                       >
                         <span
                           className={cn(
-                            "block w-9 h-9 rounded-lg flex items-center justify-center shrink-0",
+                            "block w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
                             // Default: neutral gray container, ink icon.
                             "bg-[var(--color-bg-soft)] text-[var(--color-text)]",
                             // Hover: white card with violet icon + soft violet shadow.
-                            "group-hover/item:bg-white group-hover/item:text-[var(--color-primary)] group-hover/item:shadow-[0_2px_8px_rgba(91,61,240,0.10)]",
+                            "group-hover/item:bg-white group-hover/item:text-[var(--color-primary)] group-hover/item:shadow-[0_2px_8px_rgba(91,61,240,0.12)]",
                             "transition-all duration-300",
                           )}
                         >
