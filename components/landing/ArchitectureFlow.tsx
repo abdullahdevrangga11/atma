@@ -1,92 +1,111 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
+import { useMemo } from "react";
 import Link from "next/link";
+import {
+  ReactFlow,
+  ReactFlowProvider,
+  Background,
+  Handle,
+  Position,
+  type Node,
+  type Edge,
+  type NodeProps,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import { Badge } from "@/components/ui/badge";
 
 /**
- * ArchitectureFlow — an animated SVG that traces the agent pipeline.
+ * Architecture flow rendered with React Flow.
  *
- * Nodes:
- *   Live Feeds → AllocatorAgent → RiskAgent → ReporterAgent → Attestation → Reports
- *                                  ↘ (veto)              ↗
- *
- * A particle travels along the path on a loop so the diagram reads as live
- * even without user interaction. The "veto" branch periodically lights up to
- * surface the debate loop primitive.
+ * Nodes are typed PipelineNode components so we keep full control of the
+ * visual identity (tone-mapped fills, sub-labels, click-through links). Edges
+ * use React Flow's built-in animated marker, with the main pipeline animated
+ * and the veto path styled dashed orange.
  */
 
-const NODES = [
-  { id: "feeds",      x: 60,  y: 130, w: 96,  h: 56, label: "Live Feeds",      sub: "/api/feeds",         tone: "neutral" as const, href: "/api/feeds" },
-  { id: "allocator",  x: 220, y: 130, w: 110, h: 56, label: "AllocatorAgent",  sub: "skill.md → JSON",     tone: "primary" as const, href: "/agents/allocator" },
-  { id: "risk",       x: 390, y: 130, w: 110, h: 56, label: "RiskAgent",       sub: "veto authority",     tone: "warm" as const,    href: "/agents/risk" },
-  { id: "reporter",   x: 560, y: 130, w: 110, h: 56, label: "ReporterAgent",   sub: "signs the digest",   tone: "lime" as const,    href: "/agents/reporter" },
-  { id: "attest",     x: 730, y: 130, w: 96,  h: 56, label: "Attestation",     sub: "ERC-8004 event",     tone: "primary" as const, href: "/runs" },
-  { id: "reports",    x: 730, y: 230, w: 96,  h: 48, label: "Reports",         sub: "history",            tone: "neutral" as const, href: "/reports" },
-  // Veto branch — risk back to allocator
-  { id: "vault",      x: 390, y: 230, w: 110, h: 48, label: "AtmaVault",       sub: "11-state machine",   tone: "neutral" as const, href: "/vault" },
-] as const;
+type Tone = "primary" | "warm" | "lime" | "neutral";
 
-const EDGES = [
-  { from: "feeds",     to: "allocator", main: true },
-  { from: "allocator", to: "risk",      main: true },
-  { from: "risk",      to: "reporter",  main: true },
-  { from: "reporter",  to: "attest",    main: true },
-  { from: "attest",    to: "reports",   main: false },
-  // Debate veto path
-  { from: "risk",      to: "allocator", main: false, veto: true, curve: -60 },
-  // State machine driving the vault
-  { from: "allocator", to: "vault",     main: false },
-  { from: "vault",     to: "reports",   main: false },
-] as const;
+type PipelineData = {
+  label: string;
+  sub: string;
+  tone: Tone;
+  href: string;
+};
 
-const TONE_FG: Record<(typeof NODES)[number]["tone"], string> = {
+const TONE_FG: Record<Tone, string> = {
   primary: "#5b3df0",
   warm: "#ea580c",
   lime: "#65a30d",
   neutral: "#0a0a0a",
 };
-const TONE_BG: Record<(typeof NODES)[number]["tone"], string> = {
+const TONE_BG: Record<Tone, string> = {
   primary: "#ede9fe",
   warm: "#ffedd5",
   lime: "#ecfccb",
   neutral: "#ffffff",
 };
-const TONE_BORDER: Record<(typeof NODES)[number]["tone"], string> = {
+const TONE_BORDER: Record<Tone, string> = {
   primary: "#c7bdf9",
   warm: "#fed7aa",
   lime: "#d9f99d",
   neutral: "#e8e8e8",
 };
 
-function nodeById(id: string) {
-  return NODES.find((n) => n.id === id)!;
-}
+const nodeTypes = { pipeline: PipelineNode };
 
-function pathFor(from: string, to: string, curve = 0): string {
-  const a = nodeById(from);
-  const b = nodeById(to);
-  const x1 = a.x + a.w / 2;
-  const y1 = a.y + a.h / 2;
-  const x2 = b.x + b.w / 2;
-  const y2 = b.y + b.h / 2;
-  if (curve === 0) {
-    return `M ${x1},${y1} L ${x2},${y2}`;
-  }
-  // Quadratic curve for veto loop-back
-  const mx = (x1 + x2) / 2;
-  const my = (y1 + y2) / 2 + curve;
-  return `M ${x1},${y1} Q ${mx},${my} ${x2},${y2}`;
-}
+const NODES_DATA: Array<{
+  id: string;
+  position: { x: number; y: number };
+  data: PipelineData;
+}> = [
+  { id: "feeds",     position: { x: 0,   y: 80 },  data: { label: "Live Feeds",     sub: "/api/feeds",        tone: "neutral", href: "/api/feeds" } },
+  { id: "allocator", position: { x: 180, y: 80 },  data: { label: "AllocatorAgent", sub: "skill.md → JSON",   tone: "primary", href: "/agents/allocator" } },
+  { id: "risk",      position: { x: 360, y: 80 },  data: { label: "RiskAgent",      sub: "veto authority",    tone: "warm",    href: "/agents/risk" } },
+  { id: "reporter",  position: { x: 540, y: 80 },  data: { label: "ReporterAgent",  sub: "signs the digest",  tone: "lime",    href: "/agents/reporter" } },
+  { id: "attest",    position: { x: 720, y: 80 },  data: { label: "Attestation",    sub: "ERC-8004 event",    tone: "primary", href: "/runs" } },
+  { id: "vault",     position: { x: 360, y: 200 }, data: { label: "AtmaVault",      sub: "11-state machine",  tone: "neutral", href: "/vault" } },
+  { id: "reports",   position: { x: 720, y: 200 }, data: { label: "Reports",        sub: "history",           tone: "neutral", href: "/reports" } },
+];
+
+const EDGES_DATA: Edge[] = [
+  // Main pipeline — animated violet
+  { id: "e-feeds-allocator", source: "feeds", target: "allocator", animated: true,
+    style: { stroke: "#5b3df0", strokeWidth: 1.8 },
+    markerEnd: { type: "arrowclosed", color: "#5b3df0", width: 14, height: 14 } as Edge["markerEnd"] },
+  { id: "e-allocator-risk", source: "allocator", target: "risk", animated: true,
+    style: { stroke: "#5b3df0", strokeWidth: 1.8 },
+    markerEnd: { type: "arrowclosed", color: "#5b3df0", width: 14, height: 14 } as Edge["markerEnd"] },
+  { id: "e-risk-reporter", source: "risk", target: "reporter", animated: true,
+    style: { stroke: "#5b3df0", strokeWidth: 1.8 },
+    markerEnd: { type: "arrowclosed", color: "#5b3df0", width: 14, height: 14 } as Edge["markerEnd"] },
+  { id: "e-reporter-attest", source: "reporter", target: "attest", animated: true,
+    style: { stroke: "#5b3df0", strokeWidth: 1.8 },
+    markerEnd: { type: "arrowclosed", color: "#5b3df0", width: 14, height: 14 } as Edge["markerEnd"] },
+
+  // Side effects
+  { id: "e-allocator-vault", source: "allocator", target: "vault", type: "smoothstep",
+    style: { stroke: "#c7bdf9", strokeWidth: 1.2, strokeDasharray: "4 4" },
+    markerEnd: { type: "arrowclosed", color: "#c7bdf9", width: 12, height: 12 } as Edge["markerEnd"] },
+  { id: "e-attest-reports", source: "attest", target: "reports", type: "smoothstep",
+    style: { stroke: "#c7bdf9", strokeWidth: 1.2, strokeDasharray: "4 4" },
+    markerEnd: { type: "arrowclosed", color: "#c7bdf9", width: 12, height: 12 } as Edge["markerEnd"] },
+  { id: "e-vault-reports", source: "vault", target: "reports", type: "smoothstep",
+    style: { stroke: "#c7bdf9", strokeWidth: 1.2, strokeDasharray: "4 4" },
+    markerEnd: { type: "arrowclosed", color: "#c7bdf9", width: 12, height: 12 } as Edge["markerEnd"] },
+
+  // Veto path — orange dashed loop-back
+  { id: "e-risk-allocator-veto", source: "risk", target: "allocator", type: "smoothstep",
+    label: "veto",
+    labelStyle: { fontFamily: "ui-monospace, monospace", fontSize: 10, fill: "#ea580c" },
+    labelBgStyle: { fill: "#ffedd5" },
+    labelBgPadding: [4, 8] as [number, number],
+    labelBgBorderRadius: 4,
+    style: { stroke: "#ea580c", strokeWidth: 1.6, strokeDasharray: "5 4" },
+    markerEnd: { type: "arrowclosed", color: "#ea580c", width: 14, height: 14 } as Edge["markerEnd"] },
+];
 
 export function ArchitectureFlow() {
-  // Cycle the highlighted edge so the diagram looks alive
-  const [phase, setPhase] = useState(0);
-  useEffect(() => {
-    const id = window.setInterval(() => setPhase((p) => (p + 1) % 5), 1400);
-    return () => window.clearInterval(id);
-  }, []);
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -108,127 +127,86 @@ export function ArchitectureFlow() {
         </div>
       </div>
 
-      <div className="relative w-full overflow-x-auto border border-[var(--color-border)] rounded-2xl bg-[var(--color-bg-card-soft)] p-4">
-        <svg viewBox="0 0 856 310" className="w-full h-auto min-w-[720px]" aria-label="ATMA architecture flow">
-          <defs>
-            <marker id="arch-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-              <path d="M0,0 L10,5 L0,10 z" fill="#c7bdf9" />
-            </marker>
-            <marker id="arch-arrow-active" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M0,0 L10,5 L0,10 z" fill="#5b3df0" />
-            </marker>
-            <marker id="arch-arrow-veto" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M0,0 L10,5 L0,10 z" fill="#ea580c" />
-            </marker>
-          </defs>
-
-          {/* Edges */}
-          {EDGES.map((e, i) => {
-            const d = pathFor(e.from, e.to, (e as { curve?: number }).curve ?? 0);
-            const isMainPath = e.main;
-            const isActive = isMainPath && i === phase % EDGES.filter((x) => x.main).length;
-            const isVeto = (e as { veto?: boolean }).veto;
-            const stroke = isVeto ? "#ea580c" : isActive ? "#5b3df0" : isMainPath ? "#c7bdf9" : "#e8e8e8";
-            return (
-              <path
-                key={i}
-                d={d}
-                fill="none"
-                stroke={stroke}
-                strokeWidth={isActive ? 2 : 1.4}
-                strokeDasharray={isVeto ? "5 4" : "0"}
-                markerEnd={isVeto ? "url(#arch-arrow-veto)" : isActive ? "url(#arch-arrow-active)" : "url(#arch-arrow)"}
-                style={{ transition: "stroke 480ms ease" }}
-              />
-            );
-          })}
-
-          {/* Veto label */}
-          <text x="305" y="78" fontSize="10" fontFamily="ui-monospace, monospace" fill="#ea580c" textAnchor="middle">
-            ← veto → redraft
-          </text>
-
-          {/* Animated particle traveling the main path */}
-          {EDGES.filter((e) => e.main).map((e, i) => {
-            const active = i === phase % EDGES.filter((x) => x.main).length;
-            if (!active) return null;
-            const a = nodeById(e.from);
-            const b = nodeById(e.to);
-            return (
-              <circle
-                key={`particle-${i}`}
-                cx={a.x + a.w / 2}
-                cy={a.y + a.h / 2}
-                r="3"
-                fill="#5b3df0"
-              >
-                <animate
-                  attributeName="cx"
-                  from={a.x + a.w / 2}
-                  to={b.x + b.w / 2}
-                  dur="1.4s"
-                  repeatCount="indefinite"
-                />
-                <animate
-                  attributeName="cy"
-                  from={a.y + a.h / 2}
-                  to={b.y + b.h / 2}
-                  dur="1.4s"
-                  repeatCount="indefinite"
-                />
-              </circle>
-            );
-          })}
-
-          {/* Nodes */}
-          {NODES.map((n) => (
-            <g key={n.id} transform={`translate(${n.x}, ${n.y})`}>
-              <a href={n.href}>
-                <rect
-                  x="0"
-                  y="0"
-                  width={n.w}
-                  height={n.h}
-                  rx="8"
-                  fill={TONE_BG[n.tone]}
-                  stroke={TONE_BORDER[n.tone]}
-                  strokeWidth={1.4}
-                />
-                <text
-                  x={n.w / 2}
-                  y={n.h / 2 - 4}
-                  textAnchor="middle"
-                  fontSize="11"
-                  fontFamily="ui-monospace, monospace"
-                  fontWeight="600"
-                  fill={TONE_FG[n.tone]}
-                >
-                  {n.label}
-                </text>
-                <text
-                  x={n.w / 2}
-                  y={n.h / 2 + 10}
-                  textAnchor="middle"
-                  fontSize="9"
-                  fontFamily="ui-monospace, monospace"
-                  fill="#858585"
-                >
-                  {n.sub}
-                </text>
-              </a>
-            </g>
-          ))}
-        </svg>
+      <div className="relative w-full h-[380px] rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card-soft)] overflow-hidden">
+        <ReactFlowProvider>
+          <Inner />
+        </ReactFlowProvider>
       </div>
 
-      {/* Legend */}
       <div className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] font-mono">
-        <LegendItem color="#5b3df0" label="Active flow (animates)" />
-        <LegendItem color="#c7bdf9" label="Main pipeline (idle)" />
+        <LegendItem color="#5b3df0" label="Main pipeline (animated)" />
         <LegendItem color="#ea580c" label="Veto / debate path" dashed />
-        <LegendItem color="#e8e8e8" label="Side effects" />
+        <LegendItem color="#c7bdf9" label="Side effects" dashed />
       </div>
     </div>
+  );
+}
+
+function Inner() {
+  const nodes: Node<PipelineData>[] = useMemo(
+    () =>
+      NODES_DATA.map((n) => ({
+        ...n,
+        type: "pipeline",
+        draggable: false,
+        selectable: false,
+      })),
+    [],
+  );
+  return (
+    <ReactFlow
+      nodes={nodes}
+      edges={EDGES_DATA}
+      nodeTypes={nodeTypes}
+      proOptions={{ hideAttribution: true }}
+      panOnDrag={false}
+      zoomOnScroll={false}
+      zoomOnPinch={false}
+      panOnScroll={false}
+      preventScrolling={false}
+      fitView
+      fitViewOptions={{ padding: 0.18, maxZoom: 1 }}
+    >
+      <Background gap={20} size={1} color="#e8e8e8" />
+    </ReactFlow>
+  );
+}
+
+function PipelineNode({ data }: NodeProps) {
+  const d = data as unknown as PipelineData;
+  return (
+    <a
+      href={d.href}
+      style={{
+        display: "block",
+        width: 132,
+        height: 64,
+        borderRadius: 8,
+        background: TONE_BG[d.tone],
+        border: `1.4px solid ${TONE_BORDER[d.tone]}`,
+        padding: "8px 12px",
+        position: "relative",
+        fontFamily: "ui-monospace, monospace",
+        cursor: "pointer",
+        textDecoration: "none",
+      }}
+    >
+      <Handle type="target" position={Position.Left} style={{ background: "transparent", border: "none" }} />
+      <Handle type="source" position={Position.Right} style={{ background: "transparent", border: "none" }} />
+      <Handle type="target" position={Position.Top} id="top" style={{ background: "transparent", border: "none" }} />
+      <Handle type="source" position={Position.Bottom} id="bottom" style={{ background: "transparent", border: "none" }} />
+      <div
+        style={{
+          fontSize: 12,
+          fontWeight: 600,
+          color: TONE_FG[d.tone],
+          marginBottom: 4,
+        }}
+      >
+        {d.label}
+      </div>
+      <div style={{ fontSize: 10, color: "#858585" }}>{d.sub}</div>
+    </a>
   );
 }
 
@@ -238,7 +216,9 @@ function LegendItem({ color, label, dashed }: { color: string; label: string; da
       <span
         className="block w-6 h-0.5 rounded"
         style={{
-          background: dashed ? `repeating-linear-gradient(to right, ${color} 0 5px, transparent 5px 9px)` : color,
+          background: dashed
+            ? `repeating-linear-gradient(to right, ${color} 0 5px, transparent 5px 9px)`
+            : color,
         }}
       />
       <span className="text-[var(--color-text-secondary)]">{label}</span>
