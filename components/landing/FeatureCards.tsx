@@ -1,115 +1,72 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
+import Link from "next/link";
 
-type FeatureKey = "allocator" | "risk" | "reporter";
-
-const ICONS: Record<FeatureKey, React.ReactNode> = {
-  allocator: (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <path
-        d="M10 1.667v16.666M3.333 6.667l13.334 6.666M3.333 13.333l13.334-6.666"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-    </svg>
-  ),
-  risk: (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <path
-        d="M10 6.667v3.333m0 3.333h.008M8.575 2.717 1.517 14.5a1.667 1.667 0 0 0 1.425 2.5h14.116a1.667 1.667 0 0 0 1.425-2.5L11.425 2.717a1.667 1.667 0 0 0-2.85 0Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  ),
-  reporter: (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <path
-        d="M2.5 17.5v-8.333m5 8.333v-15m5 15V10m5 7.5v-5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-    </svg>
-  ),
+type Feature = {
+  title: string;
+  body: string;
+  href: string;
+  icon: React.ReactNode;
 };
 
-const DETAILS: Record<FeatureKey, { lines: string[]; color: string }> = {
-  allocator: {
-    lines: ["USDY · mUSD · Aave V3 · MI4", "Policy caps + risk tolerance"],
-    color: "var(--color-primary)",
+const FEATURES: Feature[] = [
+  {
+    title: "Allocator",
+    body: "Reasons across USDY, mUSD, Aave V3 supply, and MI4 under your policy. Caps, risk tolerance, liquidity floors — enforced before any tx.",
+    href: "/skills",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <circle cx="11" cy="11" r="6" stroke="currentColor" strokeWidth="1.5" />
+        <circle cx="11" cy="11" r="2" fill="currentColor" />
+        <path d="M11 1v3M11 18v3M1 11h3M18 11h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    ),
   },
-  risk: {
-    lines: ["Peg · oracle · drawdown", "≤2 min trigger to defensive exit"],
-    color: "var(--color-warning)",
+  {
+    title: "Risk",
+    body: "Watches peg drift, oracle deviation, drawdown breach. Triggers defensive exit in under 2 minutes — replicates March 10 wstETH glitch as a test.",
+    href: "/skills",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M11 1l9 6v8l-9 6-9-6V7l9-6z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+        <path d="M11 7v5M11 15h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    ),
   },
-  reporter: {
-    lines: ["Weekly P&L vs baseline", "ERC-8004 attestation per decision"],
-    color: "var(--color-accent)",
+  {
+    title: "Reporter",
+    body: "Weekly P&L vs do-nothing baseline. Outperformance in basis points. Compliance CSV export. Every decision attested on ERC-8004.",
+    href: "/reports",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M3 19V9m5 10V3m5 16v-7m5 7V11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    ),
   },
-};
+];
 
 export function FeatureCards() {
-  const t = useTranslations("features");
-  const features: FeatureKey[] = ["allocator", "risk", "reporter"];
-
   return (
-    <section className="section relative">
-      <div className="absolute inset-0 grid-backdrop opacity-30" />
-      <div className="container-atma relative">
-        <div className="max-w-2xl mb-16">
-          <ScrollReveal>
-            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-4">
-              {t("eyebrow")}
-            </p>
-          </ScrollReveal>
-          <ScrollReveal delay={80}>
-            <h2 className="display-2 gradient-text">{t("title")}</h2>
-          </ScrollReveal>
-        </div>
-
+    <section className="section bg-[var(--color-bg)]">
+      <div className="container-atma">
         <div className="grid md:grid-cols-3 gap-5">
-          {features.map((key, i) => (
-            <ScrollReveal key={key} delay={150 + i * 100}>
-              <article className="card-atma p-7 md:p-8 h-full flex flex-col">
-                <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center mb-6"
-                  style={{
-                    background: `${DETAILS[key].color}1a`,
-                    color: DETAILS[key].color,
-                    border: `1px solid ${DETAILS[key].color}33`,
-                  }}
-                >
-                  {ICONS[key]}
-                </div>
-
-                <h3 className="text-xl font-medium tracking-tight mb-3">
-                  {t(`${key}.title`)}
+          {FEATURES.map((f, i) => (
+            <ScrollReveal key={f.title} delay={i * 80}>
+              <Link href={f.href} className="card-feature block h-full group">
+                <span className="arrow-indicator">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M5 11L11 5M11 5H6M11 5V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+                <div className="text-[var(--color-text)] mb-6">{f.icon}</div>
+                <h3 className="text-[18px] font-medium text-[var(--color-text)] mb-2">
+                  {f.title}
                 </h3>
-                <p className="text-[15px] leading-relaxed text-[var(--color-text-secondary)] mb-6">
-                  {t(`${key}.body`)}
+                <p className="text-[14px] leading-relaxed text-[var(--color-text-secondary)] pr-6">
+                  {f.body}
                 </p>
-
-                <ul className="mt-auto space-y-2 pt-6 border-t border-white/[0.06]">
-                  {DETAILS[key].lines.map((line) => (
-                    <li
-                      key={line}
-                      className="font-mono text-[11px] uppercase tracking-[0.06em] text-[var(--color-text-muted)] flex items-center gap-2"
-                    >
-                      <span
-                        className="w-1 h-1 rounded-full"
-                        style={{ background: DETAILS[key].color }}
-                      />
-                      {line}
-                    </li>
-                  ))}
-                </ul>
-              </article>
+              </Link>
             </ScrollReveal>
           ))}
         </div>

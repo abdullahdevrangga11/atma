@@ -6,7 +6,6 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { LenisProvider } from "@/components/providers/LenisProvider";
-import { CustomCursor } from "@/components/animations/CustomCursor";
 import { Toaster } from "sonner";
 import "../globals.css";
 
@@ -42,7 +41,6 @@ export default async function LocaleLayout({
       <body>
         <NextIntlClientProvider messages={messages}>
           <LenisProvider>
-            <CustomCursor />
             {children}
             <Toaster
               theme="dark"

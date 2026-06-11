@@ -1,81 +1,104 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils/cn";
 
-export function Navbar() {
-  const t = useTranslations("nav");
-  const [scrolled, setScrolled] = useState(false);
+const NAV_ITEMS = [
+  { label: "Product", items: [
+    { name: "Vault", desc: "Deposit + view allocation", href: "/vault" },
+    { name: "Reports", desc: "P&L + on-chain attestations", href: "/reports" },
+    { name: "Skills", desc: "Markdown policy reference", href: "/skills" },
+  ]},
+  { label: "Developers", items: [
+    { name: "GitHub", desc: "Open-source MIT", href: "https://github.com/abdullahdevrangga11/atma" },
+    { name: "Architecture", desc: "Vault state machine", href: "https://github.com/abdullahdevrangga11/atma#architecture" },
+    { name: "Risk Model", desc: "Defensive exit thresholds", href: "https://github.com/abdullahdevrangga11/atma/blob/main/RISK_MODEL.md" },
+  ]},
+  { label: "Ecosystem", items: [
+    { name: "Mantle", desc: "Host network · ERC-8004", href: "https://www.mantle.xyz" },
+    { name: "USDY", desc: "Ondo tokenized treasuries", href: "https://ondo.finance" },
+    { name: "Aave V3", desc: "Boosted supply on Mantle", href: "https://app.aave.com" },
+  ]},
+  { label: "Resources", items: [
+    { name: "Hackathon", desc: "Mantle Turing Test 2026", href: "https://dorahacks.io/hackathon/mantleturingtesthackathon2026" },
+    { name: "DoraHacks", desc: "Submission profile", href: "https://dorahacks.io" },
+    { name: "Brand", desc: "Logos and colors", href: "/about" },
+  ]},
+];
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+export function Navbar() {
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
 
   return (
-    <header
-      className={cn(
-        "fixed top-0 inset-x-0 z-50 transition-all duration-300",
-        scrolled
-          ? "border-b border-[var(--color-border)] bg-[rgba(11,11,12,0.75)] backdrop-blur-xl"
-          : "border-b border-transparent",
-      )}
-    >
-      <div className="container-atma flex items-center justify-between h-14">
-        <Link href="/" className="flex items-center gap-3 group">
-          <svg width="20" height="20" viewBox="0 0 20 20" className="text-[var(--color-text)]" fill="none">
-            <rect x="0.5" y="0.5" width="19" height="19" stroke="currentColor" opacity="0.4" />
-            <rect x="4.5" y="4.5" width="11" height="11" stroke="currentColor" />
-            <line x1="0" y1="0" x2="20" y2="20" stroke="currentColor" opacity="0.2" />
-            <line x1="20" y1="0" x2="0" y2="20" stroke="currentColor" opacity="0.2" />
-          </svg>
-          <span className="font-mono text-[12px] uppercase tracking-[0.10em]">
-            atma<span className="text-[var(--color-text-muted)]">.protocol</span>
-          </span>
+    <header className="relative z-40 bg-[var(--color-bg)]">
+      <div className="container-atma flex items-center justify-between h-16">
+        <Link href="/" className="flex items-center gap-2 shrink-0">
+          <span className="block w-6 h-6 rounded-[3px] bg-[var(--color-primary)]" aria-hidden />
+          <span className="sr-only">ATMA</span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-1 border border-[var(--color-border)] rounded-full px-2 py-1 bg-[rgba(0,0,0,0.30)] backdrop-blur-md">
-          <NavLink href="/vault" label={t("vault")} />
-          <NavLink href="/reports" label={t("reports")} />
-          <NavLink href="/skills" label={t("skills")} />
-          <a
-            href="https://github.com/abdullahdevrangga11/atma"
-            target="_blank"
-            rel="noreferrer"
-            className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-secondary)] hover:text-[var(--color-text)] px-3 py-1.5 rounded-full transition-colors"
-          >
-            {t("docs")}
-          </a>
+        <nav
+          className="hidden md:flex items-center gap-1"
+          onMouseLeave={() => setOpenIdx(null)}
+        >
+          {NAV_ITEMS.map((item, i) => (
+            <div
+              key={item.label}
+              className="relative"
+              onMouseEnter={() => setOpenIdx(i)}
+            >
+              <button
+                type="button"
+                className={cn(
+                  "px-4 py-2 text-[14px] font-medium transition-colors flex items-center gap-1.5",
+                  openIdx === i
+                    ? "text-[var(--color-text)]"
+                    : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
+                )}
+              >
+                {item.label}
+                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className={cn("transition-transform", openIdx === i && "rotate-180")}>
+                  <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+
+              {openIdx === i && (
+                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 z-50">
+                  <div className="w-[320px] bg-white border border-[var(--color-border)] rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-2">
+                    {item.items.map((sub) => (
+                      <a
+                        key={sub.name}
+                        href={sub.href}
+                        className="flex items-start gap-3 p-3 rounded-xl hover:bg-[var(--color-bg-soft)] transition-colors group"
+                      >
+                        <span className="block w-9 h-9 rounded-lg bg-[var(--color-bg-soft)] group-hover:bg-[var(--color-primary-soft)] flex items-center justify-center shrink-0 transition-colors">
+                          <span className="block w-3 h-3 rounded-[2px] bg-[var(--color-primary)]" aria-hidden />
+                        </span>
+                        <span className="flex-1">
+                          <p className="text-[14px] font-medium text-[var(--color-text)] leading-tight">
+                            {sub.name}
+                          </p>
+                          <p className="text-[12px] text-[var(--color-text-muted)] mt-1 leading-snug">
+                            {sub.desc}
+                          </p>
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
         </nav>
 
-        <div className="flex items-center gap-3">
-          <span className="hidden md:inline-flex tag tag-accent">
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] pulse-soft" />
-            mantle sepolia · 5003
-          </span>
-          <Link href="/vault" className="btn-solid text-[12px] py-2 px-4">
-            {t("launchApp")}
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-              <path d="M1 5h8M5 1l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </Link>
-        </div>
+        <Link href="/vault" className="btn-primary text-[13px] py-2.5">
+          Get Started
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M1 5h8M5 1l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </Link>
       </div>
     </header>
-  );
-}
-
-function NavLink({ href, label }: { href: string; label: string }) {
-  return (
-    <Link
-      href={href}
-      className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-secondary)] hover:text-[var(--color-text)] px-3 py-1.5 rounded-full transition-colors"
-    >
-      {label}
-    </Link>
   );
 }

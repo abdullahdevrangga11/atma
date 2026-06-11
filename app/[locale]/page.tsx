@@ -1,11 +1,13 @@
 import { setRequestLocale } from "next-intl/server";
+import { TopBanner } from "@/components/landing/TopBanner";
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
-import { ArchitectureSection } from "@/components/landing/ArchitectureSection";
-import { SkillsSection } from "@/components/landing/SkillsSection";
-import { DecisionTrace } from "@/components/landing/DecisionTrace";
-import { OnChainProof } from "@/components/landing/OnChainProof";
-import { PartnerMarquee } from "@/components/landing/PartnerMarquee";
+import { LogoStrip } from "@/components/landing/LogoStrip";
+import { FeatureCards } from "@/components/landing/FeatureCards";
+import { StatCounters } from "@/components/landing/StatCounters";
+import { ProductSection } from "@/components/landing/ProductSection";
+import { LatestReleases } from "@/components/landing/LatestReleases";
+import { BlueCTA } from "@/components/landing/BlueCTA";
 import { Footer } from "@/components/landing/Footer";
 
 export default async function LandingPage({
@@ -18,14 +20,16 @@ export default async function LandingPage({
 
   return (
     <>
+      <TopBanner />
       <Navbar />
       <main>
         <Hero />
-        <ArchitectureSection />
-        <SkillsSection />
-        <DecisionTrace />
-        <OnChainProof />
-        <PartnerMarquee />
+        <LogoStrip />
+        <FeatureCards />
+        <StatCounters />
+        <ProductSection />
+        <LatestReleases />
+        <BlueCTA />
       </main>
       <Footer />
     </>
