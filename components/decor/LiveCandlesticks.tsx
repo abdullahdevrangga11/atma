@@ -206,7 +206,11 @@ export function LiveCandlesticks({ className, hoverRadius = 200 }: Props) {
       ref={containerRef}
       aria-hidden
       className={cn(
-        "pointer-events-auto absolute inset-0 overflow-hidden",
+        // When hoverRadius > 0, capture pointer events for proximity boost.
+        // When 0, behave as pure decor so any overlay above (e.g. FiddleHover)
+        // owns cursor interaction.
+        hoverRadius > 0 ? "pointer-events-auto" : "pointer-events-none",
+        "absolute inset-0 overflow-hidden",
         className,
       )}
     >
