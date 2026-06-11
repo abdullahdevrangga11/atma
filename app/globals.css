@@ -351,6 +351,38 @@
   }
 }
 
+@layer components {
+  /* ─── FiddleHover grid overlay ─── */
+  .fiddle-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .fiddle-block {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f5f4ee;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    opacity: 0;
+    background-color: #0a0a0a;
+    transition: opacity 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .fiddle-block.fiddle-active {
+    opacity: 1;
+  }
+  /* Variant — brand blue blocks for inverted CTAs etc. */
+  .fiddle-block-blue {
+    background-color: var(--color-primary);
+    color: white;
+  }
+}
+
 @layer utilities {
   /* ─── Word-by-word mask reveal (display headlines) ─── */
   .word-mask {

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Candlesticks } from "@/components/decor/Candlesticks";
 import { Reveal, WordMask, Up, Fade } from "@/components/animations/Reveal";
+import { Button } from "@/components/ui/button";
 
 export function Hero() {
   return (
@@ -26,23 +27,22 @@ export function Hero() {
             </Up>
 
             <Up delay={820} className="mt-12 flex flex-wrap items-center justify-center gap-3">
-              <div>
-                <Link href="/vault" className="btn-primary">
+              <Button asChild size="lg" variant="default">
+                <Link href="/vault">
                   <span className="block w-3.5 h-3.5 rounded-[2px] bg-white" aria-hidden />
                   Launch on ATMA
                 </Link>
-              </div>
-              <div>
+              </Button>
+              <Button asChild size="lg" variant="outline">
                 <Link
                   href="https://github.com/abdullahdevrangga11/atma"
                   target="_blank"
                   rel="noreferrer"
-                  className="btn-outline"
                 >
                   <span className="block w-3.5 h-3.5 rounded-full bg-gradient-to-br from-[#0052ff] to-[#00d4ff]" aria-hidden />
                   View on GitHub
                 </Link>
-              </div>
+              </Button>
             </Up>
 
             <Fade delay={1100} className="mt-20">
