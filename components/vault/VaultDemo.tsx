@@ -18,15 +18,22 @@ import {
   CircleDot,
   FileBarChart,
   Cpu,
+  Coins,
+  Zap,
+  GitBranch,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { StateMachineViz, STATE_LIST } from "./StateMachineViz";
 
 // ───────────────────────────────────────────────────────────
-//  Types — mirror the server's OrchestrationEvent + payload
+//  Types — mirror OrchestrationEvent
 // ───────────────────────────────────────────────────────────
+
+type AgentName = "AllocatorAgent" | "RiskAgent" | "ReporterAgent";
+type VaultState = (typeof STATE_LIST)[number];
 
 type AgentStep = {
-  agent: "AllocatorAgent" | "RiskAgent" | "ReporterAgent";
+  agent: AgentName;
   startedAt: number;
   finishedAt: number;
   durationMs: number;
@@ -67,11 +74,17 @@ type Report = {
   reasoning: string;
 };
 
+type TotalCost = { inputTokens: number; outputTokens: number; costCents: number };
+
 type ServerEvent =
   | { type: "start"; runId: string; startedAt: number; feeds: FeedSnapshot }
-  | { type: "allocator"; step: AgentStep; proposal: Proposal }
+  | { type: "state"; state: VaultState; at: number }
+  | { type: "token"; agent: AgentName; chunk: string; attempt?: number }
+  | { type: "allocator"; step: AgentStep; proposal: Proposal; attempt: number }
   | { type: "risk"; step: AgentStep; risk: Risk }
+  | { type: "veto"; reason: string; level: Risk["level"]; attempt: number }
   | { type: "reporter"; step: AgentStep; report: Report }
+  | { type: "cost"; total: TotalCost }
   | { type: "done"; run: unknown }
   | { type: "error"; message: string };
 
@@ -88,15 +101,15 @@ const ASSET_COLORS: Record<string, string> = {
 };
 
 // ───────────────────────────────────────────────────────────
-//  VaultDemo
+//  VaultDemo — token-streaming orchestration with debate loop
 // ───────────────────────────────────────────────────────────
 
 export function VaultDemo() {
-  // Form state
   const [amount, setAmount] = useState("10000");
   const [tolerance, setTolerance] = useState<Tolerance>("balanced");
+  const [forceDebate, setForceDebate] = useState(false);
 
-  // Live feeds (poll every 30s) — shown above the form
+  // Live feeds polling
   const [feeds, setFeeds] = useState<FeedSnapshot | null>(null);
   useEffect(() => {
     let alive = true;
@@ -105,9 +118,7 @@ export function VaultDemo() {
         const res = await fetch("/api/feeds");
         const j = (await res.json()) as { data: FeedSnapshot };
         if (alive) setFeeds(j.data);
-      } catch {
-        /* swallow */
-      }
+      } catch {}
     };
     fetchFeeds();
     const id = window.setInterval(fetchFeeds, 30_000);
@@ -118,48 +129,47 @@ export function VaultDemo() {
   }, []);
 
   // Orchestration state
-  const [allocator, setAllocator] = useState<{
+  type AgentBucket = {
     state: StepState;
     step?: AgentStep;
+    tokens: string;
     proposal?: Proposal;
-  }>({ state: "idle" });
-  const [risk, setRisk] = useState<{
-    state: StepState;
-    step?: AgentStep;
     risk?: Risk;
-  }>({ state: "idle" });
-  const [reporter, setReporter] = useState<{
-    state: StepState;
-    step?: AgentStep;
     report?: Report;
-  }>({ state: "idle" });
+    attempt: number;
+  };
+  const empty: AgentBucket = { state: "idle", tokens: "", attempt: 1 };
+  const [allocator, setAllocator] = useState<AgentBucket>(empty);
+  const [risk, setRisk] = useState<AgentBucket>(empty);
+  const [reporter, setReporter] = useState<AgentBucket>(empty);
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cost, setCost] = useState<TotalCost | null>(null);
+  const [veto, setVeto] = useState<{ reason: string; level: string; attempt: number } | null>(null);
+  const [currentState, setCurrentState] = useState<VaultState | null>(null);
+  const [visitedStates, setVisitedStates] = useState<VaultState[]>([]);
   const abortRef = useRef<AbortController | null>(null);
 
-  const reset = useCallback(() => {
-    setAllocator({ state: "idle" });
-    setRisk({ state: "idle" });
-    setReporter({ state: "idle" });
+  const resetAll = useCallback(() => {
+    setAllocator(empty);
+    setRisk(empty);
+    setReporter(empty);
     setError(null);
+    setCost(null);
+    setVeto(null);
+    setCurrentState(null);
+    setVisitedStates([]);
   }, []);
 
-  /** Convert dollar amount → 6-decimal USDC base-units string */
   function base6(): string {
     const n = parseFloat(amount);
     if (Number.isNaN(n) || n <= 0) return "10000000000";
     return Math.floor(n * 1_000_000).toString();
   }
 
-  /**
-   * Kick off the stream. Reads the SSE response line-by-line and routes each
-   * event to the matching card. The card flips to `running` the moment the
-   * previous one finishes so the demo doesn't sit silently while the next
-   * agent is reasoning.
-   */
   async function runOrchestration() {
-    reset();
-    setAllocator({ state: "running" });
+    resetAll();
+    setAllocator({ ...empty, state: "running" });
     setStreaming(true);
 
     const ctrl = new AbortController();
@@ -179,6 +189,7 @@ export function VaultDemo() {
             minLiquidBps: tolerance === "conservative" ? 6000 : 4000,
             riskTolerance: tolerance,
           },
+          forceDebate,
         }),
         signal: ctrl.signal,
       });
@@ -191,28 +202,19 @@ export function VaultDemo() {
         const { value, done } = await reader.read();
         if (done) break;
         buf += decoder.decode(value, { stream: true });
-        // SSE events end with a blank line
         const chunks = buf.split("\n\n");
         buf = chunks.pop() ?? "";
         for (const chunk of chunks) {
           const dataLine = chunk.split("\n").find((l) => l.startsWith("data: "));
           if (!dataLine) continue;
-          const json = dataLine.slice(6);
-          let evt: ServerEvent;
           try {
-            evt = JSON.parse(json) as ServerEvent;
-          } catch {
-            continue;
-          }
-          handleEvent(evt);
+            handleEvent(JSON.parse(dataLine.slice(6)) as ServerEvent);
+          } catch {}
         }
       }
     } catch (err) {
       if ((err as Error).name === "AbortError") return;
       setError(err instanceof Error ? err.message : "Unknown error");
-      setAllocator((s) => (s.state === "running" ? { ...s, state: "error" } : s));
-      setRisk((s) => (s.state === "running" ? { ...s, state: "error" } : s));
-      setReporter((s) => (s.state === "running" ? { ...s, state: "error" } : s));
     } finally {
       setStreaming(false);
     }
@@ -221,18 +223,63 @@ export function VaultDemo() {
   function handleEvent(evt: ServerEvent) {
     switch (evt.type) {
       case "start":
-        // Already set allocator to running in runOrchestration
+        return;
+      case "state":
+        setCurrentState(evt.state);
+        setVisitedStates((v) => (v.includes(evt.state) ? v : [...v, evt.state]));
+        return;
+      case "token":
+        if (evt.agent === "AllocatorAgent")
+          setAllocator((s) => ({
+            ...s,
+            state: "running",
+            tokens: s.tokens + evt.chunk,
+            attempt: evt.attempt ?? s.attempt,
+          }));
+        else if (evt.agent === "RiskAgent")
+          setRisk((s) => ({ ...s, state: "running", tokens: s.tokens + evt.chunk }));
+        else if (evt.agent === "ReporterAgent")
+          setReporter((s) => ({ ...s, state: "running", tokens: s.tokens + evt.chunk }));
         return;
       case "allocator":
-        setAllocator({ state: "done", step: evt.step, proposal: evt.proposal });
-        setRisk({ state: "running" });
+        setAllocator((s) => ({
+          ...s,
+          state: "done",
+          step: evt.step,
+          proposal: evt.proposal,
+          attempt: evt.attempt,
+        }));
+        // Risk will run next (or fire on retry)
+        setRisk((s) => ({ ...empty, state: "running", tokens: "", attempt: s.attempt }));
         return;
       case "risk":
-        setRisk({ state: "done", step: evt.step, risk: evt.risk });
-        setReporter({ state: "running" });
+        setRisk((s) => ({ ...s, state: "done", step: evt.step, risk: evt.risk }));
+        // If not a veto situation, reporter starts; otherwise allocator restarts
+        if (evt.risk.level !== "trigger") {
+          setReporter((s) => ({ ...empty, state: "running", tokens: "", attempt: s.attempt }));
+        }
+        return;
+      case "veto":
+        setVeto(evt);
+        // Reset allocator + risk buckets for the retry pass
+        setAllocator((s) => ({
+          state: "running",
+          tokens: "",
+          attempt: evt.attempt + 1,
+          step: s.step,
+        }));
+        setRisk(empty);
         return;
       case "reporter":
-        setReporter({ state: "done", step: evt.step, report: evt.report });
+        setReporter((s) => ({
+          ...s,
+          state: "done",
+          step: evt.step,
+          report: evt.report,
+        }));
+        return;
+      case "cost":
+        setCost(evt.total);
         return;
       case "error":
         setError(evt.message);
@@ -247,13 +294,31 @@ export function VaultDemo() {
     setStreaming(false);
   }
 
-  const anyRunning =
-    allocator.state === "running" ||
-    risk.state === "running" ||
-    reporter.state === "running";
-
   return (
     <div className="space-y-6">
+      {/* State machine — animates as orchestrator emits state transitions */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <Badge variant="default">
+              <GitBranch className="w-3 h-3" />
+              vault state machine
+            </Badge>
+            <span className="font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-text-muted)]">
+              AtmaVault.sol · 11 states
+            </span>
+          </div>
+          <CardTitle>{currentState ?? "Idle"}</CardTitle>
+          <CardDescription>
+            Mirrors the on-chain state machine in <span className="font-mono">contracts/src/AtmaVault.sol</span>. The
+            orchestrator emits state transitions; the diagram highlights the current node and traces the path.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <StateMachineViz current={currentState} visited={visitedStates} />
+        </CardContent>
+      </Card>
+
       {/* Live feeds + control bar */}
       <Card>
         <CardHeader>
@@ -266,42 +331,20 @@ export function VaultDemo() {
           </div>
           <CardTitle>Mantle RWA market state</CardTitle>
           <CardDescription>
-            Synthesised from time-seeded noise for the hackathon demo — values drift each minute. The orchestrator pulls fresh feeds for every run.
+            Synthesised from time-seeded noise — values drift each minute. The orchestrator pulls fresh feeds for every run.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <FeedCard
-              label="USDY"
-              apy={feeds?.apys.usdy}
-              risk={feeds?.risk.usdyPeg}
-              color={ASSET_COLORS.USDY}
-            />
-            <FeedCard
-              label="mUSD"
-              apy={feeds?.apys.mUsd}
-              risk={feeds?.risk.mUsdPeg}
-              color={ASSET_COLORS.mUSD}
-            />
-            <FeedCard
-              label="Aave V3"
-              apy={feeds?.apys.aaveSupply}
-              risk={feeds?.risk.aaveOracle}
-              color={ASSET_COLORS.Aave}
-            />
-            <FeedCard
-              label="MI4"
-              apy={feeds?.apys.mi4Yield}
-              risk={feeds?.risk.mi4NAV}
-              color={ASSET_COLORS.MI4}
-            />
+            <FeedCard label="USDY" apy={feeds?.apys.usdy} risk={feeds?.risk.usdyPeg} color={ASSET_COLORS.USDY} />
+            <FeedCard label="mUSD" apy={feeds?.apys.mUsd} risk={feeds?.risk.mUsdPeg} color={ASSET_COLORS.mUSD} />
+            <FeedCard label="Aave V3" apy={feeds?.apys.aaveSupply} risk={feeds?.risk.aaveOracle} color={ASSET_COLORS.Aave} />
+            <FeedCard label="MI4" apy={feeds?.apys.mi4Yield} risk={feeds?.risk.mi4NAV} color={ASSET_COLORS.MI4} />
           </div>
 
           <div className="mt-6 grid md:grid-cols-12 gap-4">
-            <div className="md:col-span-4 flex flex-col gap-2">
-              <span className="text-[12px] font-medium text-[var(--color-text)]">
-                Target deposit (USDC)
-              </span>
+            <div className="md:col-span-3 flex flex-col gap-2">
+              <span className="text-[12px] font-medium">Target deposit (USDC)</span>
               <input
                 type="number"
                 value={amount}
@@ -312,10 +355,8 @@ export function VaultDemo() {
                 className="h-10 px-3 rounded-lg border border-[var(--color-border-strong)] bg-white font-mono text-[14px] tabular-nums focus:outline-none focus:border-[var(--color-primary)] disabled:opacity-50"
               />
             </div>
-            <div className="md:col-span-5 flex flex-col gap-2">
-              <span className="text-[12px] font-medium text-[var(--color-text)]">
-                Risk tolerance
-              </span>
+            <div className="md:col-span-4 flex flex-col gap-2">
+              <span className="text-[12px] font-medium">Risk tolerance</span>
               <div className="grid grid-cols-3 gap-2">
                 {TOLERANCES.map((t) => (
                   <Button
@@ -332,19 +373,29 @@ export function VaultDemo() {
                 ))}
               </div>
             </div>
-            <div className="md:col-span-3 flex flex-col gap-2 justify-end">
+            <div className="md:col-span-3 flex flex-col gap-2">
+              <span className="text-[12px] font-medium">Debate mode</span>
+              <Button
+                variant={forceDebate ? "invertSolid" : "outline"}
+                size="sm"
+                onClick={() => setForceDebate((b) => !b)}
+                type="button"
+                disabled={streaming}
+                className="w-full justify-start"
+              >
+                <Zap className="w-3 h-3" />
+                {forceDebate ? "ON — force trigger" : "OFF"}
+              </Button>
+            </div>
+            <div className="md:col-span-2 flex flex-col gap-2 justify-end">
               {streaming ? (
                 <Button onClick={cancel} variant="outline" size="lg">
                   Cancel
                 </Button>
               ) : (
-                <Button
-                  onClick={runOrchestration}
-                  size="lg"
-                  className="w-full"
-                >
+                <Button onClick={runOrchestration} size="lg" className="w-full">
                   <Play />
-                  Run orchestration
+                  Run
                 </Button>
               )}
             </div>
@@ -359,14 +410,72 @@ export function VaultDemo() {
         </CardContent>
       </Card>
 
-      {/* The three agent cards — reveal sequentially as events arrive */}
-      <div className="grid md:grid-cols-3 gap-4">
-        <AllocatorCard {...allocator} />
-        <RiskCard {...risk} />
-        <ReporterCard {...reporter} />
+      {/* Cost meter — live token + USD */}
+      {cost && (
+        <Card>
+          <CardContent className="!pt-4 !pb-4">
+            <div className="grid grid-cols-3 gap-4">
+              <CostCell
+                icon={<Coins className="w-3 h-3" />}
+                label="input tokens"
+                value={cost.inputTokens.toLocaleString()}
+              />
+              <CostCell
+                icon={<Coins className="w-3 h-3" />}
+                label="output tokens"
+                value={cost.outputTokens.toLocaleString()}
+              />
+              <CostCell
+                icon={<Coins className="w-3 h-3" />}
+                label="run cost"
+                value={`$${(cost.costCents / 100).toFixed(4)}`}
+                accent
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Veto banner */}
+      {veto && (
+        <div className="rounded-lg p-4 border border-amber-300 bg-amber-50 flex gap-3">
+          <AlertTriangle className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+          <div className="text-[13px] text-amber-900 leading-relaxed">
+            <p className="font-semibold mb-1">
+              RiskAgent vetoed proposal #{veto.attempt - 1} — {veto.level}
+            </p>
+            <p className="font-mono text-[11px]">{veto.reason}</p>
+            <p className="mt-2 text-amber-700">
+              AllocatorAgent is redrafting (attempt #{veto.attempt}) with the veto as a constraint.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Three agent cards */}
+      <div className="grid lg:grid-cols-3 gap-4">
+        <AllocatorCard
+          state={allocator.state}
+          step={allocator.step}
+          proposal={allocator.proposal}
+          tokens={allocator.tokens}
+          attempt={allocator.attempt}
+        />
+        <RiskCard
+          state={risk.state}
+          step={risk.step}
+          risk={risk.risk}
+          tokens={risk.tokens}
+        />
+        <ReporterCard
+          state={reporter.state}
+          step={reporter.step}
+          report={reporter.report}
+          tokens={reporter.tokens}
+        />
       </div>
 
-      {/* Attestation trail — populated once all 3 done */}
+      {/* Attestation trail */}
       {allocator.step && risk.step && reporter.step && (
         <AttestationTrail
           steps={[allocator.step, risk.step, reporter.step]}
@@ -374,9 +483,10 @@ export function VaultDemo() {
         />
       )}
 
-      {!anyRunning && allocator.state === "idle" && (
-        <div className="mt-6 text-center text-[13px] text-[var(--color-text-muted)]">
-          Click <span className="font-mono">Run orchestration</span> — Claude runs all three agents in sequence, ~6-12 seconds total.
+      {!streaming && allocator.state === "idle" && (
+        <div className="mt-2 text-center text-[13px] text-[var(--color-text-muted)]">
+          Click <span className="font-mono">Run</span> — watch Claude reason token-by-token. Enable{" "}
+          <span className="font-mono">Debate mode</span> to force a risk veto and see the orchestrator retry.
         </div>
       )}
     </div>
@@ -387,41 +497,33 @@ export function VaultDemo() {
 //  Sub-components
 // ───────────────────────────────────────────────────────────
 
-function FeedCard({
-  label,
-  apy,
-  risk,
-  color,
-}: {
-  label: string;
-  apy?: number;
-  risk?: string;
-  color: string;
-}) {
+function FeedCard({ label, apy, risk, color }: { label: string; apy?: number; risk?: string; color: string }) {
   const r = risk ?? "ok";
   return (
     <div className="rounded-lg p-4 border border-[var(--color-border)] bg-[var(--color-bg-card-soft)]">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="block w-2 h-2 rounded-[1px]" style={{ background: color }} />
-          <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-[var(--color-text-muted)]">
-            {label}
-          </span>
+          <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-[var(--color-text-muted)]">{label}</span>
         </div>
-        <Badge
-          variant={
-            r === "trigger" ? "danger" : r === "warn" ? "warning" : "success"
-          }
-        >
-          {r}
-        </Badge>
+        <Badge variant={r === "trigger" ? "danger" : r === "warn" ? "warning" : "success"}>{r}</Badge>
       </div>
       <p className="text-[22px] font-medium tabular-nums">
         {apy !== undefined ? `${(apy * 100).toFixed(2)}%` : "—"}
       </p>
-      <p className="text-[10px] font-mono uppercase tracking-[0.06em] text-[var(--color-text-muted)] mt-1">
-        APY
-      </p>
+      <p className="text-[10px] font-mono uppercase tracking-[0.06em] text-[var(--color-text-muted)] mt-1">APY</p>
+    </div>
+  );
+}
+
+function CostCell({ icon, label, value, accent }: { icon: React.ReactNode; label: string; value: string; accent?: boolean }) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-[var(--color-text-muted)]">{icon}</span>
+      <div>
+        <p className="font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-text-muted)]">{label}</p>
+        <p className={cn("text-[16px] font-medium tabular-nums", accent && "text-[var(--color-primary)]")}>{value}</p>
+      </div>
     </div>
   );
 }
@@ -432,6 +534,7 @@ function AgentCardShell({
   state,
   step,
   icon,
+  attempt,
   children,
 }: {
   title: string;
@@ -439,6 +542,7 @@ function AgentCardShell({
   state: StepState;
   step?: AgentStep;
   icon: React.ReactNode;
+  attempt?: number;
   children: React.ReactNode;
 }) {
   return (
@@ -453,6 +557,9 @@ function AgentCardShell({
           <Badge variant="default" className="font-mono">
             {icon}
             {agentName}
+            {attempt && attempt > 1 && (
+              <span className="ml-1 text-[9px] opacity-70">attempt {attempt}</span>
+            )}
           </Badge>
           <StateBadge state={state} step={step} />
         </div>
@@ -473,7 +580,7 @@ function StateBadge({ state, step }: { state: StepState; step?: AgentStep }) {
   if (state === "running")
     return (
       <Badge variant="accent">
-        <Loader2 className="w-3 h-3 animate-spin" /> reasoning
+        <Loader2 className="w-3 h-3 animate-spin" /> streaming
       </Badge>
     );
   if (state === "error")
@@ -490,55 +597,63 @@ function StateBadge({ state, step }: { state: StepState; step?: AgentStep }) {
   );
 }
 
+function TokenStream({ tokens, done }: { tokens: string; done: boolean }) {
+  // Truncate to last 600 chars during streaming so the box doesn't blow up
+  const display = tokens.length > 600 && !done ? "…" + tokens.slice(-600) : tokens;
+  return (
+    <div className="rounded-lg p-3 bg-[var(--color-bg-invert)] border border-[var(--color-bg-invert-soft)] max-h-[180px] overflow-y-auto">
+      <pre className="text-[10.5px] leading-[1.55] text-[var(--color-text-on-invert-soft)] font-mono whitespace-pre-wrap break-all">
+        {display || "…"}
+        {!done && tokens.length > 0 && <span className="inline-block w-1.5 h-3 bg-[var(--color-accent)] ml-0.5 align-[-2px] animate-pulse" />}
+      </pre>
+    </div>
+  );
+}
+
 function AllocatorCard({
-  state,
-  step,
-  proposal,
+  state, step, proposal, tokens, attempt,
 }: {
-  state: StepState;
-  step?: AgentStep;
-  proposal?: Proposal;
+  state: StepState; step?: AgentStep; proposal?: Proposal; tokens: string; attempt: number;
 }) {
   return (
     <AgentCardShell
-      title="Allocation proposed"
+      title={proposal ? "Allocation proposed" : "Will reason over USDY, mUSD, Aave, MI4"}
       agentName="AllocatorAgent"
       state={state}
       step={step}
       icon={<Cpu className="w-3 h-3" />}
+      attempt={attempt}
     >
-      {state === "idle" && <EmptyHint text="Will pick weights across USDY, mUSD, Aave, MI4." />}
-      {state === "running" && <RunningHint text="reading skill · analysing yields · drafting weights" />}
-      {state === "done" && proposal && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-2">
-            <MiniBar name="USDY" bps={proposal.weights.usdyBps} color={ASSET_COLORS.USDY} />
-            <MiniBar name="mUSD" bps={proposal.weights.mUsdBps} color={ASSET_COLORS.mUSD} />
-            <MiniBar name="Aave" bps={proposal.weights.aaveBps} color={ASSET_COLORS.Aave} />
-            <MiniBar name="MI4" bps={proposal.weights.mi4Bps} color={ASSET_COLORS.MI4} />
-          </div>
-          <div className="flex items-center justify-between text-[12px]">
-            <span className="text-[var(--color-text-muted)]">expected APY</span>
-            <span className="font-medium text-[var(--color-primary)] tabular-nums">
-              +{proposal.expectedAPYBps} bps · {(proposal.expectedAPYBps / 100).toFixed(2)}%
-            </span>
-          </div>
-          <Reasoning text={proposal.reasoning} />
-          {step && <ReasoningHash hash={step.reasoningHash} />}
-        </div>
-      )}
+      <div className="space-y-3">
+        {(state === "running" || (state === "done" && tokens)) && (
+          <TokenStream tokens={tokens} done={state === "done"} />
+        )}
+        {state === "done" && proposal && (
+          <>
+            <div className="grid grid-cols-2 gap-2">
+              <MiniBar name="USDY" bps={proposal.weights.usdyBps} color={ASSET_COLORS.USDY} />
+              <MiniBar name="mUSD" bps={proposal.weights.mUsdBps} color={ASSET_COLORS.mUSD} />
+              <MiniBar name="Aave" bps={proposal.weights.aaveBps} color={ASSET_COLORS.Aave} />
+              <MiniBar name="MI4" bps={proposal.weights.mi4Bps} color={ASSET_COLORS.MI4} />
+            </div>
+            <div className="flex items-center justify-between text-[12px]">
+              <span className="text-[var(--color-text-muted)]">expected APY</span>
+              <span className="font-medium text-[var(--color-primary)] tabular-nums">
+                +{proposal.expectedAPYBps} bps · {(proposal.expectedAPYBps / 100).toFixed(2)}%
+              </span>
+            </div>
+            {step && <ReasoningHash hash={step.reasoningHash} />}
+          </>
+        )}
+      </div>
     </AgentCardShell>
   );
 }
 
 function RiskCard({
-  state,
-  step,
-  risk,
+  state, step, risk, tokens,
 }: {
-  state: StepState;
-  step?: AgentStep;
-  risk?: Risk;
+  state: StepState; step?: AgentStep; risk?: Risk; tokens: string;
 }) {
   return (
     <AgentCardShell
@@ -547,70 +662,74 @@ function RiskCard({
           ? "Defensive exit triggered"
           : risk?.level === "warn"
             ? "Warning emitted"
-            : "All signals nominal"
+            : risk
+              ? "All signals nominal"
+              : "Will evaluate peg / oracle / liquidity"
       }
       agentName="RiskAgent"
       state={state}
       step={step}
       icon={<ShieldCheck className="w-3 h-3" />}
     >
-      {state === "idle" && <EmptyHint text="Will check USDY peg, mUSD rebase, Aave oracle, MI4 NAV." />}
-      {state === "running" && <RunningHint text="evaluating peg drift · oracle deviation · liquidity" />}
-      {state === "done" && risk && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-3 gap-2 text-[12px]">
-            <KV label="level" value={risk.level} variant={
-              risk.level === "trigger" ? "danger" : risk.level === "warn" ? "warning" : "success"
-            } />
-            <KV label="signal" value={risk.signal} />
-            <KV label="action" value={risk.action} />
-          </div>
-          <Reasoning text={risk.reasoning} />
-          {step && <ReasoningHash hash={step.reasoningHash} />}
-        </div>
-      )}
+      <div className="space-y-3">
+        {(state === "running" || (state === "done" && tokens)) && (
+          <TokenStream tokens={tokens} done={state === "done"} />
+        )}
+        {state === "done" && risk && (
+          <>
+            <div className="grid grid-cols-3 gap-2 text-[12px]">
+              <KV
+                label="level"
+                value={risk.level}
+                variant={risk.level === "trigger" ? "danger" : risk.level === "warn" ? "warning" : "success"}
+              />
+              <KV label="signal" value={risk.signal} />
+              <KV label="action" value={risk.action} />
+            </div>
+            {step && <ReasoningHash hash={step.reasoningHash} />}
+          </>
+        )}
+      </div>
     </AgentCardShell>
   );
 }
 
 function ReporterCard({
-  state,
-  step,
-  report,
+  state, step, report, tokens,
 }: {
-  state: StepState;
-  step?: AgentStep;
-  report?: Report;
+  state: StepState; step?: AgentStep; report?: Report; tokens: string;
 }) {
   return (
     <AgentCardShell
-      title="Weekly digest signed"
+      title={report ? "Weekly digest signed" : "Will compare vs three baselines"}
       agentName="ReporterAgent"
       state={state}
       step={step}
       icon={<FileBarChart className="w-3 h-3" />}
     >
-      {state === "idle" && <EmptyHint text="Will compare actual P&L against three baselines." />}
-      {state === "running" && <RunningHint text="computing outperformance · drafting digest" />}
-      {state === "done" && report && (
-        <div className="space-y-4">
-          <div className="rounded-lg p-3 bg-[var(--color-primary-soft)] border border-[var(--color-border-strong)]">
-            <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-1">
-              actual APY annualised
-            </p>
-            <p className="text-[22px] font-medium tabular-nums">
-              {(report.actualAPYBps / 100).toFixed(2)}%
-            </p>
-          </div>
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <Out label="vs nothing" bps={report.outperformanceBps.vsDoNothing} primary />
-            <Out label="vs Aave" bps={report.outperformanceBps.vsUsdcAaveOnly} />
-            <Out label="vs USDY" bps={report.outperformanceBps.vsUsdyOnly} />
-          </div>
-          <Reasoning text={report.reasoning} />
-          {step && <ReasoningHash hash={step.reasoningHash} />}
-        </div>
-      )}
+      <div className="space-y-3">
+        {(state === "running" || (state === "done" && tokens)) && (
+          <TokenStream tokens={tokens} done={state === "done"} />
+        )}
+        {state === "done" && report && (
+          <>
+            <div className="rounded-lg p-3 bg-[var(--color-primary-soft)] border border-[var(--color-border-strong)]">
+              <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-1">
+                actual APY annualised
+              </p>
+              <p className="text-[22px] font-medium tabular-nums">
+                {(report.actualAPYBps / 100).toFixed(2)}%
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <Out label="vs nothing" bps={report.outperformanceBps.vsDoNothing} primary />
+              <Out label="vs Aave" bps={report.outperformanceBps.vsUsdcAaveOnly} />
+              <Out label="vs USDY" bps={report.outperformanceBps.vsUsdyOnly} />
+            </div>
+            {step && <ReasoningHash hash={step.reasoningHash} />}
+          </>
+        )}
+      </div>
     </AgentCardShell>
   );
 }
@@ -627,29 +746,17 @@ function MiniBar({ name, bps, color }: { name: string; bps: number; color: strin
         <span className="font-mono text-[11px] tabular-nums">{pct.toFixed(2)}%</span>
       </div>
       <div className="h-1.5 rounded-full bg-[var(--color-bg-soft)] overflow-hidden">
-        <div className="h-full" style={{ width: `${pct}%`, background: color }} />
+        <div className="h-full" style={{ width: `${pct}%`, background: color, transition: "width 400ms cubic-bezier(0.16,1,0.3,1)" }} />
       </div>
     </div>
   );
 }
 
-function KV({
-  label,
-  value,
-  variant,
-}: {
-  label: string;
-  value: string;
-  variant?: "success" | "warning" | "danger" | "default";
-}) {
+function KV({ label, value, variant }: { label: string; value: string; variant?: "success" | "warning" | "danger" | "default" }) {
   return (
     <div className="rounded-md p-2 bg-[var(--color-bg-soft)] border border-[var(--color-border)]">
       <p className="font-mono text-[9px] uppercase tracking-[0.06em] text-[var(--color-text-muted)] mb-1">{label}</p>
-      {variant ? (
-        <Badge variant={variant}>{value}</Badge>
-      ) : (
-        <p className="text-[11px] font-mono">{value}</p>
-      )}
+      {variant ? <Badge variant={variant}>{value}</Badge> : <p className="text-[11px] font-mono">{value}</p>}
     </div>
   );
 }
@@ -665,14 +772,6 @@ function Out({ label, bps, primary }: { label: string; bps: number; primary?: bo
   );
 }
 
-function Reasoning({ text }: { text: string }) {
-  return (
-    <div className="rounded-lg p-3 bg-[var(--color-bg-invert)] border border-[var(--color-bg-invert-soft)]">
-      <p className="text-[12px] leading-relaxed text-[var(--color-text-on-invert)]">{text}</p>
-    </div>
-  );
-}
-
 function ReasoningHash({ hash }: { hash: string }) {
   return (
     <div className="pt-2 border-t border-[var(--color-border)]">
@@ -684,28 +783,7 @@ function ReasoningHash({ hash }: { hash: string }) {
   );
 }
 
-function EmptyHint({ text }: { text: string }) {
-  return (
-    <p className="text-[12px] text-[var(--color-text-muted)] leading-relaxed">{text}</p>
-  );
-}
-
-function RunningHint({ text }: { text: string }) {
-  return (
-    <p className="font-mono text-[11px] text-[var(--color-text-secondary)] flex items-center gap-2">
-      <Loader2 className="w-3 h-3 animate-spin text-[var(--color-primary)]" />
-      {text}
-    </p>
-  );
-}
-
-function AttestationTrail({
-  steps,
-  riskLevel,
-}: {
-  steps: AgentStep[];
-  riskLevel: "ok" | "warn" | "trigger";
-}) {
+function AttestationTrail({ steps, riskLevel }: { steps: AgentStep[]; riskLevel: "ok" | "warn" | "trigger" }) {
   const labels = ["ALLOCATE", riskLevel === "ok" ? "REPORT" : riskLevel === "warn" ? "WARN" : "DEFENSIVE_EXIT", "REPORT"];
   return (
     <Card>
@@ -726,29 +804,13 @@ function AttestationTrail({
                 i < steps.length - 1 && "border-b border-[var(--color-border)]",
               )}
             >
-              <span className="font-mono text-[var(--color-text-faint)] tabular-nums">
-                {String(i + 1).padStart(2, "0")}
-              </span>
+              <span className="font-mono text-[var(--color-text-faint)] tabular-nums">{String(i + 1).padStart(2, "0")}</span>
               <span className="font-mono">{s.agent}</span>
-              <Badge
-                variant={
-                  labels[i] === "DEFENSIVE_EXIT"
-                    ? "danger"
-                    : labels[i] === "WARN"
-                      ? "warning"
-                      : labels[i] === "ALLOCATE"
-                        ? "accent"
-                        : "default"
-                }
-              >
-                {labels[i]}
-              </Badge>
+              <Badge variant={labels[i] === "DEFENSIVE_EXIT" ? "danger" : labels[i] === "WARN" ? "warning" : labels[i] === "ALLOCATE" ? "accent" : "default"}>{labels[i]}</Badge>
               <span className="font-mono text-[var(--color-primary)] truncate text-[11px]">
                 {s.reasoningHash.slice(0, 14)}…{s.reasoningHash.slice(-6)}
               </span>
-              <span className="font-mono text-[10px] text-[var(--color-text-muted)] tabular-nums text-right">
-                {s.durationMs}ms
-              </span>
+              <span className="font-mono text-[10px] text-[var(--color-text-muted)] tabular-nums text-right">{s.durationMs}ms</span>
             </div>
           ))}
         </div>

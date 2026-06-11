@@ -12,30 +12,25 @@ import { hashReasoning } from "@/lib/agents/BaseAgent";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 const RequestSchema = z.discriminatedUnion("action", [
-  z.object({ action: z.literal("propose"), input: AllocatorInputSchema }),
-  z.object({ action: z.literal("checkRisk"), input: RiskInputSchema }),
-  z.object({ action: z.literal("report"), input: ReportInputSchema }),
+  z.object({
+    action: z.literal("propose"),
+    input: AllocatorInputSchema,
+    overrideSkill: z.string().optional(),
+  }),
+  z.object({
+    action: z.literal("checkRisk"),
+    input: RiskInputSchema,
+    overrideSkill: z.string().optional(),
+  }),
+  z.object({
+    action: z.literal("report"),
+    input: ReportInputSchema,
+    overrideSkill: z.string().optional(),
+  }),
 ]);
-
-// Lazy-instantiate so cold start doesn't fail without a key
-let allocator: AllocatorAgent | null = null;
-let risk: RiskAgent | null = null;
-let reporter: ReporterAgent | null = null;
-
-function getAllocator(): AllocatorAgent {
-  if (!allocator) allocator = new AllocatorAgent();
-  return allocator;
-}
-function getRisk(): RiskAgent {
-  if (!risk) risk = new RiskAgent();
-  return risk;
-}
-function getReporter(): ReporterAgent {
-  if (!reporter) reporter = new ReporterAgent();
-  return reporter;
-}
 
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -60,12 +55,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { action, input } = parseResult.data;
+  const { action, input, overrideSkill } = parseResult.data;
 
   try {
     switch (action) {
       case "propose": {
-        const proposal = await getAllocator().propose(input);
+        const agent = new AllocatorAgent(overrideSkill);
+        const proposal = await agent.propose(input);
         const reasoningHash = await hashReasoning({
           weights: proposal.weights,
           reasoning: proposal.reasoning,
@@ -75,18 +71,18 @@ export async function POST(req: NextRequest) {
           error: null,
         });
       }
-
       case "checkRisk": {
-        const signal = await getRisk().evaluate(input);
+        const agent = new RiskAgent(overrideSkill);
+        const signal = await agent.evaluate(input);
         const signalHash = await hashReasoning(signal);
         return NextResponse.json({
           data: { ...signal, signalHash },
           error: null,
         });
       }
-
       case "report": {
-        const report = await getReporter().generate(input);
+        const agent = new ReporterAgent(overrideSkill);
+        const report = await agent.generate(input);
         const reportHash = await hashReasoning(report);
         return NextResponse.json({
           data: { ...report, reportHash },
@@ -104,6 +100,6 @@ export async function GET() {
   return NextResponse.json({
     status: "ok",
     actions: ["propose", "checkRisk", "report"],
-    note: "POST a JSON body { action, input } to invoke an agent.",
+    note: "POST a JSON body { action, input, overrideSkill? } to invoke an agent.",
   });
 }

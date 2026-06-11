@@ -1,4 +1,4 @@
-import { BaseAgent } from "./BaseAgent";
+import { BaseAgent, type TokenUsage } from "./BaseAgent";
 import {
   AllocatorInput,
   AllocationProposal,
@@ -36,25 +36,51 @@ Constraints:
 - Never propose weights that violate policy caps.
 - The reasoning string must explain why this specific allocation was chosen.`;
 
+const REJOINDER_SUFFIX = `
+
+## Re-draft constraint from RiskAgent
+The previous proposal was VETOED by RiskAgent. You must re-allocate respecting:
+{{RISK_VETO}}
+
+Honour the veto: reduce or exclude the flagged asset, and keep the new allocation within policy.`;
+
 export class AllocatorAgent extends BaseAgent {
-  constructor() {
-    super("mantle-rwa-allocation.skill.md", "AllocatorAgent");
+  constructor(overrideSkill?: string) {
+    super("mantle-rwa-allocation.skill.md", "AllocatorAgent", overrideSkill);
   }
 
-  async propose(input: AllocatorInput): Promise<AllocationProposal> {
-    const text = await this.reason(SYSTEM, input);
-    const parsed = this.extractJSON(text);
-    const proposal = AllocationProposalSchema.parse(parsed);
+  /** Single-shot, no streaming — used by /api/agent (legacy). */
+  async propose(input: AllocatorInput): Promise<AllocationProposal & { usage: TokenUsage }> {
+    const { text, usage } = await this.reason(SYSTEM, input);
+    return { ...this.normalize(this.extractJSON(text)), usage };
+  }
 
-    // Sanity guard — clamp + verify bps sum to exactly 10000
+  /**
+   * Streaming proposal. `onChunk` receives Claude's text deltas — typically
+   * partial JSON until the close brace lands. Returns the final validated
+   * proposal once the stream completes.
+   */
+  async proposeStream(
+    input: AllocatorInput,
+    onChunk: (text: string) => void,
+    riskVeto?: string,
+  ): Promise<AllocationProposal & { usage: TokenUsage }> {
+    const system = riskVeto
+      ? SYSTEM + REJOINDER_SUFFIX.replace("{{RISK_VETO}}", riskVeto)
+      : SYSTEM;
+    const { text, usage } = await this.reasonStream(system, input, onChunk);
+    return { ...this.normalize(this.extractJSON(text)), usage };
+  }
+
+  /** Validate + clamp bps to sum to exactly 10000. */
+  private normalize(parsed: unknown): AllocationProposal {
+    const proposal = AllocationProposalSchema.parse(parsed);
     const sum =
       proposal.weights.usdyBps +
       proposal.weights.mUsdBps +
       proposal.weights.aaveBps +
       proposal.weights.mi4Bps;
-
     if (sum !== 10_000) {
-      // adjust largest by the delta
       const delta = 10_000 - sum;
       const entries: [keyof typeof proposal.weights, number][] = [
         ["usdyBps", proposal.weights.usdyBps],
@@ -63,10 +89,8 @@ export class AllocatorAgent extends BaseAgent {
         ["mi4Bps", proposal.weights.mi4Bps],
       ];
       entries.sort((a, b) => b[1] - a[1]);
-      const [largestKey] = entries[0];
-      proposal.weights[largestKey] += delta;
+      proposal.weights[entries[0][0]] += delta;
     }
-
     return proposal;
   }
 }

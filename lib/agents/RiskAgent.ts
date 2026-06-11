@@ -1,4 +1,4 @@
-import { BaseAgent } from "./BaseAgent";
+import { BaseAgent, type TokenUsage } from "./BaseAgent";
 import { RiskInput, RiskSignal, RiskSignalSchema } from "./types";
 
 const SYSTEM = `You are the RiskAgent for ATMA Treasury Protocol on Mantle.
@@ -25,10 +25,10 @@ Composite level = max(all signals) where trigger > warn > ok.
 Output schema (STRICT JSON):
 {
   "level": "ok" | "warn" | "trigger",
-  "signal": string,             // e.g. "usdy_peg" | "drawdown" | "oracle_deviation" | "ok"
-  "value": number,              // the actual deviation / drawdown / ratio
-  "threshold": number,          // the threshold breached (0 if level=ok)
-  "sustainedSeconds": int,      // best estimate of how long this signal has held
+  "signal": string,
+  "value": number,
+  "threshold": number,
+  "sustainedSeconds": int,
   "action": "none" | "alert" | "defensive_exit",
   "reasoning": string
 }
@@ -38,13 +38,20 @@ If composite = "warn", action="alert".
 If composite = "trigger", action="defensive_exit".`;
 
 export class RiskAgent extends BaseAgent {
-  constructor() {
-    super("mantle-risk-monitoring.skill.md", "RiskAgent");
+  constructor(overrideSkill?: string) {
+    super("mantle-risk-monitoring.skill.md", "RiskAgent", overrideSkill);
   }
 
-  async evaluate(input: RiskInput): Promise<RiskSignal> {
-    const text = await this.reason(SYSTEM, input);
-    const parsed = this.extractJSON(text);
-    return RiskSignalSchema.parse(parsed);
+  async evaluate(input: RiskInput): Promise<RiskSignal & { usage: TokenUsage }> {
+    const { text, usage } = await this.reason(SYSTEM, input);
+    return { ...RiskSignalSchema.parse(this.extractJSON(text)), usage };
+  }
+
+  async evaluateStream(
+    input: RiskInput,
+    onChunk: (text: string) => void,
+  ): Promise<RiskSignal & { usage: TokenUsage }> {
+    const { text, usage } = await this.reasonStream(SYSTEM, input, onChunk);
+    return { ...RiskSignalSchema.parse(this.extractJSON(text)), usage };
   }
 }

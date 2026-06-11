@@ -1,4 +1,4 @@
-import { BaseAgent } from "./BaseAgent";
+import { BaseAgent, type TokenUsage } from "./BaseAgent";
 import { ReportInput, WeeklyReport, WeeklyReportSchema } from "./types";
 
 const SYSTEM = `You are the ReporterAgent for ATMA Treasury Protocol on Mantle.
@@ -32,13 +32,20 @@ Output schema (STRICT JSON):
 The reasoning should be a 3-4 sentence plain-English summary suitable for a treasurer's weekly digest.`;
 
 export class ReporterAgent extends BaseAgent {
-  constructor() {
-    super("treasury-reporting.skill.md", "ReporterAgent");
+  constructor(overrideSkill?: string) {
+    super("treasury-reporting.skill.md", "ReporterAgent", overrideSkill);
   }
 
-  async generate(input: ReportInput): Promise<WeeklyReport> {
-    const text = await this.reason(SYSTEM, input);
-    const parsed = this.extractJSON(text);
-    return WeeklyReportSchema.parse(parsed);
+  async generate(input: ReportInput): Promise<WeeklyReport & { usage: TokenUsage }> {
+    const { text, usage } = await this.reason(SYSTEM, input);
+    return { ...WeeklyReportSchema.parse(this.extractJSON(text)), usage };
+  }
+
+  async generateStream(
+    input: ReportInput,
+    onChunk: (text: string) => void,
+  ): Promise<WeeklyReport & { usage: TokenUsage }> {
+    const { text, usage } = await this.reasonStream(SYSTEM, input, onChunk);
+    return { ...WeeklyReportSchema.parse(this.extractJSON(text)), usage };
   }
 }
