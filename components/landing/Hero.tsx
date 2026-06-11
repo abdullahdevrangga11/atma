@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { LiveCandlesticks } from "@/components/decor/LiveCandlesticks";
 import { Reveal, WordMask, Up, Fade } from "@/components/animations/Reveal";
 import { Button } from "@/components/ui/button";
 import { HeroShowcase } from "@/components/landing/HeroShowcase";
@@ -15,13 +14,6 @@ const HERO_SYMBOLS = [
 export function Hero() {
   return (
     <section className="relative pt-32 md:pt-48 pb-32 md:pb-48 overflow-hidden">
-      {/*
-        Decor: LiveCandlesticks runs in idle-only mode (hoverRadius=0,
-        pointer-events:none) so it just breathes in the background. The
-        FiddleHover overlay above owns all cursor interaction.
-      */}
-      <LiveCandlesticks className="z-0 !pointer-events-none" hoverRadius={0} />
-
       {/* FiddleHover — digital scramble hover effect covers the entire hero */}
       <FiddleHover
         as="div"
