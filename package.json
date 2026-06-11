@@ -1,0 +1,50 @@
+{
+  "name": "atma",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Treasury Orchestration Protocol for Mantle RWA Stack",
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:agents": "vitest run lib/agents",
+    "contracts:build": "cd contracts && forge build",
+    "contracts:test": "cd contracts && forge test -vvv",
+    "contracts:deploy:sepolia": "cd contracts && forge script script/Deploy.s.sol --rpc-url mantle_sepolia --broadcast --verify"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@privy-io/react-auth": "^3.23.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.15.0",
+    "geist": "^1.3.1",
+    "gsap": "^3.15.0",
+    "lenis": "^1.3.23",
+    "lucide-react": "^0.469.0",
+    "next": "16.2.4",
+    "next-intl": "^4.3.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-markdown": "^9.0.0",
+    "sonner": "^1.7.4",
+    "tailwind-merge": "^3.0.0",
+    "viem": "^2.21.55",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv": "^16.4.7",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.4",
+    "tailwindcss": "^4",
+    "tsx": "^4.19.2",
+    "typescript": "^5",
+    "vitest": "^2.1.8"
+  }
+}
