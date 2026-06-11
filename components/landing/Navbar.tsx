@@ -189,7 +189,7 @@ export function Navbar() {
   }, [openIdx, moveHighlight]);
 
   return (
-    <header className="relative z-40 bg-[var(--color-bg)]">
+    <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-xl backdrop-saturate-150 border-b border-[var(--color-border)]/60">
       <div className="container-atma flex items-center justify-between h-16">
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <span className="block w-6 h-6 rounded-[3px] bg-[var(--color-primary)]" aria-hidden />
