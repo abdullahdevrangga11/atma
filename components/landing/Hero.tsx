@@ -1,35 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { Candlesticks } from "@/components/decor/Candlesticks";
+import { LiveCandlesticks } from "@/components/decor/LiveCandlesticks";
 import { Reveal, WordMask, Up, Fade } from "@/components/animations/Reveal";
 import { Button } from "@/components/ui/button";
 import { HeroShowcase } from "@/components/landing/HeroShowcase";
-import { FiddleHover } from "@/components/animations/FiddleHover";
-
-// Treasury / yield themed glyphs for the digital hover effect
-const HERO_SYMBOLS = [
-  "$", "%", "+", "→", "▲", "▼", "Σ", "◆", "0", "1", "bps", "/", "•",
-];
 
 export function Hero() {
   return (
     <section className="relative pt-32 md:pt-48 pb-32 md:pb-48 overflow-hidden">
-      <Candlesticks preset="all" />
+      {/*
+        Live decor — sticks breathe height continuously and spike near the cursor.
+        Lives behind the hero copy via z-0; pointer events captured here for the
+        proximity boost. Hero content sits on z-10 with pointer-events:none on the
+        wrapper so cursor still reaches the candlesticks underneath.
+      */}
+      <LiveCandlesticks className="z-0" hoverRadius={200} hoverBoost={1.6} />
 
-      {/* FiddleHover covers the entire hero content area */}
-      <FiddleHover
-        as="div"
-        symbols={HERO_SYMBOLS}
-        blockSize={24}
-        detectionRadius={64}
-        clusterSize={7}
-        blockLifetime={420}
-        emptyRatio={0.30}
-        scrambleRatio={0.28}
-        scrambleInterval={130}
-        className="container-atma relative z-10"
-      >
+      <div className="container-atma relative z-10 pointer-events-none">
         <div className="mx-auto max-w-[960px] text-center">
           <Reveal threshold={0.05}>
             <h1 className="display-1">
@@ -45,7 +33,7 @@ export function Hero() {
               </p>
             </Up>
 
-            <Up delay={820} className="mt-12 flex flex-wrap items-center justify-center gap-3">
+            <Up delay={820} className="mt-12 flex flex-wrap items-center justify-center gap-3 pointer-events-auto">
               <Button asChild size="lg" variant="default">
                 <Link href="/vault">
                   <span className="block w-3.5 h-3.5 rounded-[2px] bg-white" aria-hidden />
@@ -66,21 +54,24 @@ export function Hero() {
           </Reveal>
         </div>
 
-        {/* Hero showcase — base.org-style preview card */}
-        <div className="mt-20 md:mt-28">
+        {/* Hero showcase — base.org-style preview card. Re-enables pointer events
+            because users interact with the card. */}
+        <div className="mt-20 md:mt-28 pointer-events-auto">
           <Reveal threshold={0.05}>
             <Up delay={0}>
               <HeroShowcase />
             </Up>
             <Fade delay={800} className="mt-12 flex justify-center">
               <div className="flex flex-col items-center gap-2 text-[var(--color-text-muted)]">
-                <span className="text-[10px] font-mono uppercase tracking-[0.2em]">Move the cursor · Scroll for more</span>
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em]">
+                  Move the cursor · Sticks respond
+                </span>
                 <div className="w-px h-12 bg-gradient-to-b from-[var(--color-text-faint)] to-transparent" />
               </div>
             </Fade>
           </Reveal>
         </div>
-      </FiddleHover>
+      </div>
     </section>
   );
 }
