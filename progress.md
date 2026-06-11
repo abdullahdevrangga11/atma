@@ -69,6 +69,7 @@
 - `gh` CLI authenticated as `abdullahdevrangga11`.
 - Public repo live at `https://github.com/abdullahdevrangga11/atma`.
 - `vercel` CLI authenticated as `devvveloper`.
+- **Production deployed**: https://atma-iota.vercel.app (dpl_HpDBALJAoRj8p4DUTvucmUJSaXHU).
 
 ---
 

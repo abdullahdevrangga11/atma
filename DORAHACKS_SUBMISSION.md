@@ -56,7 +56,7 @@ ATMA closes the gap with three agents that operate continuously, attested on-cha
 
 ## Links
 
-- **Live demo**: https://atma.vercel.app
+- **Live demo**: https://atma-iota.vercel.app
 - **GitHub**: https://github.com/abdullahdevrangga11/atma
 - **Deployed vault** (Mantle Sepolia): `0x<TBD — fill after deploy>`
 - **Demo video** (3 min): https://youtu.be/<TBD>
@@ -92,7 +92,7 @@ We hit all five judging axes from the hackathon requirements:
 | Slogan | Three AI agents managing your Mantle RWA treasury. Policy as Markdown. Decisions attested on-chain. |
 | Description (~250 words) | Use the "Description (long form)" section above. |
 | Tracks | Mantle AI Agents · Mantle RWA & DeFi |
-| Demo URL | https://atma.vercel.app |
+| Demo URL | https://atma-iota.vercel.app |
 | Repo URL | https://github.com/abdullahdevrangga11/atma |
 | Video URL | https://youtu.be/<TBD> |
 | Team | Devrangga Hazza Mahiswara (abdullahdevrangga@gmail.com) |

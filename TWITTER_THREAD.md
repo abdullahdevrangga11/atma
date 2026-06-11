@@ -90,7 +90,7 @@ repo: github.com/abdullahdevrangga11/atma
 
 ```
 3-min demo: <youtu.be/TBD>
-live app:   <atma.vercel.app>
+live app:   atma-iota.vercel.app
 contract:   <sepolia.mantlescan.xyz/address/TBD>
 
 submission for @0xMantle Turing Test Hackathon 2026.

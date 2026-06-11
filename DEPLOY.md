@@ -90,7 +90,7 @@ vercel env add NEXT_PUBLIC_ATMA_VAULT production
 vercel env add NEXT_PUBLIC_CHAIN_ID production
 ```
 
-Production URL: **https://atma.xyz** (alias) or **https://atma.vercel.app**.
+Production URL: **https://atma-iota.vercel.app** (alias).
 
 ---
 
