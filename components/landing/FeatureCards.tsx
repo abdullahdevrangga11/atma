@@ -52,9 +52,11 @@ export function FeatureCards() {
       <div className="container-atma">
         <Reveal>
           <div className="max-w-[640px] mb-20">
-            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-5">
-              <Up delay={0}>// three agents · one verifiable policy</Up>
-            </p>
+            <Up delay={0}>
+              <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-5">
+                // three agents · one verifiable policy
+              </p>
+            </Up>
             <h2 className="display-2 text-[var(--color-text)]">
               <WordMask text="Composable." staggerMs={70} />{" "}
               <WordMask text="Auditable." staggerMs={70} baseDelayMs={120} />{" "}

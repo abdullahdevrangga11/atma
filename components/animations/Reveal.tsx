@@ -109,10 +109,12 @@ export function Up({
   children,
   delay = 0,
   className,
+  as = "div",
 }: {
   children: ReactNode;
   delay?: number;
   className?: string;
+  as?: "div" | "span";
 }) {
   const style: CSSProperties = { transitionDelay: `${delay}ms` };
   if (isValidElement(children) && Children.count(children) === 1) {
@@ -122,6 +124,13 @@ export function Up({
       className: cn("up-reveal", el.props.className, className),
       style: { ...el.props.style, ...style },
     });
+  }
+  if (as === "span") {
+    return (
+      <span className={cn("up-reveal inline-block", className)} style={style}>
+        {children}
+      </span>
+    );
   }
   return (
     <div className={cn("up-reveal", className)} style={style}>
