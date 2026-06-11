@@ -304,8 +304,15 @@ function CardFront({ agent }: { agent: Agent }) {
         >
           {agent.name}
         </h3>
+        {/*
+          Fixed 2-line reservation so the description never causes a height
+          jump when the container width animates 75% → 60% mid-scroll. Even
+          if the text fits one line at wide widths, the slot stays the same
+          size — the card geometry is therefore stable across all three.
+        */}
         <p
-          className="font-mono text-[12px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] max-w-[280px]"
+          className="font-mono text-[12px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] max-w-[280px] leading-[1.5] text-balance"
+          style={{ minHeight: "calc(12px * 1.5 * 2)" }}
         >
           {agent.short}
         </p>

@@ -120,47 +120,70 @@ export function DissolveTransitionProvider({ children }: { children: ReactNode }
     };
   }, []);
 
-  /** Sweep a horizontal dissolve band from `from` to `to` (in normalised Y) over `durationMs`. */
-  const sweep = useCallback((from: number, to: number, durationMs: number) =>
-    new Promise<void>((resolve) => {
-      const start = performance.now();
-      const ease = (t: number) => 1 - Math.pow(1 - t, 3); // power3.out
+  /**
+   * Sweep a horizontal dissolve band from `from` to `to` (in normalised Y)
+   * over `durationMs`. If `onCrossMidpoint` is provided, fires it exactly
+   * once when the band passes the midway point — used to trigger the
+   * router.push so the navigation happens while the dissolve covers the
+   * page, producing a single continuous sweep instead of two passes.
+   */
+  const sweep = useCallback(
+    (
+      from: number,
+      to: number,
+      durationMs: number,
+      onCrossMidpoint?: () => void,
+    ) =>
+      new Promise<void>((resolve) => {
+        const start = performance.now();
+        const ease = (t: number) => 1 - Math.pow(1 - t, 3); // power3.out
+        let crossed = false;
 
-      const step = (now: number) => {
-        const p = Math.min(1, (now - start) / durationMs);
-        const eased = ease(p);
-        const bandY = from + (to - from) * eased;
+        const step = (now: number) => {
+          const p = Math.min(1, (now - start) / durationMs);
+          const eased = ease(p);
+          const bandY = from + (to - from) * eased;
 
-        const cells = cellsData.current;
-        const els = cellsRef.current;
-        const vrand = visibilityRand.current;
-        const off = scatterOffset.current;
-
-        for (let i = 0; i < cells.length; i++) {
-          const cell = cells[i];
-          const raw = Math.abs(cell.ny - bandY);
-          const scatterStrength = Math.max(MIN_SCATTER_AT_CENTER, Math.min(1, raw / CORE));
-          const scattered = cell.ny - bandY + off[i] * scatterStrength;
-          const norm =
-            scattered >= 0 ? scattered / SPREAD : Math.abs(scattered) / SPREAD;
-
-          if (norm >= 1) {
-            els[i].style.visibility = "hidden";
-          } else {
-            const density = (1 - norm) * (1 - norm);
-            const visible = density > vrand[i] * VISIBILITY_THRESHOLD;
-            els[i].style.visibility = visible ? "visible" : "hidden";
+          if (!crossed && p >= 0.5 && onCrossMidpoint) {
+            crossed = true;
+            onCrossMidpoint();
           }
-        }
 
-        if (p < 1) {
-          rafRef.current = requestAnimationFrame(step);
-        } else {
-          resolve();
-        }
-      };
-      rafRef.current = requestAnimationFrame(step);
-    }), []);
+          const cells = cellsData.current;
+          const els = cellsRef.current;
+          const vrand = visibilityRand.current;
+          const off = scatterOffset.current;
+
+          for (let i = 0; i < cells.length; i++) {
+            const cell = cells[i];
+            const raw = Math.abs(cell.ny - bandY);
+            const scatterStrength = Math.max(
+              MIN_SCATTER_AT_CENTER,
+              Math.min(1, raw / CORE),
+            );
+            const scattered = cell.ny - bandY + off[i] * scatterStrength;
+            const norm =
+              scattered >= 0 ? scattered / SPREAD : Math.abs(scattered) / SPREAD;
+
+            if (norm >= 1) {
+              els[i].style.visibility = "hidden";
+            } else {
+              const density = (1 - norm) * (1 - norm);
+              const visible = density > vrand[i] * VISIBILITY_THRESHOLD;
+              els[i].style.visibility = visible ? "visible" : "hidden";
+            }
+          }
+
+          if (p < 1) {
+            rafRef.current = requestAnimationFrame(step);
+          } else {
+            resolve();
+          }
+        };
+        rafRef.current = requestAnimationFrame(step);
+      }),
+    [],
+  );
 
   const hideAll = useCallback(() => {
     const els = cellsRef.current;
@@ -169,19 +192,19 @@ export function DissolveTransitionProvider({ children }: { children: ReactNode }
 
   const navigate = useCallback(
     async (href: string) => {
-      // Refresh random glyphs each transition so it doesn't look identical twice
+      // Refresh random glyphs so successive transitions don't look identical
       cellsRef.current.forEach((el) => (el.textContent = pickChar()));
 
       setActive(true);
-      // Dissolve-out — band sweeps top → bottom
-      await sweep(-SPREAD, 1 + SPREAD, 480);
-      hideAll();
-      router.push(href);
 
-      // Wait a tick for the new route to mount, then dissolve-in
-      await new Promise<void>((r) => setTimeout(r, 60));
-      cellsRef.current.forEach((el) => (el.textContent = pickChar()));
-      await sweep(1 + SPREAD, -SPREAD, 480);
+      // Single continuous sweep top → bottom. At the band's midpoint the
+      // band has full screen coverage, so that's when we router.push — the
+      // new page mounts under the cover and the trailing edge of the sweep
+      // then reveals it. One pass, no double-glitch.
+      await sweep(-SPREAD, 1 + SPREAD, 780, () => {
+        router.push(href);
+      });
+
       hideAll();
       setActive(false);
     },
