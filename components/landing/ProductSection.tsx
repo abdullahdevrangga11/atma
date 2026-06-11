@@ -59,7 +59,9 @@ export function ProductSection() {
       diagram: <AttestationDiagram />,
       title: "Every decision attested.",
       body: "ERC-8004 reputation events emit per allocation, rebalance, and defensive exit. Judges, regulators, and downstream protocols can query the full trace without permission.",
-      span: "md:col-span-12",
+      // Spans both columns and one row of the auto-grid. The diagram itself
+      // is horizontal — 5 tx cards in a single row across the full width.
+      span: "md:col-span-12 md:min-h-[440px]",
       delay: 480,
     },
   ];

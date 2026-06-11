@@ -19,10 +19,16 @@ import "@xyflow/react/dist/style.css";
  *   - VaultStateDiagram   — ATMA at the centre, 4 RWA assets orbiting
  *   - AgentSwarmDiagram   — 3 agent circles converging on SKILLS
  *   - PolicyAsDataDiagram — SKILL.md → CLAUDE arrow with subtitle
- *   - AttestationDiagram  — REGISTRY in the middle, tx events as satellites
+ *   - AttestationDiagram  — registry at top, 5 tx events fanning out
+ *                           horizontally so the wide bento tile gets used.
  *
- * All four reuse a tiny `Frame` wrapper that turns off pan/zoom and renders
- * a soft dotted Background so the diagrams read as decorative-but-real.
+ * Each diagram:
+ *   - Enables `nodesDraggable` so the user can rearrange any node by
+ *     dragging it — small tactile signal that this is a real graph.
+ *   - Marks every edge `animated: true` for React Flow's hardware-
+ *     accelerated dash-flow (data-flowing-through-pipe feel).
+ *   - Wraps node content with `.atma-flow-node` so the CSS hover rule
+ *     lifts the node on pointer enter.
  */
 
 type AssetTone = "violet" | "lime" | "amber" | "pink" | "ink" | "white";
@@ -42,12 +48,23 @@ const TONE: Record<
 type PillData = { label: string; tone: AssetTone; sub?: string };
 type CircleData = { label: string };
 type FileData = { label: string };
-type ArrowEdgeStyle = Pick<Edge, "style" | "markerEnd">;
+type ArrowEdgeStyle = Pick<Edge, "style" | "markerEnd" | "animated" | "type">;
 
-function solidEdge(): ArrowEdgeStyle {
+function flowEdge(): ArrowEdgeStyle {
   return {
-    style: { stroke: "#0a0a0a", strokeWidth: 1.2 },
+    type: "default",
+    animated: true,
+    style: { stroke: "#0a0a0a", strokeWidth: 1.4 },
     markerEnd: { type: "arrowclosed", color: "#0a0a0a", width: 10, height: 10 } as Edge["markerEnd"],
+  };
+}
+
+function flowEdgeViolet(): ArrowEdgeStyle {
+  return {
+    type: "smoothstep",
+    animated: true,
+    style: { stroke: "#5b3df0", strokeWidth: 1.6 },
+    markerEnd: { type: "arrowclosed", color: "#5b3df0", width: 10, height: 10 } as Edge["markerEnd"],
   };
 }
 
@@ -60,6 +77,7 @@ function PillNode({ data }: NodeProps) {
   const tone = TONE[d.tone];
   return (
     <div
+      className="atma-flow-node"
       style={{
         padding: "6px 12px",
         borderRadius: 6,
@@ -72,6 +90,7 @@ function PillNode({ data }: NodeProps) {
         textAlign: "center",
         minWidth: 56,
         lineHeight: 1.15,
+        cursor: "grab",
       }}
     >
       <Handle type="target" position={Position.Top} style={hidden} />
@@ -92,6 +111,7 @@ function CircleNode({ data }: NodeProps) {
   const d = data as unknown as CircleData;
   return (
     <div
+      className="atma-flow-node"
       style={{
         width: 56,
         height: 56,
@@ -105,6 +125,7 @@ function CircleNode({ data }: NodeProps) {
         fontSize: 10,
         fontWeight: 600,
         color: "#0a0a0a",
+        cursor: "grab",
       }}
     >
       <Handle type="target" position={Position.Top} style={hidden} />
@@ -120,6 +141,7 @@ function FileNode({ data }: NodeProps) {
   const d = data as unknown as FileData;
   return (
     <div
+      className="atma-flow-node"
       style={{
         width: 84,
         height: 100,
@@ -127,6 +149,7 @@ function FileNode({ data }: NodeProps) {
         background: "#ffffff",
         border: "1.4px solid #0a0a0a",
         fontFamily: "ui-monospace, SF Mono, monospace",
+        cursor: "grab",
       }}
     >
       <Handle type="source" position={Position.Right} style={hidden} />
@@ -177,18 +200,20 @@ function RegistryHeaderNode({ data }: NodeProps) {
   const d = data as unknown as { label: string };
   return (
     <div
+      className="atma-flow-node"
       style={{
-        padding: "8px 16px 8px 14px",
+        padding: "10px 18px 10px 16px",
         background: "#0a0a0a",
         color: "#ffffff",
-        borderRadius: 8,
+        borderRadius: 10,
         fontFamily: "ui-monospace, SF Mono, monospace",
-        fontSize: 10,
+        fontSize: 11,
         fontWeight: 600,
         display: "flex",
         alignItems: "center",
         gap: 10,
-        minWidth: 200,
+        minWidth: 220,
+        cursor: "grab",
       }}
     >
       <Handle type="source" position={Position.Bottom} style={hidden} />
@@ -199,6 +224,7 @@ function RegistryHeaderNode({ data }: NodeProps) {
           borderRadius: "50%",
           background: "#84cc16",
           boxShadow: "0 0 8px #84cc16",
+          animation: "atma-pulse-dot 2.2s ease-in-out infinite",
         }}
       />
       {d.label}
@@ -206,7 +232,7 @@ function RegistryHeaderNode({ data }: NodeProps) {
   );
 }
 
-function TxRowNode({ data }: NodeProps) {
+function TxCardNode({ data }: NodeProps) {
   const d = data as unknown as {
     tx: string;
     agent: string;
@@ -214,33 +240,48 @@ function TxRowNode({ data }: NodeProps) {
   };
   return (
     <div
+      className={`atma-flow-node${d.active ? " atma-attest-active" : ""}`}
       style={{
-        display: "grid",
-        gridTemplateColumns: "82px 64px 60px 12px",
-        gap: 8,
-        alignItems: "center",
-        padding: "6px 10px",
+        display: "flex",
+        flexDirection: "column",
+        gap: 5,
+        padding: "10px 12px",
         background: d.active ? "#5b3df0" : "#ffffff",
         color: d.active ? "#ffffff" : "#0a0a0a",
         border: `1.4px solid ${d.active ? "#5b3df0" : "#e8e8e8"}`,
-        borderRadius: 6,
+        borderRadius: 8,
         fontFamily: "ui-monospace, SF Mono, monospace",
-        fontSize: 9.5,
-        minWidth: 240,
+        fontSize: 10,
+        minWidth: 110,
+        cursor: "grab",
       }}
     >
       <Handle type="target" position={Position.Top} style={hidden} />
-      <span style={{ opacity: d.active ? 1 : 0.7 }}>{d.tx}</span>
-      <span>{d.agent}</span>
-      <span style={{ opacity: 0.85 }}>ATTEST</span>
-      <span
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <span style={{ opacity: d.active ? 1 : 0.7, fontWeight: 600 }}>{d.tx}</span>
+        <span
+          style={{
+            width: 10,
+            height: 6,
+            background: d.active ? "#ffffff" : "#0a0a0a",
+            borderRadius: 2,
+          }}
+        />
+      </div>
+      <div style={{ fontWeight: 600 }}>{d.agent}</div>
+      <div
         style={{
-          width: 10,
-          height: 6,
-          background: d.active ? "#ffffff" : "#0a0a0a",
-          borderRadius: 2,
+          alignSelf: "flex-start",
+          fontSize: 8.5,
+          padding: "2px 6px",
+          borderRadius: 3,
+          background: d.active ? "rgba(255,255,255,0.18)" : "#fafafa",
+          color: d.active ? "rgba(255,255,255,0.9)" : "#5e5e5e",
+          letterSpacing: "0.06em",
         }}
-      />
+      >
+        ATTEST_REP
+      </div>
     </div>
   );
 }
@@ -252,11 +293,11 @@ const nodeTypes = {
   circle: CircleNode,
   file: FileNode,
   registry: RegistryHeaderNode,
-  txrow: TxRowNode,
+  txcard: TxCardNode,
 };
 
 // ───────────────────────────────────────────────────────────
-//  Frame wrapper — locks down all interaction
+//  Frame wrapper — pan/zoom off but dragging enabled
 // ───────────────────────────────────────────────────────────
 
 function Frame({
@@ -283,7 +324,7 @@ function Frame({
           zoomOnScroll={false}
           zoomOnPinch={false}
           zoomOnDoubleClick={false}
-          nodesDraggable={false}
+          nodesDraggable
           nodesConnectable={false}
           elementsSelectable={false}
           preventScrolling={false}
@@ -302,20 +343,20 @@ function Frame({
 export function VaultStateDiagram() {
   const nodes = useMemo<Node[]>(
     () => [
-      { id: "atma",  type: "pill", position: { x: 150, y: 100 }, data: { label: "ATMA",  tone: "violet" }, draggable: false, selectable: false },
-      { id: "usdy",  type: "pill", position: { x: 0,    y: 40  }, data: { label: "USDY",  tone: "violet" }, draggable: false, selectable: false },
-      { id: "musd",  type: "pill", position: { x: 300,  y: 40  }, data: { label: "mUSD",  tone: "lime"   }, draggable: false, selectable: false },
-      { id: "aave",  type: "pill", position: { x: 0,    y: 160 }, data: { label: "AAVE",  tone: "amber"  }, draggable: false, selectable: false },
-      { id: "mi4",   type: "pill", position: { x: 300,  y: 160 }, data: { label: "MI4",   tone: "pink"   }, draggable: false, selectable: false },
+      { id: "atma",  type: "pill", position: { x: 150, y: 100 }, data: { label: "ATMA",  tone: "violet" } },
+      { id: "usdy",  type: "pill", position: { x: 0,    y: 40  }, data: { label: "USDY",  tone: "violet" } },
+      { id: "musd",  type: "pill", position: { x: 300,  y: 40  }, data: { label: "mUSD",  tone: "lime"   } },
+      { id: "aave",  type: "pill", position: { x: 0,    y: 160 }, data: { label: "AAVE",  tone: "amber"  } },
+      { id: "mi4",   type: "pill", position: { x: 300,  y: 160 }, data: { label: "MI4",   tone: "pink"   } },
     ],
     [],
   );
   const edges = useMemo<Edge[]>(
     () => [
-      { id: "e-usdy", source: "usdy", target: "atma", ...solidEdge() },
-      { id: "e-musd", source: "musd", target: "atma", ...solidEdge() },
-      { id: "e-aave", source: "aave", target: "atma", ...solidEdge() },
-      { id: "e-mi4",  source: "mi4",  target: "atma", ...solidEdge() },
+      { id: "e-usdy", source: "usdy", target: "atma", ...flowEdge() },
+      { id: "e-musd", source: "musd", target: "atma", ...flowEdge() },
+      { id: "e-aave", source: "aave", target: "atma", ...flowEdge() },
+      { id: "e-mi4",  source: "mi4",  target: "atma", ...flowEdge() },
     ],
     [],
   );
@@ -329,18 +370,18 @@ export function VaultStateDiagram() {
 export function AgentSwarmDiagram() {
   const nodes = useMemo<Node[]>(
     () => [
-      { id: "alloc",  type: "circle", position: { x: 30,  y: 40  }, data: { label: "ALLOC" }, draggable: false, selectable: false },
-      { id: "risk",   type: "circle", position: { x: 170, y: 0   }, data: { label: "RISK"  }, draggable: false, selectable: false },
-      { id: "rprt",   type: "circle", position: { x: 310, y: 40  }, data: { label: "RPRT"  }, draggable: false, selectable: false },
-      { id: "skills", type: "pill",   position: { x: 156, y: 170 }, data: { label: "SKILLS", tone: "violet" }, draggable: false, selectable: false },
+      { id: "alloc",  type: "circle", position: { x: 30,  y: 40  }, data: { label: "ALLOC" } },
+      { id: "risk",   type: "circle", position: { x: 170, y: 0   }, data: { label: "RISK"  } },
+      { id: "rprt",   type: "circle", position: { x: 310, y: 40  }, data: { label: "RPRT"  } },
+      { id: "skills", type: "pill",   position: { x: 156, y: 170 }, data: { label: "SKILLS", tone: "violet" } },
     ],
     [],
   );
   const edges = useMemo<Edge[]>(
     () => [
-      { id: "e-alloc",  source: "alloc",  target: "skills", ...solidEdge() },
-      { id: "e-risk",   source: "risk",   target: "skills", ...solidEdge() },
-      { id: "e-rprt",   source: "rprt",   target: "skills", ...solidEdge() },
+      { id: "e-alloc",  source: "alloc",  target: "skills", ...flowEdgeViolet() },
+      { id: "e-risk",   source: "risk",   target: "skills", ...flowEdgeViolet() },
+      { id: "e-rprt",   source: "rprt",   target: "skills", ...flowEdgeViolet() },
     ],
     [],
   );
@@ -354,14 +395,14 @@ export function AgentSwarmDiagram() {
 export function PolicyAsDataDiagram() {
   const nodes = useMemo<Node[]>(
     () => [
-      { id: "file",   type: "file",  position: { x: 20,  y: 70 }, data: { label: "SKILL.md" }, draggable: false, selectable: false },
-      { id: "claude", type: "pill",  position: { x: 240, y: 100 }, data: { label: "CLAUDE", sub: "reasons", tone: "violet" }, draggable: false, selectable: false },
+      { id: "file",   type: "file",  position: { x: 20,  y: 70 }, data: { label: "SKILL.md" } },
+      { id: "claude", type: "pill",  position: { x: 240, y: 100 }, data: { label: "CLAUDE", sub: "reasons", tone: "violet" } },
     ],
     [],
   );
   const edges = useMemo<Edge[]>(
     () => [
-      { id: "e-flow", source: "file", target: "claude", ...solidEdge() },
+      { id: "e-flow", source: "file", target: "claude", ...flowEdgeViolet() },
     ],
     [],
   );
@@ -369,20 +410,33 @@ export function PolicyAsDataDiagram() {
 }
 
 // ───────────────────────────────────────────────────────────
-//  4. Attestation diagram — registry header + tx rows
+//  4. Attestation diagram — registry at top, tx events fan
+//     out HORIZONTALLY across the full-width bento tile
 // ───────────────────────────────────────────────────────────
 
 export function AttestationDiagram() {
+  // Centre-anchored layout — registry top-centre, 5 tx cards in a row below.
+  // The middle card is "active" so the eye lands on it first.
   const nodes = useMemo<Node[]>(
     () => [
-      { id: "reg",  type: "registry", position: { x: 0, y: 0 }, data: { label: "ERC-8004 reputation registry" }, draggable: false, selectable: false },
-      { id: "tx1", type: "txrow", position: { x: 0, y: 50  }, data: { tx: "0x4f8a…",  agent: "ALLOC#1" }, draggable: false, selectable: false },
-      { id: "tx2", type: "txrow", position: { x: 0, y: 86  }, data: { tx: "0x59a5…",  agent: "ALLOC#2", active: true }, draggable: false, selectable: false },
-      { id: "tx3", type: "txrow", position: { x: 0, y: 122 }, data: { tx: "0x63c0…",  agent: "ALLOC#3" }, draggable: false, selectable: false },
-      { id: "tx4", type: "txrow", position: { x: 0, y: 158 }, data: { tx: "0x6ddb…",  agent: "ALLOC#4" }, draggable: false, selectable: false },
-      { id: "tx5", type: "txrow", position: { x: 0, y: 194 }, data: { tx: "0x77f6…",  agent: "ALLOC#5" }, draggable: false, selectable: false },
+      { id: "reg",  type: "registry", position: { x: 340, y: 0   }, data: { label: "ERC-8004 reputation registry" } },
+      { id: "tx1", type: "txcard",   position: { x: 0,   y: 130 }, data: { tx: "0x4f8a…",  agent: "ALLOC#1" } },
+      { id: "tx2", type: "txcard",   position: { x: 170, y: 130 }, data: { tx: "0x59a5…",  agent: "ALLOC#2" } },
+      { id: "tx3", type: "txcard",   position: { x: 340, y: 130 }, data: { tx: "0x63c0…",  agent: "ALLOC#3", active: true } },
+      { id: "tx4", type: "txcard",   position: { x: 510, y: 130 }, data: { tx: "0x6ddb…",  agent: "ALLOC#4" } },
+      { id: "tx5", type: "txcard",   position: { x: 680, y: 130 }, data: { tx: "0x77f6…",  agent: "ALLOC#5" } },
     ],
     [],
   );
-  return <Frame nodes={nodes} edges={[]} height={240} />;
+  const edges = useMemo<Edge[]>(
+    () => [
+      { id: "e-reg-tx1", source: "reg", target: "tx1", ...flowEdgeViolet() },
+      { id: "e-reg-tx2", source: "reg", target: "tx2", ...flowEdgeViolet() },
+      { id: "e-reg-tx3", source: "reg", target: "tx3", ...flowEdgeViolet() },
+      { id: "e-reg-tx4", source: "reg", target: "tx4", ...flowEdgeViolet() },
+      { id: "e-reg-tx5", source: "reg", target: "tx5", ...flowEdgeViolet() },
+    ],
+    [],
+  );
+  return <Frame nodes={nodes} edges={edges} height={260} />;
 }
