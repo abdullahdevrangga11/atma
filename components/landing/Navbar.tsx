@@ -163,6 +163,7 @@ const NAV: NavItem[] = [
 
 export function Navbar() {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [scrolled, setScrolled] = useState(false);
   const railRef = useRef<HTMLDivElement | null>(null);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [highlight, setHighlight] = useState<{ left: number; width: number; opacity: number }>({
@@ -188,11 +189,52 @@ export function Navbar() {
     moveHighlight(openIdx);
   }, [openIdx, moveHighlight]);
 
+  // Recompute pill position when scrolled state flips (sizes change → bounding rects change)
+  useEffect(() => {
+    moveHighlight(openIdx);
+  }, [scrolled, openIdx, moveHighlight]);
+
+  // Scroll listener — shrink past 60px
+  useEffect(() => {
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 60);
+        raf = 0;
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
   return (
-    <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-xl backdrop-saturate-150 border-b border-[var(--color-border)]/60">
-      <div className="container-atma flex items-center justify-between h-16">
+    <header
+      className={cn(
+        "sticky top-0 z-40 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+        scrolled
+          ? "bg-white/85 backdrop-blur-xl backdrop-saturate-150 border-b border-[var(--color-border)] shadow-[0_4px_24px_-12px_rgba(0,0,0,0.08)]"
+          : "bg-white/70 backdrop-blur-xl backdrop-saturate-150 border-b border-[var(--color-border)]/60",
+      )}
+    >
+      <div
+        className={cn(
+          "container-atma flex items-center justify-between transition-[height] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+          scrolled ? "h-12" : "h-16",
+        )}
+      >
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <span className="block w-6 h-6 rounded-[3px] bg-[var(--color-primary)]" aria-hidden />
+          <span
+            className={cn(
+              "block rounded-[3px] bg-[var(--color-primary)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+              scrolled ? "w-5 h-5" : "w-6 h-6",
+            )}
+            aria-hidden
+          />
           <span className="sr-only">ATMA</span>
         </Link>
 
@@ -262,7 +304,13 @@ export function Navbar() {
           ))}
         </div>
 
-        <Link href="/vault" className="btn-primary text-[13px] py-2.5">
+        <Link
+          href="/vault"
+          className={cn(
+            "btn-primary transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+            scrolled ? "text-[12px] py-2 px-4" : "text-[13px] py-2.5 px-5",
+          )}
+        >
           Get Started
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
             <path d="M1 5h8M5 1l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
