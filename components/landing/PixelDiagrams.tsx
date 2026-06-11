@@ -7,6 +7,7 @@ import {
   Background,
   Handle,
   Position,
+  useReactFlow,
   type Node,
   type Edge,
   type NodeProps,
@@ -312,27 +313,45 @@ function Frame({
   return (
     <div style={{ height }} className="w-full">
       <ReactFlowProvider>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          nodeTypes={nodeTypes}
-          proOptions={{ hideAttribution: true }}
-          fitView
-          fitViewOptions={{ padding: 0.18, maxZoom: 1 }}
-          panOnDrag={false}
-          panOnScroll={false}
-          zoomOnScroll={false}
-          zoomOnPinch={false}
-          zoomOnDoubleClick={false}
-          nodesDraggable
-          nodesConnectable={false}
-          elementsSelectable={false}
-          preventScrolling={false}
-        >
-          <Background gap={16} size={1} color="#dcdcdc" />
-        </ReactFlow>
+        <InnerFlow nodes={nodes} edges={edges} />
       </ReactFlowProvider>
     </div>
+  );
+}
+
+/**
+ * Inner React Flow that knows its viewport so it can auto-refit after a
+ * user drags a node — keeps the diagram from "disappearing" when someone
+ * pulls a node off the canvas edge.
+ */
+function InnerFlow({ nodes, edges }: { nodes: Node[]; edges: Edge[] }) {
+  const flow = useReactFlow();
+  const refit = () => {
+    requestAnimationFrame(() => {
+      flow.fitView({ duration: 420, padding: 0.18, maxZoom: 1 });
+    });
+  };
+  return (
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      nodeTypes={nodeTypes}
+      proOptions={{ hideAttribution: true }}
+      fitView
+      fitViewOptions={{ padding: 0.18, maxZoom: 1 }}
+      panOnDrag={false}
+      panOnScroll={false}
+      zoomOnScroll={false}
+      zoomOnPinch={false}
+      zoomOnDoubleClick={false}
+      nodesDraggable
+      nodesConnectable={false}
+      elementsSelectable={false}
+      preventScrolling={false}
+      onNodeDragStop={refit}
+    >
+      <Background gap={16} size={1} color="#dcdcdc" />
+    </ReactFlow>
   );
 }
 
