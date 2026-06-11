@@ -16,16 +16,16 @@ export function BlueCTA() {
       className="relative overflow-hidden bg-[var(--color-primary)] text-white"
     >
       {/*
-        FiddleHover covers the whole CTA. `blockVariant="dark"` paints active
-        blocks in near-ink so they stand out _against_ the violet background
-        rather than blending into it. Bigger blocks + a calmer cluster size
-        than the hero — this section is short and the effect should read as
-        deliberate, not chaotic.
+        FiddleHover covers the whole CTA. `blockVariant="light"` paints active
+        blocks in white with brand-violet symbols, reading as cut-outs / light
+        breaking through the violet section — friendlier than the dark ink
+        variant for a CTA. Bigger blocks + calmer cluster size than the hero
+        since the section is short and the effect should feel deliberate.
       */}
       <FiddleHover
         as="div"
         symbols={CTA_SYMBOLS}
-        blockVariant="dark"
+        blockVariant="light"
         blockSize={28}
         detectionRadius={70}
         clusterSize={5}

@@ -30,10 +30,12 @@ type FiddleHoverConfig = {
   /**
    * Visual style of active blocks.
    * - `default`: brand-violet block on light surfaces (hero).
-   * - `dark`: near-black block, intended for use on the inverted CTA — blocks
-   *   pop _against_ the section background rather than blending into it.
+   * - `dark`: near-black ink block. Heavy / brutalist. Use on inviting
+   *   sections only if the message is warning-coded.
+   * - `light`: white block with brand-violet symbols. Reads as cut-outs /
+   *   light breaking through. Use on the inverted CTA.
    */
-  blockVariant?: "default" | "dark";
+  blockVariant?: "default" | "dark" | "light";
 };
 
 type Block = {
@@ -103,8 +105,11 @@ export function FiddleHover({
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           const el = document.createElement("span");
-          el.className =
-            blockVariant === "dark" ? "fiddle-block fiddle-block-dark" : "fiddle-block";
+          el.className = cn(
+            "fiddle-block",
+            blockVariant === "dark" && "fiddle-block-dark",
+            blockVariant === "light" && "fiddle-block-light",
+          );
           const empty = Math.random() < emptyRatio;
           el.textContent = empty ? "" : pickSymbol(symbols);
           el.style.width = `${blockSize}px`;

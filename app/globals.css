@@ -381,13 +381,20 @@
   .fiddle-block.fiddle-active {
     opacity: 1;
   }
-  /* Dark variant — for inverted/colored sections like BlueCTA.
-     Blocks paint near-ink so they read as deliberate negative-space marks
-     against the section's brand colour, rather than disappearing into it.
-     Symbols use warm white for a touch of analog grain. */
+  /* Dark variant — ink stamps for inverted/colored sections.
+     Reads as "deliberate negative-space marks" against the brand colour.
+     Use when the message is serious / warning-coded. */
   .fiddle-block-dark {
     background-color: #0a0a0a;
     color: #f5f4ee;
+  }
+
+  /* Light variant — white blocks with brand-coloured symbols.
+     Reads as "cut-outs / light breaking through" the brand colour.
+     Use on inviting/CTA-coded sections. */
+  .fiddle-block-light {
+    background-color: #ffffff;
+    color: var(--color-primary);
   }
 }
 
