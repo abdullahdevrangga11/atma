@@ -469,7 +469,7 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    background: var(--color-bg-mid);
+    background: var(--color-primary-tint);
     border-radius: 9999px;
     transition: left 350ms cubic-bezier(0.16, 1, 0.3, 1),
                 width 350ms cubic-bezier(0.16, 1, 0.3, 1),

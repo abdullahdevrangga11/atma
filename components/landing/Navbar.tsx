@@ -9,6 +9,12 @@ type DropdownItem = {
   desc: string;
   href: string;
   Icon: () => React.ReactElement;
+  /**
+   * Visual tone for the icon container. base.org-style: the "headline" item
+   * in each dropdown gets a permanent violet wash; everything else stays
+   * neutral and warms into violet on hover.
+   */
+  tone?: "primary" | "neutral";
 };
 
 type NavItem = {
@@ -16,10 +22,12 @@ type NavItem = {
   items: DropdownItem[];
 };
 
-// Compact inline icons with hover animation classes
+// Compact inline icons with hover animation classes.
+// All icons inherit color from their container via `currentColor` so the
+// dropdown can tone them with one className change.
 function IconVault() {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
       <rect x="2" y="3" width="14" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
       <circle cx="9" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.4" className="origin-center transition-transform duration-500 group-hover/item:rotate-[180deg]" />
       <circle cx="9" cy="9" r="0.8" fill="currentColor" />
@@ -28,7 +36,7 @@ function IconVault() {
 }
 function IconReport() {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
       <path d="M3 15V3M15 15H3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
       <rect x="5" y="9" width="2" height="4" fill="currentColor" className="origin-bottom transition-transform duration-500 group-hover/item:scale-y-150" />
       <rect x="8" y="6" width="2" height="7" fill="currentColor" className="origin-bottom transition-transform duration-500 delay-75 group-hover/item:scale-y-125" />
@@ -38,7 +46,7 @@ function IconReport() {
 }
 function IconSkills() {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
       <path d="M4 2h7l3 3v11H4V2z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
       <path d="M11 2v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
       <line x1="6" y1="9" x2="12" y2="9" stroke="currentColor" strokeWidth="1.2" className="origin-left transition-transform duration-500 group-hover/item:scale-x-110" />
@@ -49,14 +57,14 @@ function IconSkills() {
 }
 function IconGitHub() {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor" className="text-[var(--color-text)] transition-transform duration-500 group-hover/item:rotate-[12deg]">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor" className="transition-transform duration-500 group-hover/item:rotate-[12deg]">
       <path d="M9 0a9 9 0 0 0-2.85 17.54c.45.08.62-.2.62-.43v-1.5c-2.5.55-3.03-1.21-3.03-1.21-.41-1.04-1-1.32-1-1.32-.82-.56.06-.55.06-.55.9.06 1.38.93 1.38.93.8 1.38 2.1.98 2.62.75.08-.58.31-.98.57-1.21-2-.23-4.1-1-4.1-4.46 0-.98.35-1.79.92-2.42-.09-.23-.4-1.15.09-2.4 0 0 .75-.24 2.46.92.71-.2 1.48-.3 2.24-.3.76 0 1.53.1 2.24.3 1.71-1.16 2.46-.92 2.46-.92.49 1.25.18 2.17.09 2.4.57.63.92 1.44.92 2.42 0 3.47-2.11 4.23-4.12 4.45.32.28.61.83.61 1.68v2.5c0 .24.17.52.63.43A9 9 0 0 0 9 0z" />
     </svg>
   );
 }
 function IconBook() {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
       <path d="M2 3.5C2 2.67 2.67 2 3.5 2H9v13H3.5C2.67 15 2 14.33 2 13.5v-10z" stroke="currentColor" strokeWidth="1.4" />
       <path d="M16 3.5c0-.83-.67-1.5-1.5-1.5H9v13h5.5c.83 0 1.5-.67 1.5-1.5v-10z" stroke="currentColor" strokeWidth="1.4" />
       <path d="M9 5h4M9 8h3" stroke="currentColor" strokeWidth="1.2" className="transition-opacity duration-500 group-hover/item:opacity-50" />
@@ -65,7 +73,7 @@ function IconBook() {
 }
 function IconShield() {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
       <path d="M9 1l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V4l7-3z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
       <path d="M6 9l2 2 4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="origin-left transition-transform duration-500 group-hover/item:scale-110" />
     </svg>
@@ -73,11 +81,59 @@ function IconShield() {
 }
 function IconBlock() {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
       <rect x="2" y="2" width="6" height="6" stroke="currentColor" strokeWidth="1.4" className="origin-center transition-transform duration-500 group-hover/item:rotate-45" />
       <rect x="10" y="2" width="6" height="6" stroke="currentColor" strokeWidth="1.4" />
       <rect x="2" y="10" width="6" height="6" stroke="currentColor" strokeWidth="1.4" />
       <rect x="10" y="10" width="6" height="6" stroke="currentColor" strokeWidth="1.4" fill="currentColor" />
+    </svg>
+  );
+}
+function IconAgent() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <circle cx="9" cy="6.5" r="3.2" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M3 17c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" className="origin-bottom transition-transform duration-500 group-hover/item:scale-x-110" />
+      <circle cx="13.5" cy="3.5" r="1.2" fill="currentColor" className="transition-transform duration-500 group-hover/item:scale-150" />
+    </svg>
+  );
+}
+function IconBalance() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path d="M9 2v14M3 6h12" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <path d="M3 10l3-4 3 4M9 10l3-4 3 4" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" className="transition-transform duration-500 group-hover/item:translate-y-[-1px]" />
+    </svg>
+  );
+}
+function IconBeaker() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path d="M7 2v5l-4 7a2 2 0 0 0 1.74 3h8.52A2 2 0 0 0 15 14L11 7V2" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M6 2h6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <circle cx="7" cy="13" r="0.8" fill="currentColor" className="transition-transform duration-500 group-hover/item:translate-y-[-2px]" />
+      <circle cx="10" cy="11" r="0.8" fill="currentColor" className="transition-transform duration-500 delay-75 group-hover/item:translate-y-[-2px]" />
+      <circle cx="11.5" cy="14" r="0.8" fill="currentColor" className="transition-transform duration-500 delay-150 group-hover/item:translate-y-[-2px]" />
+    </svg>
+  );
+}
+function IconNetwork() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <circle cx="9" cy="9" r="6" stroke="currentColor" strokeWidth="1.4" />
+      <circle cx="3.5" cy="4.5" r="1.4" fill="currentColor" className="transition-transform duration-500 group-hover/item:scale-125" />
+      <circle cx="14.5" cy="4.5" r="1.4" fill="currentColor" className="transition-transform duration-500 delay-75 group-hover/item:scale-125" />
+      <circle cx="9" cy="15.5" r="1.4" fill="currentColor" className="transition-transform duration-500 delay-150 group-hover/item:scale-125" />
+      <path d="M3.5 4.5L9 15.5L14.5 4.5Z" stroke="currentColor" strokeWidth="1" strokeOpacity="0.4" />
+    </svg>
+  );
+}
+function IconChartUp() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+      <path d="M2 15h14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <path d="M2 13l4-5 3 3 5-7" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-500 group-hover/item:translate-y-[-1px]" />
+      <path d="M11 4h3v3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -128,16 +184,16 @@ const NAV: NavItem[] = [
   {
     label: "Product",
     items: [
-      { name: "Vault", desc: "Live multi-agent orchestration", href: "/vault", Icon: IconVault },
-      { name: "Backtest", desc: "Replay N weeks vs 3 baselines", href: "/backtest", Icon: IconReport },
-      { name: "Compare", desc: "3 policies, parallel reasoning", href: "/compare", Icon: IconReport },
+      { name: "Vault", desc: "Live multi-agent orchestration", href: "/vault", Icon: IconVault, tone: "primary" },
+      { name: "Backtest", desc: "Replay N weeks vs 3 baselines", href: "/backtest", Icon: IconChartUp },
+      { name: "Compare", desc: "3 policies, parallel reasoning", href: "/compare", Icon: IconBalance },
       { name: "Anomaly", desc: "Stress-test the RiskAgent", href: "/anomaly", Icon: IconShield },
     ],
   },
   {
     label: "Agents",
     items: [
-      { name: "AllocatorAgent", desc: "Treasury allocation under policy", href: "/agents/allocator", Icon: IconVault },
+      { name: "AllocatorAgent", desc: "Treasury allocation under policy", href: "/agents/allocator", Icon: IconAgent, tone: "primary" },
       { name: "RiskAgent", desc: "Veto authority + defensive exit", href: "/agents/risk", Icon: IconShield },
       { name: "ReporterAgent", desc: "P&L attestation, 3 baselines", href: "/agents/reporter", Icon: IconReport },
       { name: "Reports", desc: "Real attestation history", href: "/reports", Icon: IconReport },
@@ -146,9 +202,9 @@ const NAV: NavItem[] = [
   {
     label: "Policy",
     items: [
-      { name: "Skills", desc: "Edit markdown, see diff", href: "/skills", Icon: IconSkills },
-      { name: "A/B test", desc: "Prove a policy change pays off", href: "/ab-test", Icon: IconReport },
-      { name: "Network", desc: "Cumulative network stats", href: "/network", Icon: IconBlock },
+      { name: "Skills", desc: "Edit markdown, see diff", href: "/skills", Icon: IconSkills, tone: "primary" },
+      { name: "A/B test", desc: "Prove a policy change pays off", href: "/ab-test", Icon: IconBeaker },
+      { name: "Network", desc: "Cumulative network stats", href: "/network", Icon: IconNetwork },
     ],
   },
   {
@@ -293,28 +349,48 @@ export function Navbar() {
 
               {openIdx === i && (
                 <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
-                  <div className="w-[340px] bg-white border border-[var(--color-border)] rounded-2xl shadow-[0_18px_56px_rgba(0,0,0,0.10)] p-2">
-                    {item.items.map((sub) => (
+                  <div className="w-[340px] bg-white border border-[var(--color-border)] rounded-2xl shadow-[0_18px_56px_rgba(91,61,240,0.10),0_4px_16px_rgba(0,0,0,0.04)] p-2">
+                    {item.items.map((sub) => {
+                      const isPrimary = sub.tone === "primary";
+                      return (
                       <a
                         key={sub.name}
                         href={sub.href}
                         target={sub.href.startsWith("http") ? "_blank" : undefined}
                         rel={sub.href.startsWith("http") ? "noreferrer" : undefined}
-                        className="group/item flex items-start gap-3 p-3 rounded-xl hover:bg-[var(--color-bg-mid)] transition-colors duration-200"
+                        className="group/item flex items-start gap-3 p-3 rounded-xl hover:bg-[var(--color-primary-tint)] transition-colors duration-200"
                       >
-                        <span className="block w-9 h-9 rounded-lg bg-[var(--color-bg-soft)] group-hover/item:bg-white group-hover/item:shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex items-center justify-center shrink-0 transition-all duration-300">
+                        <span
+                          className={cn(
+                            "block w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-all duration-300",
+                            // Default: primary items stay violet, others stay neutral
+                            isPrimary
+                              ? "bg-[var(--color-primary-tint)] text-[var(--color-primary)]"
+                              : "bg-[var(--color-bg-soft)] text-[var(--color-text)]",
+                            // Hover: everyone goes violet
+                            "group-hover/item:bg-white group-hover/item:text-[var(--color-primary)] group-hover/item:shadow-[0_2px_8px_rgba(91,61,240,0.10)]",
+                          )}
+                        >
                           <sub.Icon />
                         </span>
                         <span className="flex-1 min-w-0">
-                          <p className="text-[14px] font-medium text-[var(--color-text)] leading-tight">
+                          <p
+                            className={cn(
+                              "text-[14px] font-medium leading-tight transition-colors duration-200",
+                              isPrimary
+                                ? "text-[var(--color-primary)]"
+                                : "text-[var(--color-text)] group-hover/item:text-[var(--color-primary)]",
+                            )}
+                          >
                             {sub.name}
                           </p>
-                          <p className="text-[12px] text-[var(--color-text-muted)] mt-1 leading-snug">
+                          <p className="text-[12px] text-[var(--color-text-muted)] mt-1 leading-snug group-hover/item:text-[var(--color-text-secondary)] transition-colors duration-200">
                             {sub.desc}
                           </p>
                         </span>
                       </a>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
