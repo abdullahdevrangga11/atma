@@ -1,6 +1,6 @@
 "use client";
 
-import { ScrollReveal } from "@/components/animations/ScrollReveal";
+import { Reveal, Up } from "@/components/animations/Reveal";
 
 const PARTNERS = [
   "Mantle",
@@ -9,7 +9,7 @@ const PARTNERS = [
   "Tencent Cloud",
   "Nansen",
   "Elfa AI",
-  "Animoca Brands",
+  "Animoca",
   "Allora",
   "Virtuals",
   "Hashed",
@@ -17,25 +17,24 @@ const PARTNERS = [
 
 export function LogoStrip() {
   return (
-    <section className="pb-8 md:pb-12 relative bg-[var(--color-bg)]">
+    <section className="section-snug relative bg-[var(--color-bg)]">
       <div className="container-atma">
-        <ScrollReveal>
-          <p className="text-center text-[13px] text-[var(--color-text-muted)] mb-6">
-            Trusted by 10+ ecosystem partners.
-          </p>
-        </ScrollReveal>
-        <ScrollReveal delay={80}>
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
-            {PARTNERS.map((p) => (
-              <span
-                key={p}
-                className="text-[18px] md:text-[20px] font-medium tracking-tight text-[var(--color-text-faint)] hover:text-[var(--color-text-secondary)] transition-colors"
-              >
-                {p}
-              </span>
+        <Reveal>
+          <Up delay={0}>
+            <p className="text-center text-[13px] text-[var(--color-text-muted)] mb-10">
+              Trusted by 10+ ecosystem partners across the Mantle hackathon.
+            </p>
+          </Up>
+          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
+            {PARTNERS.map((p, i) => (
+              <Up key={p} delay={120 + i * 40} className="inline-block">
+                <span className="text-[19px] md:text-[22px] font-medium tracking-tight text-[var(--color-text-faint)] hover:text-[var(--color-text-secondary)] transition-colors duration-300">
+                  {p}
+                </span>
+              </Up>
             ))}
           </div>
-        </ScrollReveal>
+        </Reveal>
       </div>
     </section>
   );

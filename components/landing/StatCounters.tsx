@@ -1,6 +1,6 @@
 "use client";
 
-import { ScrollReveal } from "@/components/animations/ScrollReveal";
+import { Reveal, Up, WordMask } from "@/components/animations/Reveal";
 
 const STATS = [
   { value: "$4B+", label: "Mantle RWA TVL" },
@@ -13,29 +13,34 @@ export function StatCounters() {
   return (
     <section className="section bg-dotted">
       <div className="container-atma">
-        <ScrollReveal>
-          <p className="text-center text-[20px] md:text-[24px] font-medium text-[var(--color-text)] mb-2">
-            Where treasury meets RWA.
-          </p>
-          <p className="text-center text-[14px] text-[var(--color-text-muted)] mb-14">
-            ATMA composes Mantle's primitives that already work.
-          </p>
-        </ScrollReveal>
+        <Reveal>
+          <div className="text-center max-w-[640px] mx-auto mb-24">
+            <p className="display-3 text-[var(--color-text)] mb-4">
+              <WordMask text="Where treasury meets RWA." staggerMs={70} />
+            </p>
+            <Up delay={500}>
+              <p className="text-[15px] text-[var(--color-text-muted)] leading-relaxed">
+                ATMA composes the Mantle primitives that already work — Ondo, Aave V3, MI4 —
+                under a verifiable agentic policy.
+              </p>
+            </Up>
+          </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-y-10 md:gap-y-0">
-          {STATS.map((s, i) => (
-            <ScrollReveal key={s.label} delay={i * 60}>
-              <div className="text-center">
-                <p className="text-[36px] md:text-[44px] leading-none font-medium text-[var(--color-text)] tabular-nums">
-                  {s.value}
-                </p>
-                <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
-                  {s.label}
-                </p>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-y-14 md:gap-y-0 md:gap-x-8">
+            {STATS.map((s, i) => (
+              <Up key={s.label} delay={700 + i * 100}>
+                <div className="text-center">
+                  <p className="text-[44px] md:text-[56px] leading-none font-medium text-[var(--color-text)] tabular-nums">
+                    {s.value}
+                  </p>
+                  <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
+                    {s.label}
+                  </p>
+                </div>
+              </Up>
+            ))}
+          </div>
+        </Reveal>
       </div>
     </section>
   );

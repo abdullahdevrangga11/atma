@@ -1,34 +1,192 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils/cn";
 
-const NAV_ITEMS = [
-  { label: "Product", items: [
-    { name: "Vault", desc: "Deposit + view allocation", href: "/vault" },
-    { name: "Reports", desc: "P&L + on-chain attestations", href: "/reports" },
-    { name: "Skills", desc: "Markdown policy reference", href: "/skills" },
-  ]},
-  { label: "Developers", items: [
-    { name: "GitHub", desc: "Open-source MIT", href: "https://github.com/abdullahdevrangga11/atma" },
-    { name: "Architecture", desc: "Vault state machine", href: "https://github.com/abdullahdevrangga11/atma#architecture" },
-    { name: "Risk Model", desc: "Defensive exit thresholds", href: "https://github.com/abdullahdevrangga11/atma/blob/main/RISK_MODEL.md" },
-  ]},
-  { label: "Ecosystem", items: [
-    { name: "Mantle", desc: "Host network · ERC-8004", href: "https://www.mantle.xyz" },
-    { name: "USDY", desc: "Ondo tokenized treasuries", href: "https://ondo.finance" },
-    { name: "Aave V3", desc: "Boosted supply on Mantle", href: "https://app.aave.com" },
-  ]},
-  { label: "Resources", items: [
-    { name: "Hackathon", desc: "Mantle Turing Test 2026", href: "https://dorahacks.io/hackathon/mantleturingtesthackathon2026" },
-    { name: "DoraHacks", desc: "Submission profile", href: "https://dorahacks.io" },
-    { name: "Brand", desc: "Logos and colors", href: "/about" },
-  ]},
+type DropdownItem = {
+  name: string;
+  desc: string;
+  href: string;
+  Icon: () => React.ReactElement;
+};
+
+type NavItem = {
+  label: string;
+  items: DropdownItem[];
+};
+
+// Compact inline icons with hover animation classes
+function IconVault() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+      <rect x="2" y="3" width="14" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+      <circle cx="9" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.4" className="origin-center transition-transform duration-500 group-hover/item:rotate-[180deg]" />
+      <circle cx="9" cy="9" r="0.8" fill="currentColor" />
+    </svg>
+  );
+}
+function IconReport() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+      <path d="M3 15V3M15 15H3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <rect x="5" y="9" width="2" height="4" fill="currentColor" className="origin-bottom transition-transform duration-500 group-hover/item:scale-y-150" />
+      <rect x="8" y="6" width="2" height="7" fill="currentColor" className="origin-bottom transition-transform duration-500 delay-75 group-hover/item:scale-y-125" />
+      <rect x="11" y="4" width="2" height="9" fill="currentColor" className="origin-bottom transition-transform duration-500 delay-150 group-hover/item:scale-y-110" />
+    </svg>
+  );
+}
+function IconSkills() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+      <path d="M4 2h7l3 3v11H4V2z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M11 2v3h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <line x1="6" y1="9" x2="12" y2="9" stroke="currentColor" strokeWidth="1.2" className="origin-left transition-transform duration-500 group-hover/item:scale-x-110" />
+      <line x1="6" y1="11.5" x2="11" y2="11.5" stroke="currentColor" strokeWidth="1.2" className="origin-left transition-transform duration-500 delay-75 group-hover/item:scale-x-110" />
+      <line x1="6" y1="14" x2="9" y2="14" stroke="currentColor" strokeWidth="1.2" className="origin-left transition-transform duration-500 delay-150 group-hover/item:scale-x-110" />
+    </svg>
+  );
+}
+function IconGitHub() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor" className="text-[var(--color-text)] transition-transform duration-500 group-hover/item:rotate-[12deg]">
+      <path d="M9 0a9 9 0 0 0-2.85 17.54c.45.08.62-.2.62-.43v-1.5c-2.5.55-3.03-1.21-3.03-1.21-.41-1.04-1-1.32-1-1.32-.82-.56.06-.55.06-.55.9.06 1.38.93 1.38.93.8 1.38 2.1.98 2.62.75.08-.58.31-.98.57-1.21-2-.23-4.1-1-4.1-4.46 0-.98.35-1.79.92-2.42-.09-.23-.4-1.15.09-2.4 0 0 .75-.24 2.46.92.71-.2 1.48-.3 2.24-.3.76 0 1.53.1 2.24.3 1.71-1.16 2.46-.92 2.46-.92.49 1.25.18 2.17.09 2.4.57.63.92 1.44.92 2.42 0 3.47-2.11 4.23-4.12 4.45.32.28.61.83.61 1.68v2.5c0 .24.17.52.63.43A9 9 0 0 0 9 0z" />
+    </svg>
+  );
+}
+function IconBook() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+      <path d="M2 3.5C2 2.67 2.67 2 3.5 2H9v13H3.5C2.67 15 2 14.33 2 13.5v-10z" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M16 3.5c0-.83-.67-1.5-1.5-1.5H9v13h5.5c.83 0 1.5-.67 1.5-1.5v-10z" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M9 5h4M9 8h3" stroke="currentColor" strokeWidth="1.2" className="transition-opacity duration-500 group-hover/item:opacity-50" />
+    </svg>
+  );
+}
+function IconShield() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+      <path d="M9 1l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V4l7-3z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M6 9l2 2 4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="origin-left transition-transform duration-500 group-hover/item:scale-110" />
+    </svg>
+  );
+}
+function IconBlock() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+      <rect x="2" y="2" width="6" height="6" stroke="currentColor" strokeWidth="1.4" className="origin-center transition-transform duration-500 group-hover/item:rotate-45" />
+      <rect x="10" y="2" width="6" height="6" stroke="currentColor" strokeWidth="1.4" />
+      <rect x="2" y="10" width="6" height="6" stroke="currentColor" strokeWidth="1.4" />
+      <rect x="10" y="10" width="6" height="6" stroke="currentColor" strokeWidth="1.4" fill="currentColor" />
+    </svg>
+  );
+}
+function IconCoin() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+      <circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M9 5v8M6 7l3-2 3 2M6 11l3 2 3-2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-500 group-hover/item:translate-y-[-1px]" />
+    </svg>
+  );
+}
+function IconBank() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+      <path d="M9 1l8 4v2H1V5l8-4z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M3 9v5M7 9v5M11 9v5M15 9v5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" className="transition-transform duration-500 group-hover/item:translate-y-[1px]" />
+      <path d="M1 16h16" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  );
+}
+function IconChart() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+      <path d="M2 14l4-5 3 3 5-7 2 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-500 group-hover/item:[stroke-dasharray:30] group-hover/item:[stroke-dashoffset:60]" />
+    </svg>
+  );
+}
+function IconTrophy() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+      <path d="M5 2h8v5a4 4 0 0 1-8 0V2z" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M5 4H3a2 2 0 0 0 2 4M13 4h2a2 2 0 0 1-2 4" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M6 14h6M9 11v3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <circle cx="9" cy="6" r="1.2" fill="currentColor" className="transition-transform duration-500 group-hover/item:scale-150" />
+    </svg>
+  );
+}
+function IconBrand() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+      <rect x="3" y="3" width="12" height="12" stroke="currentColor" strokeWidth="1.4" className="origin-center transition-transform duration-500 group-hover/item:rotate-90" />
+      <rect x="6" y="6" width="6" height="6" fill="currentColor" />
+    </svg>
+  );
+}
+
+const NAV: NavItem[] = [
+  {
+    label: "Product",
+    items: [
+      { name: "Vault", desc: "Deposit + view allocation", href: "/vault", Icon: IconVault },
+      { name: "Reports", desc: "P&L + on-chain attestations", href: "/reports", Icon: IconReport },
+      { name: "Skills", desc: "Markdown policy reference", href: "/skills", Icon: IconSkills },
+    ],
+  },
+  {
+    label: "Developers",
+    items: [
+      { name: "GitHub", desc: "Open-source MIT", href: "https://github.com/abdullahdevrangga11/atma", Icon: IconGitHub },
+      { name: "Architecture", desc: "Vault state machine", href: "https://github.com/abdullahdevrangga11/atma#architecture", Icon: IconBook },
+      { name: "Risk Model", desc: "Defensive exit thresholds", href: "https://github.com/abdullahdevrangga11/atma/blob/main/RISK_MODEL.md", Icon: IconShield },
+      { name: "Block Explorer", desc: "Mantle Sepolia", href: "https://sepolia.mantlescan.xyz", Icon: IconBlock },
+    ],
+  },
+  {
+    label: "Ecosystem",
+    items: [
+      { name: "Mantle", desc: "Host network · ERC-8004", href: "https://www.mantle.xyz", Icon: IconBlock },
+      { name: "Ondo USDY", desc: "Tokenized US treasuries", href: "https://ondo.finance", Icon: IconCoin },
+      { name: "Aave V3", desc: "Boosted Mantle supply", href: "https://aave.com", Icon: IconBank },
+      { name: "MI4 Index", desc: "BTC · ETH · SOL · stables", href: "https://app.rwa.xyz/assets/MI4", Icon: IconChart },
+    ],
+  },
+  {
+    label: "Resources",
+    items: [
+      { name: "Hackathon", desc: "Mantle Turing Test 2026", href: "https://dorahacks.io/hackathon/mantleturingtesthackathon2026", Icon: IconTrophy },
+      { name: "Build Log", desc: "Daily progress notes", href: "https://github.com/abdullahdevrangga11/atma/blob/main/progress.md", Icon: IconBook },
+      { name: "Brand", desc: "Logos and colors", href: "/about", Icon: IconBrand },
+    ],
+  },
 ];
 
 export function Navbar() {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const railRef = useRef<HTMLDivElement | null>(null);
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [highlight, setHighlight] = useState<{ left: number; width: number; opacity: number }>({
+    left: 0,
+    width: 0,
+    opacity: 0,
+  });
+
+  const moveHighlight = useCallback((idx: number | null) => {
+    if (idx === null) {
+      setHighlight((h) => ({ ...h, opacity: 0 }));
+      return;
+    }
+    const rail = railRef.current;
+    const target = itemRefs.current[idx];
+    if (!rail || !target) return;
+    const r = rail.getBoundingClientRect();
+    const t = target.getBoundingClientRect();
+    setHighlight({ left: t.left - r.left, width: t.width, opacity: 1 });
+  }, []);
+
+  useEffect(() => {
+    moveHighlight(openIdx);
+  }, [openIdx, moveHighlight]);
 
   return (
     <header className="relative z-40 bg-[var(--color-bg)]">
@@ -38,44 +196,56 @@ export function Navbar() {
           <span className="sr-only">ATMA</span>
         </Link>
 
-        <nav
-          className="hidden md:flex items-center gap-1"
+        <div
+          ref={railRef}
+          className="nav-rail hidden md:flex items-center relative"
           onMouseLeave={() => setOpenIdx(null)}
         >
-          {NAV_ITEMS.map((item, i) => (
+          <div
+            className="nav-highlight"
+            style={{
+              left: highlight.left,
+              width: highlight.width,
+              opacity: highlight.opacity,
+            }}
+          />
+          {NAV.map((item, i) => (
             <div
               key={item.label}
               className="relative"
               onMouseEnter={() => setOpenIdx(i)}
             >
               <button
+                ref={(el) => { itemRefs.current[i] = el; }}
                 type="button"
                 className={cn(
-                  "px-4 py-2 text-[14px] font-medium transition-colors flex items-center gap-1.5",
+                  "relative px-5 py-2 text-[14px] font-medium transition-colors flex items-center gap-1.5",
                   openIdx === i
                     ? "text-[var(--color-text)]"
                     : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)]"
                 )}
               >
                 {item.label}
-                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className={cn("transition-transform", openIdx === i && "rotate-180")}>
+                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className={cn("transition-transform duration-300", openIdx === i && "rotate-180")}>
                   <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
 
               {openIdx === i && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 z-50">
-                  <div className="w-[320px] bg-white border border-[var(--color-border)] rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] p-2">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
+                  <div className="w-[340px] bg-white border border-[var(--color-border)] rounded-2xl shadow-[0_18px_56px_rgba(0,0,0,0.10)] p-2">
                     {item.items.map((sub) => (
                       <a
                         key={sub.name}
                         href={sub.href}
-                        className="flex items-start gap-3 p-3 rounded-xl hover:bg-[var(--color-bg-soft)] transition-colors group"
+                        target={sub.href.startsWith("http") ? "_blank" : undefined}
+                        rel={sub.href.startsWith("http") ? "noreferrer" : undefined}
+                        className="group/item flex items-start gap-3 p-3 rounded-xl hover:bg-[var(--color-bg-mid)] transition-colors duration-200"
                       >
-                        <span className="block w-9 h-9 rounded-lg bg-[var(--color-bg-soft)] group-hover:bg-[var(--color-primary-soft)] flex items-center justify-center shrink-0 transition-colors">
-                          <span className="block w-3 h-3 rounded-[2px] bg-[var(--color-primary)]" aria-hidden />
+                        <span className="block w-9 h-9 rounded-lg bg-[var(--color-bg-soft)] group-hover/item:bg-white group-hover/item:shadow-[0_2px_8px_rgba(0,0,0,0.06)] flex items-center justify-center shrink-0 transition-all duration-300">
+                          <sub.Icon />
                         </span>
-                        <span className="flex-1">
+                        <span className="flex-1 min-w-0">
                           <p className="text-[14px] font-medium text-[var(--color-text)] leading-tight">
                             {sub.name}
                           </p>
@@ -90,7 +260,7 @@ export function Navbar() {
               )}
             </div>
           ))}
-        </nav>
+        </div>
 
         <Link href="/vault" className="btn-primary text-[13px] py-2.5">
           Get Started
