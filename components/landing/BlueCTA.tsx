@@ -1,11 +1,40 @@
 "use client";
 
 import { Reveal, Up, WordMask } from "@/components/animations/Reveal";
+import { FiddleHover } from "@/components/animations/FiddleHover";
+
+// CTA-specific glyph set — leans into the open-source / treasury-attestation
+// language rather than the percent/bps mix used on the hero.
+const CTA_SYMBOLS = [
+  "{", "}", "/", "→", "▲", "◆", "0", "1", "$", "Σ", "•", "*", ">",
+];
 
 export function BlueCTA() {
   return (
-    <section id="cta" className="relative overflow-hidden bg-[var(--color-primary)] text-white">
-      <div className="container-atma relative z-10 py-28 md:py-40">
+    <section
+      id="cta"
+      className="relative overflow-hidden bg-[var(--color-primary)] text-white"
+    >
+      {/*
+        FiddleHover covers the whole CTA. `blockVariant="dark"` paints active
+        blocks in near-ink so they stand out _against_ the violet background
+        rather than blending into it. Bigger blocks + a calmer cluster size
+        than the hero — this section is short and the effect should read as
+        deliberate, not chaotic.
+      */}
+      <FiddleHover
+        as="div"
+        symbols={CTA_SYMBOLS}
+        blockVariant="dark"
+        blockSize={28}
+        detectionRadius={70}
+        clusterSize={5}
+        blockLifetime={460}
+        emptyRatio={0.32}
+        scrambleRatio={0.26}
+        scrambleInterval={150}
+        className="container-atma relative z-10 py-28 md:py-40"
+      >
         <Reveal>
           <div className="mx-auto max-w-[860px] text-center">
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/60 mb-6">
@@ -48,7 +77,7 @@ export function BlueCTA() {
             </Up>
           </div>
         </Reveal>
-      </div>
+      </FiddleHover>
     </section>
   );
 }

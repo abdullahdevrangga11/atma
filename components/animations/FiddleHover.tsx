@@ -27,6 +27,13 @@ type FiddleHoverConfig = {
   emptyRatio?: number;
   scrambleRatio?: number;
   scrambleInterval?: number;
+  /**
+   * Visual style of active blocks.
+   * - `default`: brand-violet block on light surfaces (hero).
+   * - `dark`: near-black block, intended for use on the inverted CTA — blocks
+   *   pop _against_ the section background rather than blending into it.
+   */
+  blockVariant?: "default" | "dark";
 };
 
 type Block = {
@@ -57,6 +64,7 @@ export function FiddleHover({
   emptyRatio = 0.25,
   scrambleRatio = 0.30,
   scrambleInterval = 140,
+  blockVariant = "default",
 }: FiddleHoverConfig & {
   children: ReactNode;
   className?: string;
@@ -95,7 +103,8 @@ export function FiddleHover({
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           const el = document.createElement("span");
-          el.className = "fiddle-block";
+          el.className =
+            blockVariant === "dark" ? "fiddle-block fiddle-block-dark" : "fiddle-block";
           const empty = Math.random() < emptyRatio;
           el.textContent = empty ? "" : pickSymbol(symbols);
           el.style.width = `${blockSize}px`;
@@ -128,7 +137,7 @@ export function FiddleHover({
       ro.disconnect();
       cleanupGrid();
     };
-  }, [blockSize, emptyRatio, scrambleRatio, symbols]);
+  }, [blockSize, emptyRatio, scrambleRatio, symbols, blockVariant]);
 
   // Mouse + lifecycle loop
   useEffect(() => {

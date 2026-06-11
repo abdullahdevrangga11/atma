@@ -381,7 +381,10 @@
   .fiddle-block.fiddle-active {
     opacity: 1;
   }
-  /* Variant — dark blocks for inverted CTAs etc. */
+  /* Dark variant — for inverted/colored sections like BlueCTA.
+     Blocks paint near-ink so they read as deliberate negative-space marks
+     against the section's brand colour, rather than disappearing into it.
+     Symbols use warm white for a touch of analog grain. */
   .fiddle-block-dark {
     background-color: #0a0a0a;
     color: #f5f4ee;
