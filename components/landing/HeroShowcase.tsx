@@ -1,33 +1,16 @@
 "use client";
 
-import { FiddleHover } from "@/components/animations/FiddleHover";
 import { Badge } from "@/components/ui/badge";
 
-// Financial-themed symbol palette — treasury / yield / bps glyphs
-const FINANCE_SYMBOLS = [
-  "$", "%", "+", "→", "▲", "▼", "Σ", "◆", "0", "1", "bps", "/", "•",
-];
-
 /**
- * Hero centerpiece — a card-shaped surface with FiddleHover digital-block effect.
- * Mirrors base.org's product preview cards: light background, bordered, abstract
- * pixel-art product visualization inside. The fiddle blocks animate over the
- * whole card as you move the cursor, revealing financial glyphs in a cluster.
+ * Hero centerpiece — base.org-style product preview card.
+ * (FiddleHover lives on the parent <section> in Hero.tsx, so this card just
+ * provides the static composition.)
  */
 export function HeroShowcase() {
   return (
     <div className="relative mx-auto max-w-[920px]">
-      <FiddleHover
-        symbols={FINANCE_SYMBOLS}
-        blockSize={22}
-        detectionRadius={56}
-        clusterSize={7}
-        blockLifetime={420}
-        emptyRatio={0.28}
-        scrambleRatio={0.30}
-        scrambleInterval={130}
-        className="block w-full"
-      >
+      <div>
         <div className="relative w-full rounded-[20px] border border-[var(--color-border)] bg-[var(--color-bg-card-soft)] overflow-hidden">
           {/* Card header strip */}
           <div className="flex items-center justify-between px-7 py-4 border-b border-[var(--color-border)] bg-white/60 backdrop-blur-sm">
@@ -121,7 +104,7 @@ export function HeroShowcase() {
             </div>
           </div>
         </div>
-      </FiddleHover>
+      </div>
     </div>
   );
 }

@@ -5,13 +5,31 @@ import { Candlesticks } from "@/components/decor/Candlesticks";
 import { Reveal, WordMask, Up, Fade } from "@/components/animations/Reveal";
 import { Button } from "@/components/ui/button";
 import { HeroShowcase } from "@/components/landing/HeroShowcase";
+import { FiddleHover } from "@/components/animations/FiddleHover";
+
+// Treasury / yield themed glyphs for the digital hover effect
+const HERO_SYMBOLS = [
+  "$", "%", "+", "→", "▲", "▼", "Σ", "◆", "0", "1", "bps", "/", "•",
+];
 
 export function Hero() {
   return (
     <section className="relative pt-32 md:pt-48 pb-32 md:pb-48 overflow-hidden">
       <Candlesticks preset="all" />
 
-      <div className="container-atma relative z-10">
+      {/* FiddleHover covers the entire hero content area */}
+      <FiddleHover
+        as="div"
+        symbols={HERO_SYMBOLS}
+        blockSize={24}
+        detectionRadius={64}
+        clusterSize={7}
+        blockLifetime={420}
+        emptyRatio={0.30}
+        scrambleRatio={0.28}
+        scrambleInterval={130}
+        className="container-atma relative z-10"
+      >
         <div className="mx-auto max-w-[960px] text-center">
           <Reveal threshold={0.05}>
             <h1 className="display-1">
@@ -45,11 +63,10 @@ export function Hero() {
                 </Link>
               </Button>
             </Up>
-
           </Reveal>
         </div>
 
-        {/* Hero showcase — base.org-style preview card with FiddleHover */}
+        {/* Hero showcase — base.org-style preview card */}
         <div className="mt-20 md:mt-28">
           <Reveal threshold={0.05}>
             <Up delay={0}>
@@ -57,13 +74,13 @@ export function Hero() {
             </Up>
             <Fade delay={800} className="mt-12 flex justify-center">
               <div className="flex flex-col items-center gap-2 text-[var(--color-text-muted)]">
-                <span className="text-[10px] font-mono uppercase tracking-[0.2em]">Hover the card · Scroll for more</span>
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em]">Move the cursor · Scroll for more</span>
                 <div className="w-px h-12 bg-gradient-to-b from-[var(--color-text-faint)] to-transparent" />
               </div>
             </Fade>
           </Reveal>
         </div>
-      </div>
+      </FiddleHover>
     </section>
   );
 }

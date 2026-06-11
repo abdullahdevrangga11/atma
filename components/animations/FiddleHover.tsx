@@ -48,6 +48,7 @@ function pickSymbol(symbols: string[]): string {
 export function FiddleHover({
   children,
   className,
+  as = "span",
   symbols = DEFAULT_SYMBOLS,
   blockSize = 14,
   detectionRadius = 40,
@@ -56,8 +57,13 @@ export function FiddleHover({
   emptyRatio = 0.25,
   scrambleRatio = 0.30,
   scrambleInterval = 140,
-}: FiddleHoverConfig & { children: ReactNode; className?: string }) {
-  const wrapperRef = useRef<HTMLSpanElement | null>(null);
+}: FiddleHoverConfig & {
+  children: ReactNode;
+  className?: string;
+  /** Wrapper element. Use "div" for section-wide containers, "span" for inline. */
+  as?: "span" | "div";
+}) {
+  const wrapperRef = useRef<HTMLDivElement | HTMLSpanElement | null>(null);
   const overlayRef = useRef<HTMLSpanElement | null>(null);
   const blocksRef = useRef<Block[]>([]);
   const rafRef = useRef<number | null>(null);
@@ -199,20 +205,33 @@ export function FiddleHover({
     };
     rafRef.current = requestAnimationFrame(tick);
 
-    wrapper.addEventListener("mousemove", onMove);
+    const moveListener = onMove as unknown as EventListener;
+    wrapper.addEventListener("mousemove", moveListener);
     return () => {
-      wrapper.removeEventListener("mousemove", onMove);
+      wrapper.removeEventListener("mousemove", moveListener);
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
     };
   }, [ready, detectionRadius, clusterSize, blockLifetime, scrambleInterval, symbols]);
 
+  const baseClass = as === "div"
+    ? "relative block overflow-hidden"
+    : "relative inline-flex items-center justify-center overflow-hidden";
+
+  if (as === "div") {
+    return (
+      <div
+        ref={wrapperRef as React.RefObject<HTMLDivElement>}
+        className={cn(baseClass, className)}
+      >
+        <span ref={overlayRef} className="fiddle-overlay" aria-hidden />
+        <div className="relative z-10">{children}</div>
+      </div>
+    );
+  }
   return (
     <span
-      ref={wrapperRef}
-      className={cn(
-        "relative inline-flex items-center justify-center overflow-hidden",
-        className,
-      )}
+      ref={wrapperRef as React.RefObject<HTMLSpanElement>}
+      className={cn(baseClass, className)}
     >
       <span ref={overlayRef} className="fiddle-overlay" aria-hidden />
       <span className="relative z-10">{children}</span>
