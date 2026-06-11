@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { TransitionLink } from "@/components/transitions/DissolveTransition";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils/cn";
 
@@ -345,7 +346,7 @@ export function Navbar() {
                 <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
                   <div className="w-[360px] bg-white border border-[var(--color-border)] rounded-2xl shadow-[0_18px_56px_rgba(91,61,240,0.10),0_4px_16px_rgba(0,0,0,0.04)] p-1.5">
                     {item.items.map((sub) => (
-                      <a
+                      <TransitionLink
                         key={sub.name}
                         href={sub.href}
                         target={sub.href.startsWith("http") ? "_blank" : undefined}
@@ -372,7 +373,7 @@ export function Navbar() {
                             {sub.desc}
                           </p>
                         </span>
-                      </a>
+                      </TransitionLink>
                     ))}
                   </div>
                 </div>

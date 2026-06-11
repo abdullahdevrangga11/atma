@@ -6,6 +6,7 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { LenisProvider } from "@/components/providers/LenisProvider";
+import { DissolveTransitionProvider } from "@/components/transitions/DissolveTransition";
 import { Toaster } from "sonner";
 import "../globals.css";
 
@@ -41,19 +42,21 @@ export default async function LocaleLayout({
       <body>
         <NextIntlClientProvider messages={messages}>
           <LenisProvider>
-            {children}
-            <Toaster
-              theme="dark"
-              position="bottom-right"
-              toastOptions={{
-                style: {
-                  background: "rgba(19, 26, 61, 0.90)",
-                  backdropFilter: "blur(20px)",
-                  border: "1px solid rgba(255, 255, 255, 0.08)",
-                  color: "#ffffff",
-                },
-              }}
-            />
+            <DissolveTransitionProvider>
+              {children}
+              <Toaster
+                theme="dark"
+                position="bottom-right"
+                toastOptions={{
+                  style: {
+                    background: "rgba(19, 26, 61, 0.90)",
+                    backdropFilter: "blur(20px)",
+                    border: "1px solid rgba(255, 255, 255, 0.08)",
+                    color: "#ffffff",
+                  },
+                }}
+              />
+            </DissolveTransitionProvider>
           </LenisProvider>
         </NextIntlClientProvider>
       </body>

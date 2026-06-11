@@ -533,6 +533,37 @@
     50%      { transform: scale(1.18); opacity: 0;   }
   }
 
+  /* Split-card mobile fallback — neutralise the GSAP-driven 3D when the
+     pinned ScrollTrigger isn't active. */
+  @media (max-width: 999px) {
+    .split-card-section {
+      min-height: auto !important;
+      padding: 4rem 2rem;
+      flex-direction: column;
+    }
+    .split-card-header {
+      position: relative !important;
+      top: 0 !important;
+      left: 0 !important;
+      transform: none !important;
+      opacity: 1 !important;
+      margin-bottom: 3rem;
+    }
+    .split-card-container {
+      width: 100% !important;
+      flex-direction: column;
+      gap: 1.25rem !important;
+      transform: none !important;
+    }
+    .split-card {
+      width: 100% !important;
+      max-width: 420px;
+      margin: 0 auto;
+      border-radius: 20px !important;
+      aspect-ratio: 5 / 7;
+    }
+  }
+
   /* HeroShowcase animations (shimmer wipe, card lift, chip slide) are owned
      by the GSAP timeline in components/landing/HeroShowcase.tsx. Kept here:
      pulse-soft (header dot), glow-pulse (accent metric), float-stick (decor). */
