@@ -8,8 +8,62 @@ import {
   AttestationDiagram,
   PolicyAsDataDiagram,
 } from "@/components/landing/PixelDiagrams";
+import { cn } from "@/lib/utils/cn";
+
+/**
+ * Bento grid showcase — varied col-spans + row-spans give the four
+ * diagram cards a magazine rhythm instead of the previous 2×2 grid.
+ *
+ * Layout on md+:
+ *   Row 1:  [Allocation: cols 1-7] [Skills: cols 8-12, spans 2 rows]
+ *   Row 2:  [Policy:     cols 1-7] [Skills continues               ]
+ *   Row 3:  [Attestation full width 1-12                            ]
+ *
+ * Falls back to single-column stack on mobile.
+ */
+
+type BentoTile = {
+  diagram: React.ReactNode;
+  title: string;
+  body: string;
+  /** Tailwind className driving the grid placement on md+ */
+  span: string;
+  delay: number;
+};
 
 export function ProductSection() {
+  const tiles: BentoTile[] = [
+    {
+      diagram: <VaultStateDiagram />,
+      title: "Allocation as a primitive.",
+      body: "One vault contract. Four Mantle RWA assets. Eight states enforced at the contract level. Every transition gas-cheap and queryable on Mantle Explorer.",
+      span: "md:col-span-7",
+      delay: 120,
+    },
+    {
+      diagram: <AgentSwarmDiagram />,
+      title: "Skills-first reasoning.",
+      body: "Three specialized agents — Allocator, Risk, Reporter — each loads its markdown skill at runtime. Policy update = file commit. No redeploy. No hardcoded scripts dressed as agents.",
+      // Tall tile on the right, spans both upper rows
+      span: "md:col-span-5 md:row-span-2",
+      delay: 240,
+    },
+    {
+      diagram: <PolicyAsDataDiagram />,
+      title: "Policy as data, not code.",
+      body: "Inspired by CrossBeam — first prize in Anthropic's Claude Code Hackathon. Skills live as markdown reference files. Auditable. Updatable. Composable by downstream dApps.",
+      span: "md:col-span-7",
+      delay: 360,
+    },
+    {
+      diagram: <AttestationDiagram />,
+      title: "Every decision attested.",
+      body: "ERC-8004 reputation events emit per allocation, rebalance, and defensive exit. Judges, regulators, and downstream protocols can query the full trace without permission.",
+      span: "md:col-span-12",
+      delay: 480,
+    },
+  ];
+
   return (
     <section className="section bg-[var(--color-bg)]">
       <div className="container-atma">
@@ -34,71 +88,30 @@ export function ProductSection() {
           </div>
         </Reveal>
 
-        {/* 2-up diagram showcase */}
         <Reveal>
-          <div className="grid md:grid-cols-2 gap-6 mb-6">
-            <ScaleIn delay={120}>
-              <div className="card-diagram !p-12">
-                <div className="rounded-2xl overflow-hidden bg-[var(--color-bg-card-soft)] p-10 mb-8">
-                  <VaultStateDiagram />
-                </div>
-                <h3 className="text-[24px] font-medium mb-3 tracking-[-0.01em]">Allocation as a primitive.</h3>
-                <p className="text-[15px] text-[var(--color-text-secondary)] leading-relaxed">
-                  One vault contract. Four Mantle RWA assets. Eight states enforced at the
-                  contract level. Every transition gas-cheap and queryable on Mantle
-                  Explorer.
-                </p>
-              </div>
-            </ScaleIn>
-
-            <ScaleIn delay={240}>
-              <div className="card-diagram !p-12">
-                <div className="rounded-2xl overflow-hidden bg-[var(--color-bg-card-soft)] p-10 mb-8">
-                  <AgentSwarmDiagram />
-                </div>
-                <h3 className="text-[24px] font-medium mb-3 tracking-[-0.01em]">Skills-first reasoning.</h3>
-                <p className="text-[15px] text-[var(--color-text-secondary)] leading-relaxed">
-                  Three specialized agents — Allocator, Risk, Reporter — each loads its
-                  markdown skill at runtime. Policy update = file commit. No redeploy. No
-                  hardcoded scripts dressed as agents.
-                </p>
-              </div>
-            </ScaleIn>
-          </div>
-        </Reveal>
-
-        <Reveal>
-          <div className="grid md:grid-cols-2 gap-6">
-            <ScaleIn delay={120}>
-              <div className="card-diagram !p-12">
-                <div className="rounded-2xl overflow-hidden bg-[var(--color-bg-card-soft)] p-10 mb-8">
-                  <PolicyAsDataDiagram />
-                </div>
-                <h3 className="text-[24px] font-medium mb-3 tracking-[-0.01em]">Policy as data, not code.</h3>
-                <p className="text-[15px] text-[var(--color-text-secondary)] leading-relaxed">
-                  Inspired by CrossBeam — first prize in Anthropic's Claude Code Hackathon.
-                  Skills live as markdown reference files. Auditable. Updatable. Composable
-                  by downstream dApps.
-                </p>
-              </div>
-            </ScaleIn>
-
-            <ScaleIn delay={240}>
-              <div className="card-diagram !p-12">
-                <div className="rounded-2xl overflow-hidden bg-[var(--color-bg-card-soft)] p-10 mb-8">
-                  <AttestationDiagram />
-                </div>
-                <h3 className="text-[24px] font-medium mb-3 tracking-[-0.01em]">Every decision attested.</h3>
-                <p className="text-[15px] text-[var(--color-text-secondary)] leading-relaxed">
-                  ERC-8004 reputation events emit per allocation, rebalance, and defensive
-                  exit. Judges, regulators, and downstream protocols can query the full
-                  trace without permission.
-                </p>
-              </div>
-            </ScaleIn>
+          <div className="grid grid-cols-1 md:grid-cols-12 md:auto-rows-[minmax(340px,auto)] gap-5">
+            {tiles.map((t) => (
+              <ScaleIn key={t.title} delay={t.delay} className={cn(t.span)}>
+                <BentoCard tile={t} />
+              </ScaleIn>
+            ))}
           </div>
         </Reveal>
       </div>
     </section>
+  );
+}
+
+function BentoCard({ tile }: { tile: BentoTile }) {
+  return (
+    <div className="card-diagram !p-7 md:!p-9 h-full flex flex-col">
+      <div className="flex-1 min-h-0 rounded-2xl overflow-hidden bg-[var(--color-bg-card-soft)] mb-6 flex items-center justify-center">
+        {tile.diagram}
+      </div>
+      <h3 className="text-[20px] md:text-[22px] font-medium mb-2 tracking-[-0.01em]">{tile.title}</h3>
+      <p className="text-[14px] md:text-[15px] text-[var(--color-text-secondary)] leading-relaxed">
+        {tile.body}
+      </p>
+    </div>
   );
 }
