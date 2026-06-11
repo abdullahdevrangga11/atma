@@ -1,121 +1,104 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import Link from "next/link";
-import { GradientOrb } from "@/components/animations/GradientOrb";
+import { ScrollReveal } from "@/components/animations/ScrollReveal";
 
 export function Footer() {
-  const t = useTranslations("footer");
-
   return (
-    <footer className="relative pt-32 pb-12 overflow-hidden border-t border-white/[0.06]">
-      <GradientOrb
-        variant="primary"
-        size={500}
-        className="bottom-[-200px] left-1/2 -translate-x-1/2"
-        delay="2s"
-      />
-
-      <div className="container-atma relative">
-        <div className="grid md:grid-cols-12 gap-12 mb-20">
-          <div className="md:col-span-5">
-            <div className="flex items-center gap-2.5 mb-6">
-              <div className="relative w-8 h-8">
-                <div className="absolute inset-0 bg-[var(--color-primary)] rounded-md rotate-45" />
-                <div className="absolute inset-[5px] bg-[var(--color-bg)] rounded-sm rotate-45" />
+    <footer className="relative pt-24 md:pt-32 pb-12 overflow-hidden">
+      <div className="container-atma">
+        <ScrollReveal>
+          <div className="border border-[var(--color-border)] rounded-2xl p-8 md:p-12 mb-16">
+            <div className="grid lg:grid-cols-12 gap-8">
+              <div className="lg:col-span-7">
+                <p className="eyebrow eyebrow-dot mb-6">// cta</p>
+                <h2 className="display-2 max-w-xl mb-6">
+                  Try ATMA on Mantle Sepolia.
+                  <br />
+                  <span className="text-[var(--color-text-muted)]">
+                    Open-source. MIT. Audit the markdown.
+                  </span>
+                </h2>
+                <p className="text-[14px] text-[var(--color-text-secondary)] max-w-lg leading-relaxed">
+                  DAO treasurer? Crypto-native SMB founder? Startup runway manager?
+                  ATMA was built for you. Deposit, watch the agents reason, audit
+                  every decision.
+                </p>
               </div>
-              <span className="font-display font-semibold text-[20px] tracking-tight">
-                ATMA
-              </span>
+              <div className="lg:col-span-5 flex flex-col items-start lg:items-end justify-center gap-4">
+                <a href="/vault" className="btn-solid">
+                  Launch vault
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                    <path
+                      d="M1 5h8M5 1l4 4-4 4"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </a>
+                <a
+                  href="https://github.com/abdullahdevrangga11/atma"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-link"
+                >
+                  Star on GitHub
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                    <path
+                      d="M3 1h6v6M9 1L1 9"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </a>
+              </div>
             </div>
-            <p className="display-2 mb-6 gradient-text max-w-[480px]">
-              {t("tagline")}
-            </p>
-            <p className="text-[13px] text-[var(--color-text-muted)] leading-relaxed">
-              {t("builtBy")}
-            </p>
-            <p className="mt-2 text-[13px] text-[var(--color-text-muted)] leading-relaxed">
-              {t("hackathon")}
-            </p>
+          </div>
+        </ScrollReveal>
+
+        {/* Terminal-style meta footer */}
+        <div className="border-t border-[var(--color-border)] pt-8">
+          <div className="grid md:grid-cols-12 gap-6">
+            <div className="md:col-span-4 font-mono text-[11px] uppercase tracking-[0.06em] text-[var(--color-text-muted)] space-y-1">
+              <p>
+                <span className="text-[var(--color-text-secondary)]">$</span>{" "}
+                builder
+              </p>
+              <p className="text-[var(--color-text)] normal-case tracking-normal text-[13px]">
+                Devrangga Hazza Mahiswara
+              </p>
+              <p>UGM Software Engineering · '23 · Yogyakarta 🇮🇩</p>
+            </div>
+
+            <div className="md:col-span-4 font-mono text-[11px] uppercase tracking-[0.06em] text-[var(--color-text-muted)] space-y-1">
+              <p>
+                <span className="text-[var(--color-text-secondary)]">$</span>{" "}
+                hackathon
+              </p>
+              <p className="text-[var(--color-text)] normal-case tracking-normal text-[13px]">
+                Mantle Turing Test 2026
+              </p>
+              <p>AI × RWA Track · Phase 2 AI Awakening</p>
+            </div>
+
+            <div className="md:col-span-4 font-mono text-[11px] uppercase tracking-[0.06em] text-[var(--color-text-muted)] space-y-1">
+              <p>
+                <span className="text-[var(--color-text-secondary)]">$</span>{" "}
+                source
+              </p>
+              <p className="text-[var(--color-text)] normal-case tracking-normal text-[13px]">
+                github.com/abdullahdevrangga11/atma
+              </p>
+              <p>MIT · open-source · audit the markdown</p>
+            </div>
           </div>
 
-          <div className="md:col-span-2">
-            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-5">
-              {t("sections.product")}
-            </p>
-            <ul className="space-y-3 text-[14px]">
-              <li>
-                <Link href="/vault" className="underline-reveal text-[var(--color-text-secondary)] hover:text-white">
-                  Vault
-                </Link>
-              </li>
-              <li>
-                <Link href="/reports" className="underline-reveal text-[var(--color-text-secondary)] hover:text-white">
-                  Reports
-                </Link>
-              </li>
-              <li>
-                <Link href="/skills" className="underline-reveal text-[var(--color-text-secondary)] hover:text-white">
-                  Skills
-                </Link>
-              </li>
-            </ul>
+          <div className="mt-12 flex flex-col md:flex-row md:items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-text-faint)]">
+            <p>© 2026 atma.protocol — built in 3 days, with intent</p>
+            <p>mantle sepolia · 5003 · v0.1.0 · built at 13:04 +07</p>
           </div>
-
-          <div className="md:col-span-2">
-            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-5">
-              {t("sections.resources")}
-            </p>
-            <ul className="space-y-3 text-[14px]">
-              <li>
-                <a href="https://github.com/abdullahdevrangga11/atma" target="_blank" rel="noreferrer" className="underline-reveal text-[var(--color-text-secondary)] hover:text-white">
-                  GitHub
-                </a>
-              </li>
-              <li>
-                <a href="https://github.com/abdullahdevrangga11/atma#architecture" target="_blank" rel="noreferrer" className="underline-reveal text-[var(--color-text-secondary)] hover:text-white">
-                  Architecture
-                </a>
-              </li>
-              <li>
-                <a href="https://github.com/abdullahdevrangga11/atma#risk_model" target="_blank" rel="noreferrer" className="underline-reveal text-[var(--color-text-secondary)] hover:text-white">
-                  Risk Model
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="md:col-span-3">
-            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-5">
-              {t("sections.social")}
-            </p>
-            <ul className="space-y-3 text-[14px]">
-              <li>
-                <a href="https://x.com/" target="_blank" rel="noreferrer" className="underline-reveal text-[var(--color-text-secondary)] hover:text-white">
-                  @devrangga on X
-                </a>
-              </li>
-              <li>
-                <a href="mailto:abdullahdevrangga@gmail.com" className="underline-reveal text-[var(--color-text-secondary)] hover:text-white">
-                  abdullahdevrangga@gmail.com
-                </a>
-              </li>
-              <li>
-                <a href="https://dorahacks.io/hackathon/mantleturingtesthackathon2026" target="_blank" rel="noreferrer" className="underline-reveal text-[var(--color-text-secondary)] hover:text-white">
-                  DoraHacks
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
-            © 2026 ATMA · MIT License
-          </p>
-          <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
-            Deployed on Mantle Sepolia · ChainId 5003
-          </p>
         </div>
       </div>
     </footer>

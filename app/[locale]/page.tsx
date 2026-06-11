@@ -1,9 +1,10 @@
 import { setRequestLocale } from "next-intl/server";
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
-import { FeatureCards } from "@/components/landing/FeatureCards";
-import { HowItWorks } from "@/components/landing/HowItWorks";
-import { StatCounters } from "@/components/landing/StatCounters";
+import { ArchitectureSection } from "@/components/landing/ArchitectureSection";
+import { SkillsSection } from "@/components/landing/SkillsSection";
+import { DecisionTrace } from "@/components/landing/DecisionTrace";
+import { OnChainProof } from "@/components/landing/OnChainProof";
 import { PartnerMarquee } from "@/components/landing/PartnerMarquee";
 import { Footer } from "@/components/landing/Footer";
 
@@ -20,9 +21,10 @@ export default async function LandingPage({
       <Navbar />
       <main>
         <Hero />
-        <FeatureCards />
-        <HowItWorks />
-        <StatCounters />
+        <ArchitectureSection />
+        <SkillsSection />
+        <DecisionTrace />
+        <OnChainProof />
         <PartnerMarquee />
       </main>
       <Footer />

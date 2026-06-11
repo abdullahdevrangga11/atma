@@ -1,139 +1,174 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { GradientOrb } from "@/components/animations/GradientOrb";
-import { TypeWriter } from "@/components/animations/TypeWriter";
-import { MagneticButton } from "@/components/animations/MagneticButton";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
-import { NumberCounter } from "@/components/animations/NumberCounter";
+import { StateMachineViz } from "@/components/landing/StateMachineViz";
 
 export function Hero() {
-  const t = useTranslations("hero");
-
   return (
-    <section className="relative min-h-screen flex items-center pt-32 pb-24 overflow-hidden">
-      {/* Background layers */}
-      <div className="absolute inset-0 grid-backdrop opacity-60" />
-      <div className="noise" />
-      <GradientOrb
-        variant="primary"
-        size={720}
-        className="top-[-200px] left-[-180px]"
-        delay="0s"
-      />
-      <GradientOrb
-        variant="accent"
-        size={520}
-        className="bottom-[-160px] right-[-120px]"
-        delay="4s"
+    <section className="relative pt-28 md:pt-36 pb-24 md:pb-32 overflow-hidden">
+      {/* Backdrop — subtle dot grid, no orbs */}
+      <div className="absolute inset-0 dot-grid opacity-50" aria-hidden />
+      <div
+        className="absolute left-0 right-0 top-0 h-px"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent, var(--color-border-strong), transparent)",
+        }}
+        aria-hidden
       />
 
       <div className="container-atma relative z-10">
-        {/* Eyebrow chip */}
+        {/* Top meta strip — coordinates / build info */}
         <ScrollReveal>
-          <div className="chip mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] pulse-glow" />
-            {t("eyebrow")}
-          </div>
-        </ScrollReveal>
-
-        {/* Headline */}
-        <ScrollReveal delay={100}>
-          <h1 className="display-1 max-w-[1100px] gradient-text">
-            {t("title")}
-          </h1>
-        </ScrollReveal>
-
-        {/* TypeWriter subheadline */}
-        <ScrollReveal delay={200}>
-          <p className="mt-6 text-[20px] md:text-[22px] font-mono text-[var(--color-accent)]">
-            <TypeWriter text={t("subtitleTyped")} speed={28} startDelay={800} />
-          </p>
-        </ScrollReveal>
-
-        {/* Body */}
-        <ScrollReveal delay={300}>
-          <p className="mt-5 max-w-[680px] text-[17px] leading-relaxed text-[var(--color-text-secondary)]">
-            {t("subtitle")}
-          </p>
-        </ScrollReveal>
-
-        {/* CTAs */}
-        <ScrollReveal delay={400}>
-          <div className="mt-10 flex flex-wrap items-center gap-3">
-            <MagneticButton as="a" href="/vault" strength={0.25}>
-              <span className="btn-primary">
-                {t("ctaPrimary")}
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path
-                    d="M3 7H11M11 7L7 3M11 7L7 11"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+          <div className="flex flex-wrap items-center justify-between gap-y-2 mb-12 md:mb-20 text-[10px] uppercase tracking-[0.08em] text-[var(--color-text-faint)] font-mono">
+            <div className="flex items-center gap-4">
+              <span>// v0.1.0</span>
+              <span className="hidden md:inline">06°S 110°E · YOGYAKARTA</span>
+              <span className="hidden md:inline">UGM SE '23</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-[var(--color-text-secondary)]">build</span>
+              <span className="text-[var(--color-accent)] tabular-nums">
+                {process.env.NEXT_PUBLIC_BUILD_ID || "240ms · sepolia · 5003"}
               </span>
-            </MagneticButton>
-
-            <MagneticButton
-              as="a"
-              href="https://github.com/abdullahdevrangga11/atma"
-              target="_blank"
-              rel="noreferrer"
-              strength={0.15}
-            >
-              <span className="btn-ghost">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                  <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.34c-2.23.48-2.7-1.07-2.7-1.07-.36-.93-.89-1.17-.89-1.17-.73-.5.05-.49.05-.49.81.06 1.23.83 1.23.83.72 1.22 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.01.08-2.12 0 0 .67-.21 2.2.82a7.65 7.65 0 0 1 4 0c1.53-1.03 2.2-.82 2.2-.82.44 1.11.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
-                </svg>
-                {t("ctaSecondary")}
-              </span>
-            </MagneticButton>
-          </div>
-        </ScrollReveal>
-
-        {/* Hero stat strip */}
-        <ScrollReveal delay={550}>
-          <div className="mt-20 grid grid-cols-3 gap-px bg-white/[0.04] border border-white/[0.06] rounded-2xl overflow-hidden max-w-[860px]">
-            <div className="bg-[rgba(10,14,39,0.50)] backdrop-blur-md p-6 md:p-8">
-              <p className="text-[11px] font-mono uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
-                {t("statTvlLabel")}
-              </p>
-              <p className="mt-3 display-2 font-medium text-white">
-                {t("statTvl")}
-              </p>
-            </div>
-            <div className="bg-[rgba(10,14,39,0.50)] backdrop-blur-md p-6 md:p-8">
-              <p className="text-[11px] font-mono uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
-                {t("statBpsLabel")}
-              </p>
-              <p className="mt-3 display-2 font-medium">
-                <NumberCounter
-                  value={463}
-                  decimals={0}
-                  suffix=" bps"
-                  className="text-[var(--color-accent)]"
-                />
-              </p>
-            </div>
-            <div className="bg-[rgba(10,14,39,0.50)] backdrop-blur-md p-6 md:p-8">
-              <p className="text-[11px] font-mono uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
-                {t("statAgentsLabel")}
-              </p>
-              <p className="mt-3 display-2 font-medium text-white">
-                <NumberCounter value={3} decimals={0} suffix=" agents" />
-              </p>
             </div>
           </div>
         </ScrollReveal>
-      </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 hide-mobile">
-        <div className="w-px h-12 bg-gradient-to-b from-transparent via-white/30 to-transparent" />
+        {/* Main editorial grid */}
+        <div className="grid lg:grid-cols-12 gap-y-12 lg:gap-x-12">
+          {/* Left: editorial copy */}
+          <div className="lg:col-span-7">
+            <ScrollReveal>
+              <p className="eyebrow eyebrow-dot mb-7">
+                Mantle Turing Test Hackathon 2026 / AI × RWA
+              </p>
+            </ScrollReveal>
+
+            <ScrollReveal delay={80}>
+              <h1 className="display-1 max-w-[820px]">
+                Treasury policy
+                <br />
+                as a primitive,
+                <br />
+                <span className="inline-flex items-baseline gap-3">
+                  <span className="text-[var(--color-text-muted)]">not</span>
+                  <span className="inline-block px-3 -mb-1 pt-1 pb-2 bg-[var(--color-paper)] text-[var(--color-bg)]">
+                    a dashboard.
+                  </span>
+                </span>
+              </h1>
+            </ScrollReveal>
+
+            <ScrollReveal delay={180}>
+              <div className="mt-10 max-w-[540px] space-y-5 text-[16px] leading-[1.55] text-[var(--color-text-secondary)]">
+                <p>
+                  ATMA composes three agents — <span className="text-[var(--color-text)]">Allocator</span>,{" "}
+                  <span className="text-[var(--color-text)]">Risk</span>,{" "}
+                  <span className="text-[var(--color-text)]">Reporter</span> — under a Skills-First policy.
+                  Idle USDC routes through{" "}
+                  <span className="font-mono text-[14px] text-[var(--color-text)]">{`{usdy, mUsd, aave, mi4}`}</span>{" "}
+                  with every decision signed by an{" "}
+                  <span className="text-[var(--color-text)]">ERC-8004 agent identity</span>, attested
+                  permanently on Mantle.
+                </p>
+                <p className="text-[14px] text-[var(--color-text-muted)]">
+                  No DAO multisig theater. No off-chain dashboards. Just a verifiable
+                  primitive that any treasury contract can call.
+                </p>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal delay={260}>
+              <div className="mt-10 flex flex-wrap items-center gap-4">
+                <Link href="/vault" className="btn-solid">
+                  Launch vault
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                    <path
+                      d="M1 5h8M5 1l4 4-4 4"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </Link>
+                <Link
+                  href="https://github.com/abdullahdevrangga11/atma"
+                  className="btn-link"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Read the source
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                    <path
+                      d="M3 1h6v6M9 1L1 9"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </Link>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          {/* Right: live state machine */}
+          <div className="lg:col-span-5">
+            <ScrollReveal delay={120}>
+              <StateMachineViz />
+            </ScrollReveal>
+          </div>
+        </div>
+
+        {/* Stat strip — flat, no glass cards */}
+        <ScrollReveal delay={340}>
+          <div className="mt-24 md:mt-32 grid grid-cols-2 md:grid-cols-4 gap-y-8 md:gap-y-0 md:gap-x-12">
+            <Stat label="Mantle RWA TVL" value="$4.0B" sub="addressable surface" />
+            <Stat label="USDY APY" value="4.65%" sub="ondo · treasury-backed" mono />
+            <Stat label="Aave V3 Mantle" value="$539M" sub="boosted lending" mono />
+            <Stat
+              label="Sample outperformance"
+              value="+463 bps"
+              sub="vs do-nothing baseline"
+              accent
+            />
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal delay={420}>
+          <div className="rule mt-16" />
+        </ScrollReveal>
       </div>
     </section>
+  );
+}
+
+function Stat({
+  label,
+  value,
+  sub,
+  accent,
+  mono,
+}: {
+  label: string;
+  value: string;
+  sub: string;
+  accent?: boolean;
+  mono?: boolean;
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      <p className="eyebrow">{label}</p>
+      <p
+        className={`num-display text-[44px] md:text-[48px] leading-none ${
+          accent ? "text-[var(--color-accent)]" : "text-[var(--color-text)]"
+        } ${mono ? "font-mono" : ""}`}
+      >
+        {value}
+      </p>
+      <p className="text-[12px] text-[var(--color-text-muted)] font-mono lowercase">{sub}</p>
+    </div>
   );
 }

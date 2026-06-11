@@ -1,65 +1,78 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { ScrollReveal } from "@/components/animations/ScrollReveal";
 
-const PARTNERS = [
-  "Mantle",
-  "Byreal",
-  "Bybit",
-  "Tencent Cloud",
-  "Nansen",
-  "Elfa AI",
-  "Animoca Brands",
-  "Allora Network",
-  "Virtuals Protocol",
-  "Mirana Ventures",
-  "Hashed",
-  "DoraHacks",
+const ROWS: { name: string; role: string; group: string }[] = [
+  { name: "Mantle", role: "host network · ERC-8004 registry", group: "Ecosystem" },
+  { name: "Byreal", role: "Skills CLI · RealClaw", group: "Ecosystem" },
+  { name: "Bybit", role: "CEX bridge · Mantle integration", group: "Ecosystem" },
+  { name: "Tencent Cloud", role: "Hunyuan inference credits", group: "Infra" },
+  { name: "Nansen", role: "wallet labels · smart-money tags", group: "Data" },
+  { name: "Elfa AI", role: "sentiment · narrative feed", group: "Data" },
+  { name: "Allora", role: "agent infra · judging", group: "Judges" },
+  { name: "Animoca Brands", role: "consumer · judging", group: "Judges" },
+  { name: "Virtuals Protocol", role: "agent economy · judging", group: "Judges" },
+  { name: "Hashed · Caladan", role: "venture · judging", group: "Judges" },
+  { name: "Mirana · Four Pillar", role: "alpha track · judging", group: "Judges" },
+  { name: "DoraHacks", role: "platform · submission", group: "Org" },
 ];
 
 export function PartnerMarquee() {
-  const t = useTranslations("marquee");
-
   return (
-    <section className="py-20 border-y border-white/[0.06] relative overflow-hidden">
-      <div className="absolute inset-0 grid-backdrop opacity-30" />
+    <section className="relative py-24 md:py-32 border-y border-[var(--color-border)]">
+      <div className="container-atma">
+        <div className="grid lg:grid-cols-12 gap-12 mb-10">
+          <div className="lg:col-span-4">
+            <ScrollReveal>
+              <p className="eyebrow eyebrow-dot mb-6">// manifest</p>
+            </ScrollReveal>
+            <ScrollReveal delay={80}>
+              <h2 className="display-3 max-w-sm">
+                12 ecosystem participants.
+                <br />
+                <span className="text-[var(--color-text-muted)]">One on-chain benchmark.</span>
+              </h2>
+            </ScrollReveal>
+          </div>
 
-      <div className="container-atma relative mb-10">
-        <ScrollReveal>
-          <p className="text-center font-mono text-[11px] uppercase tracking-[0.10em] text-[var(--color-text-muted)]">
-            {t("label")} ·{" "}
-            <span className="text-[var(--color-text-secondary)]">
-              {PARTNERS.length} ecosystem partners
-            </span>
-          </p>
-        </ScrollReveal>
-      </div>
+          <div className="lg:col-span-8 lg:pt-3">
+            <ScrollReveal delay={120}>
+              <p className="text-[14px] text-[var(--color-text-secondary)] leading-relaxed">
+                The Turing Test Hackathon is the first time an on-chain environment has
+                been used to benchmark AI agent performance at scale. Every key decision
+                is recorded permanently on Mantle. This is the panel ATMA is built for.
+              </p>
+            </ScrollReveal>
+          </div>
+        </div>
 
-      {/* edge masks */}
-      <div className="relative">
-        <div
-          aria-hidden
-          className="absolute left-0 inset-y-0 w-32 z-10 pointer-events-none bg-gradient-to-r from-[var(--color-bg)] to-transparent"
-        />
-        <div
-          aria-hidden
-          className="absolute right-0 inset-y-0 w-32 z-10 pointer-events-none bg-gradient-to-l from-[var(--color-bg)] to-transparent"
-        />
-
-        <div className="overflow-hidden">
-          <div className="marquee flex gap-12 whitespace-nowrap w-max">
-            {[...PARTNERS, ...PARTNERS].map((p, i) => (
+        <ScrollReveal delay={180}>
+          <div className="border border-[var(--color-border)] rounded-lg overflow-hidden">
+            {ROWS.map((row, i) => (
               <div
-                key={`${p}-${i}`}
-                className="text-[24px] md:text-[28px] font-medium tracking-tight text-white/30 hover:text-white/80 transition-colors duration-300 flex items-center gap-3"
+                key={row.name}
+                className={`grid grid-cols-[80px_1.4fr_2fr_60px] items-center px-6 py-4 hover:bg-[var(--color-surface-hi)] transition-colors group ${
+                  i < ROWS.length - 1
+                    ? "border-b border-[var(--color-border)]"
+                    : ""
+                }`}
               >
-                {p}
-                <span className="w-1 h-1 rounded-full bg-white/20" />
+                <span className="font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-text-faint)] tabular-nums">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="font-mono text-[13px] text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors">
+                  {row.name}
+                </span>
+                <span className="text-[12px] text-[var(--color-text-secondary)] font-mono lowercase">
+                  {row.role}
+                </span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-text-muted)] text-right">
+                  {row.group}
+                </span>
               </div>
             ))}
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );
