@@ -147,7 +147,8 @@ const NAV: NavItem[] = [
     label: "Policy",
     items: [
       { name: "Skills", desc: "Edit markdown, see diff", href: "/skills", Icon: IconSkills },
-      { name: "System prompts", desc: "Bytes Claude actually sees", href: "/skills#inspector", Icon: IconBook },
+      { name: "A/B test", desc: "Prove a policy change pays off", href: "/ab-test", Icon: IconReport },
+      { name: "Network", desc: "Cumulative network stats", href: "/network", Icon: IconBlock },
     ],
   },
   {
