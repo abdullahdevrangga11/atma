@@ -14,7 +14,7 @@ const RELEASES: Release[] = [
     title: "Day 1 shipped — vault deployed",
     body: "AtmaVault on Mantle Sepolia, ERC-4626, 8 states. 53 Foundry tests passing.",
     date: "Jun 11, 2026",
-    accent: "linear-gradient(135deg, #0052ff, #00d4ff)",
+    accent: "linear-gradient(135deg, #5b3df0, #a78bfa)",
   },
   {
     title: "Skills-First architecture",

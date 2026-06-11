@@ -29,6 +29,11 @@ function useViewportTrigger<T extends HTMLElement>(threshold: number = 0.4) {
   return { ref, active };
 }
 
+/**
+ * Smoothly counts up to `target` using ease-out-expo. Single source of truth
+ * for animated numeric values — no CSS transition should chase the same
+ * property concurrently (e.g. AllocBar's width is driven directly off this).
+ */
 function useCountUp(target: number, durationMs: number, start: boolean, delayMs = 0) {
   const [value, setValue] = useState(0);
   useEffect(() => {
@@ -38,8 +43,7 @@ function useCountUp(target: number, durationMs: number, start: boolean, delayMs 
       const startTime = performance.now();
       const tick = (now: number) => {
         const p = Math.min((now - startTime) / durationMs, 1);
-        // ease-out-expo
-        const eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+        const eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p); // ease-out-expo
         setValue(target * eased);
         if (p < 1) rafId = requestAnimationFrame(tick);
       };
@@ -84,6 +88,20 @@ function useLiveClock(start: boolean): string {
   return t;
 }
 
+/**
+ * Returns true once `delayMs` has elapsed since `active` became true.
+ * Used to stagger sub-element entrances on top of the parent's viewport trigger.
+ */
+function useDelayedActive(active: boolean, delayMs: number): boolean {
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    if (!active) return;
+    const t = window.setTimeout(() => setOn(true), delayMs);
+    return () => window.clearTimeout(t);
+  }, [active, delayMs]);
+  return on;
+}
+
 // ─────────────────────────────────────────────────────────
 //  Static demo data
 // ─────────────────────────────────────────────────────────
@@ -118,30 +136,31 @@ const SIGNERS = ["Allocator#1", "Risk#2", "Reporter#3"];
 export function HeroShowcase() {
   const { ref, active } = useViewportTrigger<HTMLDivElement>(0.3);
 
-  // Number animations
+  // Number animations — start times are coordinated so the eye reads
+  // headline → secondary → allocation in a natural cascade.
   const nav = useCountUp(NAV_TARGET, 1600, active, 0);
-  const pnl = useCountUp(PNL_TARGET, 1200, active, 400);
-  const apy = useCountUp(APY_TARGET, 1100, active, 600);
-  const bps = useCountUp(BPS_TARGET, 1300, active, 700);
-  const att = useCountUp(ATTESTATIONS_TARGET, 900, active, 900);
+  const pnl = useCountUp(PNL_TARGET, 1100, active, 480);
+  const apy = useCountUp(APY_TARGET, 1100, active, 620);
+  const bps = useCountUp(BPS_TARGET, 1300, active, 760);
+  const att = useCountUp(ATTESTATIONS_TARGET, 900, active, 920);
+
+  // Staggered entrance booleans
+  const stateBadgeIn = useDelayedActive(active, 350);
+  const pnlIn = useDelayedActive(active, 520);
 
   // Cycling values
   const txHash = useCyclingValue(TX_HASHES, 3600, active);
   const signer = useCyclingValue(SIGNERS, 3600, active);
   const clock = useLiveClock(active);
 
-  // Flicker state when cycling — opacity drop right before new value
-  const [flicker, setFlicker] = useState(false);
-  useEffect(() => {
-    if (!active) return;
-    setFlicker(true);
-    const t = window.setTimeout(() => setFlicker(false), 200);
-    return () => window.clearTimeout(t);
-  }, [txHash, signer, active]);
-
   return (
     <div ref={ref} className="relative mx-auto max-w-[920px]">
-      <div className="relative w-full rounded-[20px] border border-[var(--color-border)] bg-[var(--color-bg-card-soft)] overflow-hidden">
+      <div
+        className={cn(
+          "relative w-full rounded-[20px] border border-[var(--color-border)] bg-[var(--color-bg-card-soft)] overflow-hidden",
+          active && "card-lift",
+        )}
+      >
         {/* Card header strip */}
         <div className="flex items-center justify-between px-7 py-4 border-b border-[var(--color-border)] bg-white/60 backdrop-blur-sm">
           <div className="flex items-center gap-3">
@@ -152,15 +171,16 @@ export function HeroShowcase() {
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="default">// vault state</Badge>
-            <Badge
-              variant="accent"
+            <span
               className={cn(
-                "transition-all duration-500",
-                active ? "scale-100 opacity-100" : "scale-95 opacity-0",
+                "transition-all duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
+                stateBadgeIn
+                  ? "opacity-100 translate-y-0 scale-100"
+                  : "opacity-0 -translate-y-1 scale-95",
               )}
             >
-              allocated
-            </Badge>
+              <Badge variant="accent">allocated</Badge>
+            </span>
           </div>
         </div>
 
@@ -174,10 +194,15 @@ export function HeroShowcase() {
             <p className="text-[44px] md:text-[48px] leading-none font-medium tabular-nums">
               {formatUSD(nav)}
             </p>
+
+            {/* PnL chip — slides in once active and a beat after NAV starts */}
             <div
               className={cn(
-                "mt-4 flex items-center gap-2 text-[12px] transition-opacity duration-700",
-                pnl > 1 ? "opacity-100" : "opacity-0",
+                "mt-4 flex items-center gap-2 text-[12px]",
+                "transition-all duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
+                pnlIn
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-1.5",
               )}
             >
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-mono tabular-nums">
@@ -235,17 +260,9 @@ export function HeroShowcase() {
             </div>
 
             <div className="mt-6 pt-5 border-t border-[var(--color-border)] grid grid-cols-3 gap-3">
-              <Chip
-                label="// last tx"
-                value={txHash}
-                flicker={flicker && active}
-              />
-              <Chip
-                label="// signed by"
-                value={signer}
-                flicker={flicker && active}
-              />
-              <Chip label="// at" value={clock} />
+              <Chip label="// last tx"   value={txHash} />
+              <Chip label="// signed by" value={signer} />
+              <Chip label="// at"        value={clock} static />
             </div>
           </div>
         </div>
@@ -302,9 +319,16 @@ function AllocBar({
   active: boolean;
   delayMs: number;
 }) {
-  const pct = bps / 100;
-  const animated = useCountUp(bps, 1200, active, delayMs);
+  const animated = useCountUp(bps, 1400, active, delayMs);
   const animatedPct = animated / 100;
+  // Trigger the shimmer wipe exactly when the bar starts filling, and only once
+  const [shimmerKey, setShimmerKey] = useState<number | null>(null);
+  useEffect(() => {
+    if (!active) return;
+    const t = window.setTimeout(() => setShimmerKey(Date.now()), delayMs);
+    return () => window.clearTimeout(t);
+  }, [active, delayMs]);
+
   return (
     <div className={muted ? "opacity-50" : ""}>
       <div className="flex items-center justify-between mb-1.5">
@@ -317,15 +341,18 @@ function AllocBar({
           <span className="text-[var(--color-text-muted)]">/ {Math.round(animated)} bps</span>
         </span>
       </div>
-      <div className="h-2 rounded-full bg-white border border-[var(--color-border)] overflow-hidden">
+      <div className="relative h-2 rounded-full bg-white border border-[var(--color-border)] overflow-hidden">
+        {/*
+          Width is driven straight off rAF state — no CSS transition chases it,
+          so the fill is buttery instead of stair-stepped.
+        */}
         <div
-          className="h-full"
-          style={{
-            width: `${animatedPct}%`,
-            background: color,
-            transition: "width 80ms linear",
-          }}
+          className="h-full rounded-full"
+          style={{ width: `${animatedPct}%`, background: color }}
         />
+        {shimmerKey !== null && !muted && (
+          <span key={shimmerKey} className="shimmer-wipe absolute inset-0 block" />
+        )}
       </div>
     </div>
   );
@@ -334,21 +361,27 @@ function AllocBar({
 function Chip({
   label,
   value,
-  flicker,
+  static: isStatic,
 }: {
   label: string;
   value: string;
-  flicker?: boolean;
+  /** When true, value updates without the slide-in animation (e.g. live clock) */
+  static?: boolean;
 }) {
   return (
-    <div className="rounded-md px-3 py-2 bg-white border border-[var(--color-border)]">
+    <div className="rounded-md px-3 py-2 bg-white border border-[var(--color-border)] overflow-hidden">
       <p className="font-mono text-[9px] uppercase tracking-[0.06em] text-[var(--color-text-muted)] mb-0.5">
         {label}
       </p>
+      {/*
+        Key on value forces remount each cycle; the chip-slide-in keyframe
+        replaces the old "flicker" hack with a proper slide + blur reveal.
+      */}
       <p
+        key={isStatic ? undefined : value}
         className={cn(
-          "font-mono text-[11px] text-[var(--color-text)] truncate transition-opacity duration-200 tabular-nums",
-          flicker && "opacity-30",
+          "font-mono text-[11px] text-[var(--color-text)] truncate tabular-nums",
+          !isStatic && "chip-slide-in",
         )}
       >
         {value}

@@ -12,7 +12,7 @@ export function VaultStateDiagram() {
       <rect x="0" y="0" width="280" height="180" fill="url(#vgrid)" />
 
       {/* Center vault box */}
-      <rect x="116" y="74" width="48" height="32" fill="#0052ff" />
+      <rect x="116" y="74" width="48" height="32" fill="#5b3df0" />
       <text x="140" y="93" fill="white" fontSize="10" fontFamily="monospace" textAnchor="middle">ATMA</text>
 
       {/* 4 asset boxes around */}
@@ -35,7 +35,7 @@ export function VaultStateDiagram() {
       <line x1="222" y1="129" x2="164" y2="100" stroke="#0a0a0a" strokeWidth="1" />
 
       {/* Dotted accent corner blocks */}
-      <rect x="6" y="6" width="6" height="6" fill="#0052ff" />
+      <rect x="6" y="6" width="6" height="6" fill="#5b3df0" />
       <rect x="268" y="6" width="6" height="6" fill="#fbbf24" />
       <rect x="6" y="168" width="6" height="6" fill="#84cc16" />
       <rect x="268" y="168" width="6" height="6" fill="#a78bfa" />
@@ -64,7 +64,7 @@ export function AgentSwarmDiagram() {
       <text x="200" y="93" fill="#0a0a0a" fontSize="9" fontFamily="monospace" textAnchor="middle">RPRT</text>
 
       {/* central skill block */}
-      <rect x="116" y="120" width="48" height="22" fill="#0052ff" />
+      <rect x="116" y="120" width="48" height="22" fill="#5b3df0" />
       <text x="140" y="134" fill="white" fontSize="9" fontFamily="monospace" textAnchor="middle">SKILLS</text>
 
       {/* lines */}
@@ -76,7 +76,7 @@ export function AgentSwarmDiagram() {
       <rect x="38" y="26" width="6" height="14" fill="#a78bfa" />
       <rect x="46" y="20" width="6" height="20" fill="#84cc16" />
       <rect x="240" y="22" width="6" height="18" fill="#fbbf24" />
-      <rect x="248" y="28" width="6" height="12" fill="#0052ff" />
+      <rect x="248" y="28" width="6" height="12" fill="#5b3df0" />
       <rect x="10" y="150" width="6" height="10" fill="#f9a8d4" />
       <rect x="262" y="150" width="6" height="14" fill="#84cc16" />
     </svg>
@@ -94,7 +94,7 @@ export function AttestationDiagram() {
       {/* 3 rows of attestations */}
       {[34, 64, 94, 124, 154].map((y, i) => (
         <g key={y}>
-          <rect x="12" y={y} width="256" height="22" fill={i === 1 ? "#0052ff" : "white"} stroke="#e8e8e8" />
+          <rect x="12" y={y} width="256" height="22" fill={i === 1 ? "#5b3df0" : "white"} stroke="#e8e8e8" />
           <text x="20" y={y + 14} fill={i === 1 ? "white" : "#5e5e5e"} fontSize="9" fontFamily="monospace">
             tx 0x{(0x4f8a + i * 0xa1b).toString(16).slice(0, 4)}...
           </text>
@@ -135,7 +135,7 @@ export function PolicyAsDataDiagram() {
       <path d="M120 78l32 0M150 72l8 6-8 6" stroke="#0a0a0a" strokeWidth="1.5" fill="none" />
 
       {/* destination — agent */}
-      <rect x="170" y="50" width="70" height="56" fill="#0052ff" />
+      <rect x="170" y="50" width="70" height="56" fill="#5b3df0" />
       <text x="205" y="74" fill="white" fontSize="10" fontFamily="monospace" textAnchor="middle">CLAUDE</text>
       <text x="205" y="88" fill="rgba(255,255,255,0.7)" fontSize="8" fontFamily="monospace" textAnchor="middle">reasons</text>
 
