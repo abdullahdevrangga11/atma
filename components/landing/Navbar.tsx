@@ -130,8 +130,24 @@ const NAV: NavItem[] = [
     items: [
       { name: "Vault", desc: "Live multi-agent orchestration", href: "/vault", Icon: IconVault },
       { name: "Backtest", desc: "Replay N weeks vs 3 baselines", href: "/backtest", Icon: IconReport },
+      { name: "Compare", desc: "3 policies, parallel reasoning", href: "/compare", Icon: IconReport },
+      { name: "Anomaly", desc: "Stress-test the RiskAgent", href: "/anomaly", Icon: IconShield },
+    ],
+  },
+  {
+    label: "Agents",
+    items: [
+      { name: "AllocatorAgent", desc: "Treasury allocation under policy", href: "/agents/allocator", Icon: IconVault },
+      { name: "RiskAgent", desc: "Veto authority + defensive exit", href: "/agents/risk", Icon: IconShield },
+      { name: "ReporterAgent", desc: "P&L attestation, 3 baselines", href: "/agents/reporter", Icon: IconReport },
       { name: "Reports", desc: "Real attestation history", href: "/reports", Icon: IconReport },
-      { name: "Skills", desc: "Edit policy, see diff", href: "/skills", Icon: IconSkills },
+    ],
+  },
+  {
+    label: "Policy",
+    items: [
+      { name: "Skills", desc: "Edit markdown, see diff", href: "/skills", Icon: IconSkills },
+      { name: "System prompts", desc: "Bytes Claude actually sees", href: "/skills#inspector", Icon: IconBook },
     ],
   },
   {
