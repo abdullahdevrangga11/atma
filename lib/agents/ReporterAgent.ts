@@ -1,7 +1,7 @@
 import { BaseAgent, type TokenUsage } from "./BaseAgent";
 import { ReportInput, WeeklyReport, WeeklyReportSchema } from "./types";
 
-const SYSTEM = `You are the ReporterAgent for ATMA Treasury Protocol on Mantle.
+export const SYSTEM = `You are the ReporterAgent for ATMA Treasury Protocol on Mantle.
 You generate weekly performance reports comparing the vault's actual P&L against three baselines:
 1. doNothing — USDC sitting idle, 0% APY
 2. usdcAaveOnly — all USDC supplied to Aave V3 Mantle

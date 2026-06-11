@@ -128,9 +128,10 @@ const NAV: NavItem[] = [
   {
     label: "Product",
     items: [
-      { name: "Vault", desc: "Deposit + view allocation", href: "/vault", Icon: IconVault },
-      { name: "Reports", desc: "P&L + on-chain attestations", href: "/reports", Icon: IconReport },
-      { name: "Skills", desc: "Markdown policy reference", href: "/skills", Icon: IconSkills },
+      { name: "Vault", desc: "Live multi-agent orchestration", href: "/vault", Icon: IconVault },
+      { name: "Backtest", desc: "Replay N weeks vs 3 baselines", href: "/backtest", Icon: IconReport },
+      { name: "Reports", desc: "Real attestation history", href: "/reports", Icon: IconReport },
+      { name: "Skills", desc: "Edit policy, see diff", href: "/skills", Icon: IconSkills },
     ],
   },
   {

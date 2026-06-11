@@ -60,6 +60,16 @@ export abstract class BaseAgent {
     ].join("\n");
   }
 
+  /** Public accessor for tests + UI prompt inspector. */
+  public describePrompt(systemContext: string): string {
+    return this.buildSystem(systemContext);
+  }
+
+  /** Read-only view of the skill markdown this agent loaded at construction. */
+  public skill(): string {
+    return this.skillContent;
+  }
+
   /**
    * Non-streaming reasoning call. Used by /api/agent (legacy) and by tests.
    * Returns the raw text the model produced.

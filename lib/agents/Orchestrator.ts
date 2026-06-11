@@ -75,6 +75,8 @@ export type OrchestrateInput = {
   entryNAV?: string;
   /** When true, force the RiskAgent to see a trigger on first pass for demo. */
   forceDebate?: boolean;
+  /** Inject a historical snapshot — used by the backtest endpoint. */
+  feedsOverride?: FeedSnapshot;
 };
 
 // ───────────────────────────────────────────────────────────
@@ -133,7 +135,7 @@ export class Orchestrator {
 
     const runStartedAt = Date.now();
     const runId = `run_${runStartedAt}_${Math.random().toString(36).slice(2, 8)}`;
-    const feeds = readFeeds();
+    const feeds = input.feedsOverride ?? readFeeds();
     const steps: AgentStep[] = [];
     let totalInput = 0;
     let totalOutput = 0;

@@ -14,8 +14,11 @@ import {
   RotateCcw,
   Loader2,
   Sparkles,
+  SplitSquareHorizontal,
+  Eye,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { diffLines, type DiffLine } from "@/lib/utils/diffLines";
 
 type Skill = {
   id: string;
@@ -114,6 +117,7 @@ export function SkillsViewer({ skills }: SkillsViewerProps) {
     () => Object.fromEntries(skills.map((s) => [s.id, s.content])),
   );
   const [editMode, setEditMode] = useState(false);
+  const [diffMode, setDiffMode] = useState(false);
 
   // Run state
   const [baselineRun, setBaselineRun] = useState<RunResult | null>(null);
@@ -230,8 +234,18 @@ export function SkillsViewer({ skills }: SkillsViewerProps) {
               <span className="font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-text-muted)] tabular-nums">
                 {lineCount} lines · {charCount} chars
               </span>
+              {isDirty && (
+                <Button
+                  variant={diffMode ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setDiffMode((v) => !v)}
+                >
+                  <SplitSquareHorizontal className="w-3 h-3" />
+                  Diff
+                </Button>
+              )}
               {!editMode ? (
-                <Button variant="ghost" size="sm" onClick={() => setEditMode(true)}>
+                <Button variant="ghost" size="sm" onClick={() => { setEditMode(true); setDiffMode(false); }}>
                   <Pencil className="w-3 h-3" />
                   Edit
                 </Button>
@@ -255,13 +269,15 @@ export function SkillsViewer({ skills }: SkillsViewerProps) {
 
           {/* Body */}
           <CardContent className="p-0">
-            {!editMode ? (
-              <ReadOnlyView content={edited[active.id] ?? active.content} />
-            ) : (
+            {editMode ? (
               <EditView
                 content={edited[active.id] ?? active.content}
                 onChange={(v) => setEdited((prev) => ({ ...prev, [active.id]: v }))}
               />
+            ) : diffMode && isDirty ? (
+              <DiffView baseline={active.content} edited={edited[active.id] ?? active.content} />
+            ) : (
+              <ReadOnlyView content={edited[active.id] ?? active.content} />
             )}
           </CardContent>
 
@@ -309,6 +325,14 @@ export function SkillsViewer({ skills }: SkillsViewerProps) {
         </div>
       )}
 
+      {/* System prompt inspector — the exact bytes we send to Claude */}
+      {active && (
+        <PromptInspector
+          agent={active.agent}
+          editedSkill={isDirty ? edited[active.id] : undefined}
+        />
+      )}
+
       {/* Explainer strip */}
       <div className="grid md:grid-cols-3 gap-4">
         <InfoTile
@@ -334,6 +358,73 @@ export function SkillsViewer({ skills }: SkillsViewerProps) {
 // ───────────────────────────────────────────────────────────
 //  Sub-components
 // ───────────────────────────────────────────────────────────
+
+function DiffView({ baseline, edited }: { baseline: string; edited: string }) {
+  const lines = diffLines(baseline, edited);
+  return (
+    <div className="font-mono text-[12.5px] leading-[1.7]">
+      <div className="bg-[var(--color-bg-soft)] px-5 py-2 border-b border-[var(--color-border)] flex items-center gap-3">
+        <span className="font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-text-muted)]">
+          unified diff · committed → your edits
+        </span>
+        <Badge variant="success">
+          +{lines.filter((l) => l.kind === "add").length}
+        </Badge>
+        <Badge variant="danger">
+          −{lines.filter((l) => l.kind === "del").length}
+        </Badge>
+      </div>
+      <div className="grid grid-cols-[36px_36px_1fr] py-3">
+        {lines.map((l, i) => {
+          const bg =
+            l.kind === "add"
+              ? "bg-emerald-50"
+              : l.kind === "del"
+                ? "bg-red-50"
+                : "";
+          const sign = l.kind === "add" ? "+" : l.kind === "del" ? "−" : " ";
+          const signColor =
+            l.kind === "add" ? "text-emerald-700" : l.kind === "del" ? "text-red-700" : "text-[var(--color-text-faint)]";
+          const leftNum = l.kind === "del" || l.kind === "same" ? String(l.kind === "same" ? l.left : l.left) : "";
+          const rightNum = l.kind === "add" || l.kind === "same" ? String(l.kind === "same" ? l.right : l.right) : "";
+          return (
+            <DiffRow
+              key={i}
+              bg={bg}
+              sign={sign}
+              signColor={signColor}
+              leftNum={leftNum}
+              rightNum={rightNum}
+              text={l.text}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function DiffRow({
+  bg, sign, signColor, leftNum, rightNum, text,
+}: {
+  bg: string;
+  sign: string;
+  signColor: string;
+  leftNum: string;
+  rightNum: string;
+  text: string;
+}) {
+  return (
+    <>
+      <div className={cn("px-2 text-right text-[var(--color-text-faint)] tabular-nums", bg)}>{leftNum}</div>
+      <div className={cn("px-2 text-right text-[var(--color-text-faint)] tabular-nums", bg)}>{rightNum}</div>
+      <div className={cn("px-3 whitespace-pre-wrap break-all", bg)}>
+        <span className={cn("inline-block w-3 mr-1", signColor)}>{sign}</span>
+        <span className="text-[var(--color-text)]">{text || " "}</span>
+      </div>
+    </>
+  );
+}
 
 function ReadOnlyView({ content }: { content: string }) {
   const lines = content.split("\n");
@@ -463,6 +554,104 @@ function HashRow({ hash }: { hash: string }) {
       <p className="font-mono text-[9px] uppercase tracking-[0.06em] text-[var(--color-text-muted)] mb-1">SHA-256 reasoning hash</p>
       <p className="font-mono text-[10px] text-[var(--color-text-secondary)] break-all">{hash}</p>
     </div>
+  );
+}
+
+function PromptInspector({
+  agent,
+  editedSkill,
+}: {
+  agent: Skill["agent"];
+  editedSkill?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [data, setData] = useState<{
+    agents: Array<{
+      name: string;
+      skillFile: string;
+      systemContext: string;
+      skillContent: string;
+      fullPrompt: string;
+    }>;
+    model: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!open || data) return;
+    fetch("/api/prompts")
+      .then((r) => r.json())
+      .then((j) => setData(j.data))
+      .catch(() => {});
+  }, [open, data]);
+
+  const found = data?.agents.find((a) => a.name === agent);
+  const composed = found
+    ? editedSkill
+      ? [
+          found.systemContext,
+          "",
+          "## Skill Reference (read carefully — this is your decision logic)",
+          "",
+          editedSkill,
+          "",
+          "## Output rules",
+          "- Respond with STRICT JSON only. No prose, no markdown, no code fences.",
+          "- The JSON must match the schema described in the system context.",
+        ].join("\n")
+      : found.fullPrompt
+    : "";
+
+  return (
+    <Card>
+      <CardContent className="!pt-4 !pb-4">
+        <button
+          onClick={() => setOpen((v) => !v)}
+          className="w-full flex items-center justify-between gap-3 text-left"
+        >
+          <div className="flex items-center gap-3">
+            <Eye className="w-4 h-4 text-[var(--color-text-muted)]" />
+            <div>
+              <p className="text-[14px] font-medium text-[var(--color-text)]">
+                Inspect system prompt sent to Claude
+              </p>
+              <p className="text-[12px] text-[var(--color-text-secondary)]">
+                The exact bytes the model sees for {agent}.{" "}
+                {editedSkill ? "Reflects your edits." : "Committed skill markdown."}
+              </p>
+            </div>
+          </div>
+          <Badge variant={open ? "accent" : "outline"}>
+            {open ? "hide" : "show"}
+          </Badge>
+        </button>
+
+        {open && (
+          <div className="mt-4 space-y-3">
+            {found && (
+              <>
+                <div className="flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-[var(--color-text-muted)]">
+                    model: <span className="text-[var(--color-text)]">{data?.model}</span> ·
+                    skill: <span className="text-[var(--color-text)]">{found.skillFile}</span>
+                  </span>
+                  <span className="text-[var(--color-text-muted)]">
+                    {composed.split("\n").length} lines · {composed.length} chars
+                  </span>
+                </div>
+                <div className="rounded-lg bg-[var(--color-bg-invert)] border border-[var(--color-bg-invert-soft)] p-4 max-h-[420px] overflow-y-auto">
+                  <pre className="font-mono text-[11px] leading-[1.6] text-[var(--color-text-on-invert-soft)] whitespace-pre-wrap break-all">
+                    {composed}
+                  </pre>
+                </div>
+              </>
+            )}
+            {!found && (
+              <p className="text-[12px] text-[var(--color-text-muted)]">Loading…</p>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
