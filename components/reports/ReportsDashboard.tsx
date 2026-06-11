@@ -1,50 +1,183 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Download, TrendingUp, FileText, ArrowRight } from "lucide-react";
+import { Download, TrendingUp, FileText, ArrowRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
-// Demo data — would come from /api/agent in production
-const REPORT = {
-  period: "week-of-2026-06-15",
-  actualAPYBps: 463,
-  baselines: {
-    doNothing: 0,
-    usdcAaveOnly: 416,
-    usdyOnly: 442,
-  },
-  reasoning:
-    "This week ATMA outperformed 'do nothing' by 463 bps annualized. Versus 'USDC Aave only' baseline, ATMA outperformed by 47 bps thanks to mUSD's 0.18% boost via rebasing. No defensive exits triggered. Risk Agent emitted 6 'warn' heartbeats on Aave oracle deviation (Tuesday 2pm UTC, ~85 minute duration) but reverted to 'ok' without action. All 3 agent identities active. Next snapshot: Sunday 00:00 UTC.",
+// ───────────────────────────────────────────────────────────
+//  Types — mirror what /api/runs returns
+// ───────────────────────────────────────────────────────────
+
+type AgentStep = {
+  agent: "AllocatorAgent" | "RiskAgent" | "ReporterAgent";
+  startedAt: number;
+  finishedAt: number;
+  durationMs: number;
+  reasoningHash: `0x${string}`;
 };
 
-const ATTESTATIONS = [
-  { id: 1, agentId: 1001, agentName: "Allocator#1", eventType: "ALLOCATE", txHash: "0x4f8a…b9c2", time: "2026-06-15T09:14:22Z", reasoning: "Balanced tolerance · USDY 34.08% / mUSD 30% / Aave 35.92%" },
-  { id: 2, agentId: 2002, agentName: "Risk#2",      eventType: "REPORT",   txHash: "0x9c3d…e7a1", time: "2026-06-15T09:14:38Z", reasoning: "All signals OK · heartbeat" },
-  { id: 3, agentId: 2002, agentName: "Risk#2",      eventType: "WARN",     txHash: "0x2b1e…c5f4", time: "2026-06-16T14:02:09Z", reasoning: "Aave oracle 0.58% deviation · monitoring" },
-  { id: 4, agentId: 2002, agentName: "Risk#2",      eventType: "REPORT",   txHash: "0xa7c4…d8b3", time: "2026-06-16T15:27:31Z", reasoning: "Oracle returned to band · WARN cleared" },
-  { id: 5, agentId: 3003, agentName: "Reporter#3",  eventType: "REPORT",   txHash: "0x1c8e…f019", time: "2026-06-22T00:00:14Z", reasoning: "Weekly snapshot · +463 bps vs do-nothing" },
-];
+type Run = {
+  id: string;
+  startedAt: number;
+  finishedAt: number;
+  proposal: { reasoning: string };
+  risk: { level: "ok" | "warn" | "trigger"; reasoning: string };
+  report: {
+    periodLabel: string;
+    actualAPYBps: number;
+    outperformanceBps: {
+      vsDoNothing: number;
+      vsUsdcAaveOnly: number;
+      vsUsdyOnly: number;
+    };
+    reasoning: string;
+  };
+  steps: AgentStep[];
+};
+
+type Aggregate = {
+  runCount: number;
+  totalAttestations: number;
+  latest: Run;
+  actualAPYBps: number;
+  outperformanceBps: {
+    vsDoNothing: number;
+    vsUsdcAaveOnly: number;
+    vsUsdyOnly: number;
+  };
+};
+
+type RunsResponse = {
+  data: { runs: Run[]; aggregate: Aggregate | null; total: number };
+  error: string | null;
+};
+
+// ───────────────────────────────────────────────────────────
+//  ReportsDashboard
+// ───────────────────────────────────────────────────────────
 
 export function ReportsDashboard() {
-  const out = REPORT.actualAPYBps - REPORT.baselines.doNothing;
+  const [runs, setRuns] = useState<Run[]>([]);
+  const [aggregate, setAggregate] = useState<Aggregate | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [orchestrating, setOrchestrating] = useState(false);
+
+  async function fetchRuns() {
+    try {
+      const res = await fetch("/api/runs");
+      const j = (await res.json()) as RunsResponse;
+      setRuns(j.data.runs);
+      setAggregate(j.data.aggregate);
+    } catch {
+      /* swallow — keeps existing state */
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchRuns();
+    const id = window.setInterval(fetchRuns, 8_000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  async function triggerRun() {
+    setOrchestrating(true);
+    try {
+      await fetch("/api/orchestrate", { method: "POST", body: "{}" });
+      await fetchRuns();
+    } finally {
+      setOrchestrating(false);
+    }
+  }
+
+  function exportCSV() {
+    const header = "agent,timestamp,duration_ms,event,reasoning_hash\n";
+    const rows = runs.flatMap((r) =>
+      r.steps.map((s, i) => {
+        const label =
+          i === 0
+            ? "ALLOCATE"
+            : i === 1
+              ? r.risk.level === "ok"
+                ? "REPORT"
+                : r.risk.level === "warn"
+                  ? "WARN"
+                  : "DEFENSIVE_EXIT"
+              : "REPORT";
+        return [
+          s.agent,
+          new Date(s.startedAt).toISOString(),
+          s.durationMs,
+          label,
+          s.reasoningHash,
+        ].join(",");
+      }),
+    );
+    const blob = new Blob([header + rows.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `atma-attestations-${Date.now()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Sparkles className="w-5 h-5 text-[var(--color-primary)] animate-pulse" />
+      </div>
+    );
+  }
+
+  // Empty state — no runs in the store yet
+  if (!aggregate) {
+    return (
+      <Card>
+        <CardHeader>
+          <Badge variant="default">// reports</Badge>
+          <CardTitle>No orchestration runs yet</CardTitle>
+          <CardDescription>
+            Reports are computed from real agent runs. Trigger one below or go to{" "}
+            <a href="/vault" className="underline">
+              /vault
+            </a>{" "}
+            to watch the agents work live.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={triggerRun} disabled={orchestrating} size="lg">
+            {orchestrating ? "Running…" : "Run an orchestration"}
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const out = aggregate.actualAPYBps - aggregate.outperformanceBps.vsDoNothing;
   return (
     <div className="space-y-8">
-      {/* Headline metric */}
+      {/* Headline metric — pulled from latest run */}
       <Card className="overflow-hidden">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <Badge variant="default">// week of 2026-06-15</Badge>
+            <Badge variant="default">// {aggregate.latest.report.periodLabel}</Badge>
             <Badge variant="success">
               <TrendingUp className="w-3 h-3" />
-              live
+              live · {aggregate.runCount} run{aggregate.runCount === 1 ? "" : "s"}
             </Badge>
           </div>
-          <CardTitle>+{out} bps annualized vs do-nothing</CardTitle>
+          <CardTitle>
+            +{aggregate.outperformanceBps.vsDoNothing} bps annualized vs do-nothing
+          </CardTitle>
           <CardDescription>
-            Actual {(REPORT.actualAPYBps / 100).toFixed(2)}% APY against three baselines. All
-            outperformance figures attested via ERC-8004 ReputationRegistry.
+            Actual {(aggregate.actualAPYBps / 100).toFixed(2)}% APY against three
+            baselines. All outperformance figures attested via ERC-8004
+            ReputationRegistry. Recomputed on every orchestration run.
           </CardDescription>
         </CardHeader>
 
@@ -52,30 +185,31 @@ export function ReportsDashboard() {
           <div className="grid md:grid-cols-3 gap-4">
             <BaselineCard
               label="vs do-nothing"
-              baselineBps={REPORT.baselines.doNothing}
-              actualBps={REPORT.actualAPYBps}
+              baselineBps={0}
+              actualBps={aggregate.actualAPYBps}
               accent
             />
             <BaselineCard
               label="vs USDC + Aave"
-              baselineBps={REPORT.baselines.usdcAaveOnly}
-              actualBps={REPORT.actualAPYBps}
+              baselineBps={aggregate.actualAPYBps - aggregate.outperformanceBps.vsUsdcAaveOnly}
+              actualBps={aggregate.actualAPYBps}
             />
             <BaselineCard
               label="vs USDY only"
-              baselineBps={REPORT.baselines.usdyOnly}
-              actualBps={REPORT.actualAPYBps}
+              baselineBps={aggregate.actualAPYBps - aggregate.outperformanceBps.vsUsdyOnly}
+              actualBps={aggregate.actualAPYBps}
             />
           </div>
+          <div className="sr-only">{out}</div>
         </CardContent>
       </Card>
 
-      {/* Agent reasoning summary */}
+      {/* Reporter reasoning */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <Badge variant="default">// reporter agent reasoning</Badge>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={exportCSV}>
               <Download className="w-3 h-3" />
               Export CSV
             </Button>
@@ -85,86 +219,98 @@ export function ReportsDashboard() {
         <CardContent>
           <div className="rounded-lg p-5 bg-[var(--color-bg-invert)] border border-[var(--color-bg-invert-soft)]">
             <p className="text-[14px] leading-relaxed text-[var(--color-text-on-invert)]">
-              {REPORT.reasoning}
+              {aggregate.latest.report.reasoning}
             </p>
           </div>
         </CardContent>
       </Card>
 
-      {/* Attestation feed */}
+      {/* Attestation feed — real */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <Badge variant="default">// erc-8004 attestation feed</Badge>
             <Badge variant="outline">
               <FileText className="w-3 h-3" />
-              5 events
+              {aggregate.totalAttestations} events
             </Badge>
           </div>
           <CardTitle>On-chain reputation events</CardTitle>
           <CardDescription>
             Every decision is signed by an agent identity and emitted as a
-            ReputationEvent. Anyone can query the full trace via Mantle Explorer.
+            ReputationEvent. The feed below is sourced from this deployment&apos;s
+            actual orchestration history.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="border border-[var(--color-border)] rounded-lg overflow-hidden">
-            <div className="grid grid-cols-[60px_1.4fr_1.2fr_1fr_2.5fr] bg-[var(--color-bg-soft)] px-5 py-3 text-[10px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] font-mono">
+            <div className="grid grid-cols-[60px_1.4fr_1.2fr_1.4fr_2.2fr_0.6fr] bg-[var(--color-bg-soft)] px-5 py-3 text-[10px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] font-mono">
               <span>#</span>
               <span>agent</span>
               <span>event</span>
-              <span>tx</span>
-              <span>reasoning</span>
+              <span>hash</span>
+              <span>at</span>
+              <span className="text-right">ms</span>
             </div>
-            {ATTESTATIONS.map((a, i) => (
-              <div
-                key={a.id}
-                className={cn(
-                  "grid grid-cols-[60px_1.4fr_1.2fr_1fr_2.5fr] px-5 py-4 items-center text-[12px] hover:bg-[var(--color-bg-soft)] transition-colors",
-                  i < ATTESTATIONS.length - 1 && "border-b border-[var(--color-border)]",
-                )}
-              >
-                <span className="font-mono text-[var(--color-text-faint)] tabular-nums">
-                  {String(a.id).padStart(2, "0")}
-                </span>
-                <span className="flex items-center gap-2">
-                  <span
-                    className="block w-2 h-2 rounded-full"
-                    style={{
-                      background:
-                        a.agentName.startsWith("Allocator")
-                          ? "#a78bfa"
-                          : a.agentName.startsWith("Risk")
-                            ? "#fbbf24"
-                            : "#84cc16",
-                    }}
-                  />
-                  <span className="font-mono text-[var(--color-text)]">{a.agentName}</span>
-                </span>
-                <span>
-                  <Badge variant={a.eventType === "WARN" ? "warning" : a.eventType === "ALLOCATE" ? "accent" : "default"}>
-                    {a.eventType}
-                  </Badge>
-                </span>
-                <a
-                  href={`https://sepolia.mantlescan.xyz/tx/${a.txHash}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-mono text-[var(--color-primary)] hover:underline truncate"
+            {flattenSteps(runs)
+              .slice(0, 15)
+              .map((s, i, arr) => (
+                <div
+                  key={`${s.runId}-${s.idx}`}
+                  className={cn(
+                    "grid grid-cols-[60px_1.4fr_1.2fr_1.4fr_2.2fr_0.6fr] px-5 py-3 items-center text-[12px] hover:bg-[var(--color-bg-soft)] transition-colors",
+                    i < arr.length - 1 && "border-b border-[var(--color-border)]",
+                  )}
                 >
-                  {a.txHash}
-                </a>
-                <span className="text-[var(--color-text-secondary)] truncate">{a.reasoning}</span>
-              </div>
-            ))}
+                  <span className="font-mono text-[var(--color-text-faint)] tabular-nums">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <span
+                      className="block w-2 h-2 rounded-full"
+                      style={{
+                        background:
+                          s.agent === "AllocatorAgent"
+                            ? "#a78bfa"
+                            : s.agent === "RiskAgent"
+                              ? "#fbbf24"
+                              : "#84cc16",
+                      }}
+                    />
+                    <span className="font-mono">{s.agent}</span>
+                  </span>
+                  <Badge
+                    variant={
+                      s.label === "DEFENSIVE_EXIT"
+                        ? "danger"
+                        : s.label === "WARN"
+                          ? "warning"
+                          : s.label === "ALLOCATE"
+                            ? "accent"
+                            : "default"
+                    }
+                  >
+                    {s.label}
+                  </Badge>
+                  <span className="font-mono text-[var(--color-primary)] truncate text-[11px]">
+                    {s.reasoningHash.slice(0, 12)}…{s.reasoningHash.slice(-6)}
+                  </span>
+                  <span className="font-mono text-[10px] text-[var(--color-text-muted)] tabular-nums">
+                    {new Date(s.startedAt).toLocaleString()}
+                  </span>
+                  <span className="font-mono text-[10px] text-[var(--color-text-muted)] tabular-nums text-right">
+                    {s.durationMs}
+                  </span>
+                </div>
+              ))}
           </div>
 
           <div className="mt-4 flex items-center justify-between">
             <p className="font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-text-faint)]">
-              // showing 5 of 12 events this week
+              // showing latest {Math.min(15, flattenSteps(runs).length)} of {aggregate.totalAttestations}
             </p>
-            <Button variant="link" size="sm">
-              View all on Explorer
+            <Button variant="link" size="sm" onClick={triggerRun} disabled={orchestrating}>
+              {orchestrating ? "Running…" : "Trigger another run"}
               <ArrowRight className="w-3 h-3" />
             </Button>
           </div>
@@ -172,6 +318,49 @@ export function ReportsDashboard() {
       </Card>
     </div>
   );
+}
+
+// ───────────────────────────────────────────────────────────
+//  Helpers
+// ───────────────────────────────────────────────────────────
+
+type FlatStep = {
+  runId: string;
+  idx: number;
+  agent: AgentStep["agent"];
+  startedAt: number;
+  durationMs: number;
+  reasoningHash: `0x${string}`;
+  label: "ALLOCATE" | "REPORT" | "WARN" | "DEFENSIVE_EXIT";
+};
+
+function flattenSteps(runs: Run[]): FlatStep[] {
+  const out: FlatStep[] = [];
+  for (const r of runs) {
+    for (let i = 0; i < r.steps.length; i++) {
+      const s = r.steps[i];
+      const label =
+        i === 0
+          ? "ALLOCATE"
+          : i === 1
+            ? r.risk.level === "ok"
+              ? "REPORT"
+              : r.risk.level === "warn"
+                ? "WARN"
+                : "DEFENSIVE_EXIT"
+            : "REPORT";
+      out.push({
+        runId: r.id,
+        idx: i,
+        agent: s.agent,
+        startedAt: s.startedAt,
+        durationMs: s.durationMs,
+        reasoningHash: s.reasoningHash,
+        label,
+      });
+    }
+  }
+  return out;
 }
 
 function BaselineCard({
