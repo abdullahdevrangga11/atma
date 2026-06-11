@@ -34,11 +34,6 @@ export function VaultStateDiagram() {
       <line x1="58" y1="129" x2="116" y2="100" stroke="#0a0a0a" strokeWidth="1" />
       <line x1="222" y1="129" x2="164" y2="100" stroke="#0a0a0a" strokeWidth="1" />
 
-      {/* Dotted accent corner blocks */}
-      <rect x="6" y="6" width="6" height="6" fill="#5b3df0" />
-      <rect x="268" y="6" width="6" height="6" fill="#fbbf24" />
-      <rect x="6" y="168" width="6" height="6" fill="#84cc16" />
-      <rect x="268" y="168" width="6" height="6" fill="#a78bfa" />
     </svg>
   );
 }
@@ -72,13 +67,6 @@ export function AgentSwarmDiagram() {
       <line x1="140" y1="82" x2="140" y2="120" stroke="#0a0a0a" strokeWidth="1" />
       <line x1="200" y1="112" x2="160" y2="120" stroke="#0a0a0a" strokeWidth="1" />
 
-      {/* small chips */}
-      <rect x="38" y="26" width="6" height="14" fill="#a78bfa" />
-      <rect x="46" y="20" width="6" height="20" fill="#84cc16" />
-      <rect x="240" y="22" width="6" height="18" fill="#fbbf24" />
-      <rect x="248" y="28" width="6" height="12" fill="#5b3df0" />
-      <rect x="10" y="150" width="6" height="10" fill="#f9a8d4" />
-      <rect x="262" y="150" width="6" height="14" fill="#84cc16" />
     </svg>
   );
 }
@@ -139,11 +127,6 @@ export function PolicyAsDataDiagram() {
       <text x="205" y="74" fill="white" fontSize="10" fontFamily="monospace" textAnchor="middle">CLAUDE</text>
       <text x="205" y="88" fill="rgba(255,255,255,0.7)" fontSize="8" fontFamily="monospace" textAnchor="middle">reasons</text>
 
-      {/* small chips */}
-      <rect x="20" y="20" width="6" height="14" fill="#fbbf24" />
-      <rect x="254" y="20" width="6" height="14" fill="#a78bfa" />
-      <rect x="20" y="146" width="6" height="14" fill="#84cc16" />
-      <rect x="254" y="146" width="6" height="14" fill="#f9a8d4" />
     </svg>
   );
 }
