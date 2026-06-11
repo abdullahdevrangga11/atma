@@ -364,22 +364,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #f5f4ee;
+    color: white;
     font-family: var(--font-mono);
     font-weight: 500;
     opacity: 0;
-    background-color: #0a0a0a;
+    background-color: var(--color-primary);
     transition: opacity 220ms cubic-bezier(0.16, 1, 0.3, 1);
     user-select: none;
     -webkit-user-select: none;
+    z-index: 5;
   }
   .fiddle-block.fiddle-active {
     opacity: 1;
   }
-  /* Variant — brand blue blocks for inverted CTAs etc. */
-  .fiddle-block-blue {
-    background-color: var(--color-primary);
-    color: white;
+  /* Variant — dark blocks for inverted CTAs etc. */
+  .fiddle-block-dark {
+    background-color: #0a0a0a;
+    color: #f5f4ee;
   }
 }
 

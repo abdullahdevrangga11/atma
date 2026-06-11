@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils/cn";
-import { FiddleHover } from "@/components/animations/FiddleHover";
-import { Button } from "@/components/ui/button";
 
 type DropdownItem = {
   name: string;
@@ -221,26 +219,16 @@ export function Navbar() {
                 ref={(el) => { itemRefs.current[i] = el; }}
                 type="button"
                 className={cn(
-                  "relative rounded-full overflow-hidden transition-colors duration-200",
+                  "relative px-5 py-2 text-[14px] font-medium transition-colors duration-200 flex items-center gap-1.5",
                   openIdx === i
                     ? "text-[var(--color-primary)]"
                     : "text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]",
                 )}
               >
-                <FiddleHover
-                  blockSize={14}
-                  detectionRadius={36}
-                  clusterSize={4}
-                  blockLifetime={360}
-                  className="px-5 py-2 rounded-full"
-                >
-                  <span className="text-[14px] font-medium flex items-center gap-1.5">
-                    {item.label}
-                    <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className={cn("transition-transform duration-300", openIdx === i && "rotate-180")}>
-                      <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </span>
-                </FiddleHover>
+                {item.label}
+                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" className={cn("transition-transform duration-300", openIdx === i && "rotate-180")}>
+                  <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </button>
 
               {openIdx === i && (

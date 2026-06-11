@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Candlesticks } from "@/components/decor/Candlesticks";
 import { Reveal, WordMask, Up, Fade } from "@/components/animations/Reveal";
 import { Button } from "@/components/ui/button";
+import { HeroShowcase } from "@/components/landing/HeroShowcase";
 
 export function Hero() {
   return (
@@ -45,9 +46,18 @@ export function Hero() {
               </Button>
             </Up>
 
-            <Fade delay={1100} className="mt-20">
+          </Reveal>
+        </div>
+
+        {/* Hero showcase — base.org-style preview card with FiddleHover */}
+        <div className="mt-20 md:mt-28">
+          <Reveal threshold={0.05}>
+            <Up delay={0}>
+              <HeroShowcase />
+            </Up>
+            <Fade delay={800} className="mt-12 flex justify-center">
               <div className="flex flex-col items-center gap-2 text-[var(--color-text-muted)]">
-                <span className="text-[10px] font-mono uppercase tracking-[0.2em]">Scroll</span>
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em]">Hover the card · Scroll for more</span>
                 <div className="w-px h-12 bg-gradient-to-b from-[var(--color-text-faint)] to-transparent" />
               </div>
             </Fade>
