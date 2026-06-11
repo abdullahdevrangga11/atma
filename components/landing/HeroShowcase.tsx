@@ -1,117 +1,24 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils/cn";
 
-// ─────────────────────────────────────────────────────────
-//  Animation primitives — local to this showcase
-// ─────────────────────────────────────────────────────────
-
-function useViewportTrigger<T extends HTMLElement>(threshold: number = 0.4) {
-  const ref = useRef<T | null>(null);
-  const [active, setActive] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setActive(true);
-          obs.disconnect();
-        }
-      },
-      { threshold },
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [threshold]);
-  return { ref, active };
-}
-
-/**
- * Smoothly counts up to `target` using ease-out-expo. Single source of truth
- * for animated numeric values — no CSS transition should chase the same
- * property concurrently (e.g. AllocBar's width is driven directly off this).
- */
-function useCountUp(target: number, durationMs: number, start: boolean, delayMs = 0) {
-  const [value, setValue] = useState(0);
-  useEffect(() => {
-    if (!start) return;
-    let rafId = 0;
-    const t = window.setTimeout(() => {
-      const startTime = performance.now();
-      const tick = (now: number) => {
-        const p = Math.min((now - startTime) / durationMs, 1);
-        const eased = p === 1 ? 1 : 1 - Math.pow(2, -10 * p); // ease-out-expo
-        setValue(target * eased);
-        if (p < 1) rafId = requestAnimationFrame(tick);
-      };
-      rafId = requestAnimationFrame(tick);
-    }, delayMs);
-    return () => {
-      window.clearTimeout(t);
-      if (rafId) cancelAnimationFrame(rafId);
-    };
-  }, [target, durationMs, start, delayMs]);
-  return value;
-}
-
-function useCyclingValue<T>(values: T[], intervalMs: number, start: boolean) {
-  const [idx, setIdx] = useState(0);
-  useEffect(() => {
-    if (!start) return;
-    const id = window.setInterval(
-      () => setIdx((i) => (i + 1) % values.length),
-      intervalMs,
-    );
-    return () => window.clearInterval(id);
-  }, [values.length, intervalMs, start]);
-  return values[idx];
-}
-
-function useLiveClock(start: boolean): string {
-  const [t, setT] = useState<string>("--:--:--Z");
-  useEffect(() => {
-    if (!start) return;
-    const fmt = () => {
-      const d = new Date();
-      const hh = String(d.getUTCHours()).padStart(2, "0");
-      const mm = String(d.getUTCMinutes()).padStart(2, "0");
-      const ss = String(d.getUTCSeconds()).padStart(2, "0");
-      return `${hh}:${mm}:${ss}Z`;
-    };
-    setT(fmt());
-    const id = window.setInterval(() => setT(fmt()), 1000);
-    return () => window.clearInterval(id);
-  }, [start]);
-  return t;
-}
-
-/**
- * Returns true once `delayMs` has elapsed since `active` became true.
- * Used to stagger sub-element entrances on top of the parent's viewport trigger.
- */
-function useDelayedActive(active: boolean, delayMs: number): boolean {
-  const [on, setOn] = useState(false);
-  useEffect(() => {
-    if (!active) return;
-    const t = window.setTimeout(() => setOn(true), delayMs);
-    return () => window.clearTimeout(t);
-  }, [active, delayMs]);
-  return on;
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
 }
 
 // ─────────────────────────────────────────────────────────
 //  Static demo data
 // ─────────────────────────────────────────────────────────
 
-const NAV_TARGET = 10046.3;
-const PNL_TARGET = 46.3;
-const APY_TARGET = 4.63;
-const BPS_TARGET = 463;
-const ATTESTATIONS_TARGET = 12;
-const RISK_SCORE = 1;
+const NAV = 10046.3;
+const PNL = 46.3;
+const APY = 4.63;
+const BPS = 463;
+const ATT = 12;
+const RISK = 1;
 
 const ALLOCATIONS = [
   { name: "USDY", bps: 3408, color: "#a78bfa" },
@@ -120,46 +27,223 @@ const ALLOCATIONS = [
   { name: "MI4",  bps: 0,    color: "#f9a8d4", muted: true },
 ] as const;
 
-const TX_HASHES = [
-  "0x4f8a…b9c2",
-  "0x9c3d…e7a1",
-  "0x2b1e…c5f4",
-  "0xa7c4…d8b3",
-];
-
+const TX_HASHES = ["0x4f8a…b9c2", "0x9c3d…e7a1", "0x2b1e…c5f4", "0xa7c4…d8b3"];
 const SIGNERS = ["Allocator#1", "Risk#2", "Reporter#3"];
 
 // ─────────────────────────────────────────────────────────
-//  HeroShowcase
+//  HeroShowcase — single GSAP timeline drives everything
 // ─────────────────────────────────────────────────────────
 
 export function HeroShowcase() {
-  const { ref, active } = useViewportTrigger<HTMLDivElement>(0.3);
+  // Root and card refs
+  const rootRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
-  // Number animations — start times are coordinated so the eye reads
-  // headline → secondary → allocation in a natural cascade.
-  const nav = useCountUp(NAV_TARGET, 1600, active, 0);
-  const pnl = useCountUp(PNL_TARGET, 1100, active, 480);
-  const apy = useCountUp(APY_TARGET, 1100, active, 620);
-  const bps = useCountUp(BPS_TARGET, 1300, active, 760);
-  const att = useCountUp(ATTESTATIONS_TARGET, 900, active, 920);
+  // Animated text targets — written directly by GSAP onUpdate
+  const navEl = useRef<HTMLParagraphElement>(null);
+  const apyEl = useRef<HTMLSpanElement>(null);
+  const bpsEl = useRef<HTMLSpanElement>(null);
+  const attEl = useRef<HTMLSpanElement>(null);
+  const pnlChip = useRef<HTMLDivElement>(null);
+  const pnlValue = useRef<HTMLSpanElement>(null);
+  const stateBadge = useRef<HTMLSpanElement>(null);
 
-  // Staggered entrance booleans
-  const stateBadgeIn = useDelayedActive(active, 350);
-  const pnlIn = useDelayedActive(active, 520);
+  // Allocation bars and their inline labels
+  const barRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const labelRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const shimmerRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
-  // Cycling values
-  const txHash = useCyclingValue(TX_HASHES, 3600, active);
-  const signer = useCyclingValue(SIGNERS, 3600, active);
-  const clock = useLiveClock(active);
+  // Live clock (interval-driven, no GSAP needed)
+  const [clock, setClock] = useState("--:--:--Z");
+  useEffect(() => {
+    const fmt = () => {
+      const d = new Date();
+      const hh = String(d.getUTCHours()).padStart(2, "0");
+      const mm = String(d.getUTCMinutes()).padStart(2, "0");
+      const ss = String(d.getUTCSeconds()).padStart(2, "0");
+      return `${hh}:${mm}:${ss}Z`;
+    };
+    setClock(fmt());
+    const id = window.setInterval(() => setClock(fmt()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  // Cycling chip values (separate cadence) — GSAP plays the slide-in keyframe
+  // on each value change via a key-driven refs pattern below.
+  const [txIdx, setTxIdx] = useState(0);
+  const [signerIdx, setSignerIdx] = useState(0);
+  const txEl = useRef<HTMLParagraphElement>(null);
+  const signerEl = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setTxIdx((i) => (i + 1) % TX_HASHES.length);
+      setSignerIdx((i) => (i + 1) % SIGNERS.length);
+    }, 3600);
+    return () => window.clearInterval(id);
+  }, []);
+
+  // Play the slide-in animation whenever the index changes (including initial mount)
+  useEffect(() => {
+    if (!txEl.current) return;
+    gsap.fromTo(
+      txEl.current,
+      { y: 6, filter: "blur(3px)", opacity: 0 },
+      { y: 0, filter: "blur(0px)", opacity: 1, duration: 0.36, ease: "expo.out" },
+    );
+  }, [txIdx]);
+  useEffect(() => {
+    if (!signerEl.current) return;
+    gsap.fromTo(
+      signerEl.current,
+      { y: 6, filter: "blur(3px)", opacity: 0 },
+      { y: 0, filter: "blur(0px)", opacity: 1, duration: 0.36, ease: "expo.out" },
+    );
+  }, [signerIdx]);
+
+  // Master entrance timeline — fires once when the card enters viewport
+  useEffect(() => {
+    if (!rootRef.current) return;
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: rootRef.current,
+          start: "top 82%",
+          once: true,
+        },
+        defaults: { ease: "expo.out" },
+      });
+
+      // 1. Card lifts in — soft scale + shadow grow
+      tl.fromTo(
+        cardRef.current,
+        {
+          y: 8,
+          scale: 0.985,
+          opacity: 0,
+          boxShadow: "0 2px 12px -4px rgba(0,0,0,0.04)",
+        },
+        {
+          y: 0,
+          scale: 1,
+          opacity: 1,
+          boxShadow: "0 30px 80px -28px rgba(0,0,0,0.18)",
+          duration: 0.95,
+        },
+        0,
+      );
+
+      // 2. NAV counts up from 0
+      const navState = { n: 0 };
+      tl.to(navState, {
+        n: NAV,
+        duration: 1.6,
+        onUpdate: () => {
+          if (navEl.current) navEl.current.textContent = formatUSD(navState.n);
+        },
+      }, 0.1);
+
+      // 3. State badge lands
+      tl.fromTo(
+        stateBadge.current,
+        { y: -4, scale: 0.94, opacity: 0 },
+        { y: 0, scale: 1, opacity: 1, duration: 0.7 },
+        0.35,
+      );
+
+      // 4. PnL chip slides up + counts the +46.30
+      const pnlState = { n: 0 };
+      tl.fromTo(
+        pnlChip.current,
+        { y: 6, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.7 },
+        0.48,
+      ).to(
+        pnlState,
+        {
+          n: PNL,
+          duration: 1.1,
+          onUpdate: () => {
+            if (pnlValue.current) pnlValue.current.textContent = `+${pnlState.n.toFixed(2)}`;
+          },
+        },
+        0.48,
+      );
+
+      // 5. Secondary metrics — APY, +bps (with overshoot back ease for accent),
+      //    risk score is static, attestations rolls.
+      const apyState = { n: 0 };
+      tl.to(apyState, {
+        n: APY,
+        duration: 1.1,
+        onUpdate: () => {
+          if (apyEl.current) apyEl.current.textContent = `${apyState.n.toFixed(2)}%`;
+        },
+      }, 0.62);
+
+      const bpsState = { n: 0 };
+      tl.to(bpsState, {
+        n: BPS,
+        duration: 1.4,
+        ease: "back.out(1.3)",
+        onUpdate: () => {
+          if (bpsEl.current) bpsEl.current.textContent = `+${Math.round(bpsState.n)}`;
+        },
+      }, 0.76);
+
+      const attState = { n: 0 };
+      tl.to(attState, {
+        n: ATT,
+        duration: 0.9,
+        onUpdate: () => {
+          if (attEl.current) attEl.current.textContent = String(Math.round(attState.n));
+        },
+      }, 0.92);
+
+      // 6. Allocation bars — width + label count + shimmer wipe, staggered
+      ALLOCATIONS.forEach((a, i) => {
+        const bar = barRefs.current[i];
+        const lbl = labelRefs.current[i];
+        const shimmer = shimmerRefs.current[i];
+        if (!bar) return;
+        const at = 0.95 + i * 0.13;
+        const pct = a.bps / 100;
+        const muted = "muted" in a && a.muted;
+
+        const state = { bps: 0 };
+        tl.to(state, {
+          bps: a.bps,
+          duration: 1.5,
+          onUpdate: () => {
+            const p = state.bps / 100;
+            bar.style.width = `${p}%`;
+            if (lbl) {
+              lbl.firstChild!.textContent = `${p.toFixed(2)}% `;
+              (lbl.lastChild as HTMLElement).textContent = `/ ${Math.round(state.bps)} bps`;
+            }
+          },
+        }, at);
+
+        if (shimmer && !muted) {
+          tl.fromTo(
+            shimmer,
+            { xPercent: -120, opacity: 0 },
+            { xPercent: 220, opacity: 0.85, duration: 1.4, ease: "expo.out" },
+            at + 0.15,
+          );
+        }
+      });
+    }, rootRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <div ref={ref} className="relative mx-auto max-w-[920px]">
+    <div ref={rootRef} className="relative mx-auto max-w-[920px]">
       <div
-        className={cn(
-          "relative w-full rounded-[20px] border border-[var(--color-border)] bg-[var(--color-bg-card-soft)] overflow-hidden",
-          active && "card-lift",
-        )}
+        ref={cardRef}
+        className="relative w-full rounded-[20px] border border-[var(--color-border)] bg-[var(--color-bg-card-soft)] overflow-hidden"
+        style={{ willChange: "transform, opacity, box-shadow" }}
       >
         {/* Card header strip */}
         <div className="flex items-center justify-between px-7 py-4 border-b border-[var(--color-border)] bg-white/60 backdrop-blur-sm">
@@ -171,14 +255,7 @@ export function HeroShowcase() {
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="default">// vault state</Badge>
-            <span
-              className={cn(
-                "transition-all duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
-                stateBadgeIn
-                  ? "opacity-100 translate-y-0 scale-100"
-                  : "opacity-0 -translate-y-1 scale-95",
-              )}
-            >
+            <span ref={stateBadge} style={{ opacity: 0, display: "inline-block" }}>
               <Badge variant="accent">allocated</Badge>
             </span>
           </div>
@@ -191,46 +268,61 @@ export function HeroShowcase() {
             <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-3">
               NAV
             </p>
-            <p className="text-[44px] md:text-[48px] leading-none font-medium tabular-nums">
-              {formatUSD(nav)}
+            <p
+              ref={navEl}
+              className="text-[44px] md:text-[48px] leading-none font-medium tabular-nums"
+            >
+              $0.00
             </p>
 
-            {/* PnL chip — slides in once active and a beat after NAV starts */}
+            {/* PnL chip — slides in once active */}
             <div
-              className={cn(
-                "mt-4 flex items-center gap-2 text-[12px]",
-                "transition-all duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)]",
-                pnlIn
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-1.5",
-              )}
+              ref={pnlChip}
+              className="mt-4 flex items-center gap-2 text-[12px]"
+              style={{ opacity: 0 }}
             >
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-mono tabular-nums">
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                   <path d="M5 8V2M2 5l3-3 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                +{pnl.toFixed(2)}
+                <span ref={pnlValue}>+0.00</span>
               </span>
               <span className="text-[var(--color-text-muted)]">vs entry</span>
             </div>
 
             <div className="mt-7 grid grid-cols-2 gap-x-4 gap-y-5">
-              <Metric label="APY" value={`${apy.toFixed(2)}%`} />
-              <Metric
-                label="vs do-nothing"
-                value={`+${Math.round(bps)} bps`}
-                accent
-                glow={active}
-              />
-              <Metric
-                label="risk score"
-                value={
-                  <>
-                    {RISK_SCORE} <span className="text-[12px] text-[var(--color-text-muted)]">/10</span>
-                  </>
-                }
-              />
-              <Metric label="attestations" value={Math.round(att).toString()} />
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-1">
+                  APY
+                </p>
+                <p className="text-[18px] font-medium tabular-nums text-[var(--color-text)]">
+                  <span ref={apyEl}>0.00%</span>
+                </p>
+              </div>
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-1">
+                  vs do-nothing
+                </p>
+                <p className="text-[18px] font-medium tabular-nums text-[var(--color-primary)] glow-pulse">
+                  <span ref={bpsEl}>+0</span> bps
+                </p>
+              </div>
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-1">
+                  risk score
+                </p>
+                <p className="text-[18px] font-medium tabular-nums text-[var(--color-text)]">
+                  {RISK} <span className="text-[12px] text-[var(--color-text-muted)]">/10</span>
+                </p>
+              </div>
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-1">
+                  attestations
+                </p>
+                <p className="text-[18px] font-medium tabular-nums text-[var(--color-text)]">
+                  <span ref={attEl}>0</span>
+                </p>
+              </div>
             </div>
           </div>
 
@@ -246,23 +338,73 @@ export function HeroShowcase() {
             </div>
 
             <div className="space-y-3.5">
-              {ALLOCATIONS.map((a, i) => (
-                <AllocBar
-                  key={a.name}
-                  name={a.name}
-                  bps={a.bps}
-                  color={a.color}
-                  muted={"muted" in a ? a.muted : false}
-                  active={active}
-                  delayMs={900 + i * 140}
-                />
-              ))}
+              {ALLOCATIONS.map((a, i) => {
+                const muted = "muted" in a && a.muted;
+                return (
+                  <div key={a.name} className={muted ? "opacity-50" : ""}>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="block w-2 h-2 rounded-[1px]" style={{ background: a.color }} />
+                        <span className="text-[13px] font-medium text-[var(--color-text)]">{a.name}</span>
+                      </div>
+                      <span
+                        ref={(el) => { labelRefs.current[i] = el; }}
+                        className="font-mono text-[12px] text-[var(--color-text-secondary)] tabular-nums"
+                      >
+                        <span>0.00% </span>
+                        <span className="text-[var(--color-text-muted)]">/ 0 bps</span>
+                      </span>
+                    </div>
+                    <div className="relative h-2 rounded-full bg-white border border-[var(--color-border)] overflow-hidden">
+                      <div
+                        ref={(el) => { barRefs.current[i] = el; }}
+                        className="h-full rounded-full"
+                        style={{ width: "0%", background: a.color }}
+                      />
+                      {!muted && (
+                        <span
+                          ref={(el) => { shimmerRefs.current[i] = el; }}
+                          aria-hidden
+                          className="absolute inset-0 block pointer-events-none"
+                          style={{
+                            background:
+                              "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.55) 50%, transparent 100%)",
+                            transform: "translateX(-120%)",
+                            opacity: 0,
+                          }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
             <div className="mt-6 pt-5 border-t border-[var(--color-border)] grid grid-cols-3 gap-3">
-              <Chip label="// last tx"   value={txHash} />
-              <Chip label="// signed by" value={signer} />
-              <Chip label="// at"        value={clock} static />
+              <div className="rounded-md px-3 py-2 bg-white border border-[var(--color-border)] overflow-hidden">
+                <p className="font-mono text-[9px] uppercase tracking-[0.06em] text-[var(--color-text-muted)] mb-0.5">
+                  // last tx
+                </p>
+                <p ref={txEl} className="font-mono text-[11px] text-[var(--color-text)] truncate tabular-nums">
+                  {TX_HASHES[txIdx]}
+                </p>
+              </div>
+              <div className="rounded-md px-3 py-2 bg-white border border-[var(--color-border)] overflow-hidden">
+                <p className="font-mono text-[9px] uppercase tracking-[0.06em] text-[var(--color-text-muted)] mb-0.5">
+                  // signed by
+                </p>
+                <p ref={signerEl} className="font-mono text-[11px] text-[var(--color-text)] truncate tabular-nums">
+                  {SIGNERS[signerIdx]}
+                </p>
+              </div>
+              <div className="rounded-md px-3 py-2 bg-white border border-[var(--color-border)] overflow-hidden">
+                <p className="font-mono text-[9px] uppercase tracking-[0.06em] text-[var(--color-text-muted)] mb-0.5">
+                  // at
+                </p>
+                <p className="font-mono text-[11px] text-[var(--color-text)] truncate tabular-nums">
+                  {clock}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -270,129 +412,6 @@ export function HeroShowcase() {
     </div>
   );
 }
-
-// ─────────────────────────────────────────────────────────
-//  Sub-components
-// ─────────────────────────────────────────────────────────
-
-function Metric({
-  label,
-  value,
-  accent,
-  glow,
-}: {
-  label: string;
-  value: React.ReactNode;
-  accent?: boolean;
-  glow?: boolean;
-}) {
-  return (
-    <div>
-      <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-1">
-        {label}
-      </p>
-      <p
-        className={cn(
-          "text-[18px] font-medium tabular-nums",
-          accent ? "text-[var(--color-primary)]" : "text-[var(--color-text)]",
-          glow && accent && "glow-pulse",
-        )}
-      >
-        {value}
-      </p>
-    </div>
-  );
-}
-
-function AllocBar({
-  name,
-  bps,
-  color,
-  muted,
-  active,
-  delayMs,
-}: {
-  name: string;
-  bps: number;
-  color: string;
-  muted?: boolean;
-  active: boolean;
-  delayMs: number;
-}) {
-  const animated = useCountUp(bps, 1400, active, delayMs);
-  const animatedPct = animated / 100;
-  // Trigger the shimmer wipe exactly when the bar starts filling, and only once
-  const [shimmerKey, setShimmerKey] = useState<number | null>(null);
-  useEffect(() => {
-    if (!active) return;
-    const t = window.setTimeout(() => setShimmerKey(Date.now()), delayMs);
-    return () => window.clearTimeout(t);
-  }, [active, delayMs]);
-
-  return (
-    <div className={muted ? "opacity-50" : ""}>
-      <div className="flex items-center justify-between mb-1.5">
-        <div className="flex items-center gap-2">
-          <span className="block w-2 h-2 rounded-[1px]" style={{ background: color }} />
-          <span className="text-[13px] font-medium text-[var(--color-text)]">{name}</span>
-        </div>
-        <span className="font-mono text-[12px] text-[var(--color-text-secondary)] tabular-nums">
-          {animatedPct.toFixed(2)}%{" "}
-          <span className="text-[var(--color-text-muted)]">/ {Math.round(animated)} bps</span>
-        </span>
-      </div>
-      <div className="relative h-2 rounded-full bg-white border border-[var(--color-border)] overflow-hidden">
-        {/*
-          Width is driven straight off rAF state — no CSS transition chases it,
-          so the fill is buttery instead of stair-stepped.
-        */}
-        <div
-          className="h-full rounded-full"
-          style={{ width: `${animatedPct}%`, background: color }}
-        />
-        {shimmerKey !== null && !muted && (
-          <span key={shimmerKey} className="shimmer-wipe absolute inset-0 block" />
-        )}
-      </div>
-    </div>
-  );
-}
-
-function Chip({
-  label,
-  value,
-  static: isStatic,
-}: {
-  label: string;
-  value: string;
-  /** When true, value updates without the slide-in animation (e.g. live clock) */
-  static?: boolean;
-}) {
-  return (
-    <div className="rounded-md px-3 py-2 bg-white border border-[var(--color-border)] overflow-hidden">
-      <p className="font-mono text-[9px] uppercase tracking-[0.06em] text-[var(--color-text-muted)] mb-0.5">
-        {label}
-      </p>
-      {/*
-        Key on value forces remount each cycle; the chip-slide-in keyframe
-        replaces the old "flicker" hack with a proper slide + blur reveal.
-      */}
-      <p
-        key={isStatic ? undefined : value}
-        className={cn(
-          "font-mono text-[11px] text-[var(--color-text)] truncate tabular-nums",
-          !isStatic && "chip-slide-in",
-        )}
-      >
-        {value}
-      </p>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────
-//  Helpers
-// ─────────────────────────────────────────────────────────
 
 function formatUSD(n: number): string {
   return n.toLocaleString("en-US", {

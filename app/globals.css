@@ -517,51 +517,9 @@
   }
   .float-stick { animation: float-stick 6s ease-in-out infinite; }
 
-  /* Shimmer wipe — pulses a soft highlight across allocation bars as they fill */
-  @keyframes shimmer-wipe {
-    0%   { transform: translateX(-120%); opacity: 0; }
-    20%  { opacity: 0.9; }
-    100% { transform: translateX(220%); opacity: 0; }
-  }
-  .shimmer-wipe::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.55) 50%,
-      transparent 100%
-    );
-    transform: translateX(-120%);
-    animation: shimmer-wipe 1.3s cubic-bezier(0.16, 1, 0.3, 1) 0.3s 1 forwards;
-    pointer-events: none;
-  }
-
-  /* Cycling chip slide — old value out, new value in */
-  @keyframes chip-slide-in {
-    0%   { transform: translateY(6px); filter: blur(3px); opacity: 0; }
-    60%  { filter: blur(0); }
-    100% { transform: translateY(0);    filter: blur(0); opacity: 1; }
-  }
-  .chip-slide-in {
-    animation: chip-slide-in 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  /* Card lift — soft scale + shadow on viewport enter */
-  @keyframes card-lift {
-    0%   {
-      transform: translateY(6px) scale(0.985);
-      box-shadow: 0 2px 12px -4px rgba(0, 0, 0, 0.04);
-    }
-    100% {
-      transform: translateY(0) scale(1);
-      box-shadow: 0 30px 80px -28px rgba(0, 0, 0, 0.18);
-    }
-  }
-  .card-lift {
-    animation: card-lift 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
+  /* HeroShowcase animations (shimmer wipe, card lift, chip slide) are owned
+     by the GSAP timeline in components/landing/HeroShowcase.tsx. Kept here:
+     pulse-soft (header dot), glow-pulse (accent metric), float-stick (decor). */
   .float-stick-delay-1 { animation: float-stick 6s ease-in-out infinite; animation-delay: 1s; }
   .float-stick-delay-2 { animation: float-stick 6s ease-in-out infinite; animation-delay: 2s; }
   .float-stick-delay-3 { animation: float-stick 6s ease-in-out infinite; animation-delay: 3s; }
