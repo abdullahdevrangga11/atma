@@ -15,7 +15,7 @@ export function Hero() {
         proximity boost. Hero content sits on z-10 with pointer-events:none on the
         wrapper so cursor still reaches the candlesticks underneath.
       */}
-      <LiveCandlesticks className="z-0" hoverRadius={200} hoverBoost={1.6} />
+      <LiveCandlesticks className="z-0" hoverRadius={220} />
 
       <div className="container-atma relative z-10 pointer-events-none">
         <div className="mx-auto max-w-[960px] text-center">
