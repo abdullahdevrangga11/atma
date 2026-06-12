@@ -198,6 +198,7 @@ const NAV: NavItem[] = [
     label: "Policy",
     items: [
       { name: "Skills", desc: "Edit markdown, see diff", href: "/skills", Icon: IconSkills },
+      { name: "Marketplace", desc: "Fork community-published skills", href: "/marketplace", Icon: IconBlock },
       { name: "A/B test", desc: "Prove a policy change pays off", href: "/ab-test", Icon: IconBeaker },
       { name: "Network", desc: "Cumulative network stats", href: "/network", Icon: IconNetwork },
     ],

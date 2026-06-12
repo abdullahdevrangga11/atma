@@ -13,6 +13,7 @@ const ROUTES = [
   "/skills",
   "/reports",
   "/network",
+  "/marketplace",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
