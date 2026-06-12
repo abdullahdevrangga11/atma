@@ -1,6 +1,7 @@
 "use client";
 
 import { Reveal, Up, WordMask } from "@/components/animations/Reveal";
+import { Logo3DLazy } from "@/components/landing/Logo3DLazy";
 
 const STATS = [
   { value: "$4B+", label: "Mantle RWA TVL" },
@@ -14,7 +15,7 @@ export function StatCounters() {
     <section className="section bg-dotted">
       <div className="container-amana">
         <Reveal>
-          <div className="text-center max-w-[640px] mx-auto mb-24">
+          <div className="text-center max-w-[640px] mx-auto mb-14">
             <p className="display-3 text-[var(--color-text)] mb-4">
               <WordMask text="Where treasury meets RWA." staggerMs={70} />
             </p>
@@ -25,6 +26,9 @@ export function StatCounters() {
               </p>
             </Up>
           </div>
+
+          {/* Scroll-reactive extruded 3D logo (lazy; three.js loads only here) */}
+          <Logo3DLazy />
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-y-14 md:gap-y-0 md:gap-x-8">
             {STATS.map((s, i) => (
