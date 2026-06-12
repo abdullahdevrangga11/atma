@@ -12,10 +12,14 @@ const STATS = [
 
 export function StatCounters() {
   return (
-    <section className="section bg-dotted">
-      <div className="container-amana">
+    <section className="section bg-dotted relative overflow-hidden">
+      {/* Scroll-reactive extruded 3D logos — absolute decoration, two corners.
+          Lazy: three.js loads only when this section nears the viewport. */}
+      <Logo3DLazy />
+
+      <div className="container-amana relative z-10">
         <Reveal>
-          <div className="text-center max-w-[640px] mx-auto mb-14">
+          <div className="text-center max-w-[640px] mx-auto mb-24">
             <p className="display-3 text-[var(--color-text)] mb-4">
               <WordMask text="Where treasury meets RWA." staggerMs={70} />
             </p>
@@ -26,9 +30,6 @@ export function StatCounters() {
               </p>
             </Up>
           </div>
-
-          {/* Scroll-reactive extruded 3D logo (lazy; three.js loads only here) */}
-          <Logo3DLazy />
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-y-14 md:gap-y-0 md:gap-x-8">
             {STATS.map((s, i) => (

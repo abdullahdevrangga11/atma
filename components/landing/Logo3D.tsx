@@ -1,20 +1,21 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
+import { Environment, Lightformer } from "@react-three/drei";
 import { useMemo, useRef, type MutableRefObject } from "react";
 import * as THREE from "three";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
 
 /**
- * Extruded 3D AMANA logo, scroll-reactive.
+ * Premium extruded AMANA logo, scroll-reactive — two instances bleeding into
+ * the top-right and bottom-left corners as ambient decoration.
  *
- * The logo is two clean SVG paths → ideal for ExtrudeGeometry: it becomes a
- * solid chunky object, not a noisy mesh. Floats gently on its own clock and
- * rotates on Y driven by the section's scroll progress (passed in via a ref so
- * no React re-render happens per frame).
+ * Premium look comes from image-based lighting: a baked Lightformer studio
+ * environment (no external HDR file) gives the metal long specular streaks,
+ * and meshPhysicalMaterial adds clearcoat + a hint of iridescence. The logos
+ * spin on scroll so the reflections sweep across the surface.
  *
- * Loaded only via Logo3DLazy (dynamic, ssr:false, IntersectionObserver) so
- * three.js never touches the initial bundle.
+ * One Canvas, two meshes (shared geometry) = a single WebGL context.
  */
 
 const LOGO_SVG = `<svg width="648" height="972" viewBox="0 0 648 972" xmlns="http://www.w3.org/2000/svg">
@@ -22,59 +23,90 @@ const LOGO_SVG = `<svg width="648" height="972" viewBox="0 0 648 972" xmlns="htt
 <path d="M350 567V810H486C575.469 810 648 737.469 648 648V0H350V243C360.434 313.258 415.742 368.566 486 379V431C415.742 441.434 360.434 496.742 350 567Z"/>
 </svg>`;
 
-function LogoMesh({ scrollRef }: { scrollRef: MutableRefObject<number> }) {
-  const group = useRef<THREE.Group>(null);
-
-  const geometry = useMemo(() => {
+function useLogoGeometry() {
+  return useMemo(() => {
     const data = new SVGLoader().parse(LOGO_SVG);
     const shapes: THREE.Shape[] = [];
     for (const path of data.paths) {
       for (const shape of SVGLoader.createShapes(path)) shapes.push(shape);
     }
-
     const geom = new THREE.ExtrudeGeometry(shapes, {
-      depth: 130,
+      depth: 150,
       bevelEnabled: true,
-      bevelThickness: 16,
-      bevelSize: 9,
-      bevelSegments: 3,
-      curveSegments: 10,
+      bevelThickness: 22,
+      bevelSize: 12,
+      bevelSegments: 5,
+      curveSegments: 14,
     });
-
-    // Center, then normalize to ~2.2 world units tall and flip Y (SVG is y-down).
     geom.center();
     geom.computeBoundingBox();
     const size = new THREE.Vector3();
     geom.boundingBox!.getSize(size);
     const s = 2.2 / size.y;
-    geom.scale(s, -s, s);
+    geom.scale(s, -s, s); // normalize height + flip SVG y-down
     geom.center();
     geom.computeVertexNormals();
     return geom;
   }, []);
+}
+
+function LogoInstance({
+  geometry,
+  scrollRef,
+  position,
+  baseRotation,
+  spin,
+  phase,
+  scale,
+}: {
+  geometry: THREE.BufferGeometry;
+  scrollRef: MutableRefObject<number>;
+  position: [number, number, number];
+  baseRotation: number;
+  spin: number;
+  phase: number;
+  scale: number;
+}) {
+  const group = useRef<THREE.Group>(null);
 
   useFrame((state) => {
     if (!group.current) return;
-    const t = state.clock.elapsedTime;
+    const t = state.clock.elapsedTime + phase;
     const scroll = scrollRef.current ?? 0;
-    // Scroll drives the bulk of the Y spin; sine adds life so it never looks frozen.
-    group.current.rotation.y = scroll * Math.PI * 1.15 + Math.sin(t * 0.4) * 0.18;
-    group.current.rotation.x = -0.06 + Math.sin(t * 0.32) * 0.09;
-    group.current.position.y = Math.sin(t * 0.8) * 0.08;
+    group.current.rotation.y = baseRotation + scroll * Math.PI * spin + Math.sin(t * 0.4) * 0.16;
+    group.current.rotation.x = -0.05 + Math.sin(t * 0.3) * 0.08;
+    group.current.position.y = position[1] + Math.sin(t * 0.7) * 0.12;
   });
 
   return (
-    <group ref={group}>
+    <group ref={group} position={position} scale={scale}>
       <mesh geometry={geometry}>
-        <meshStandardMaterial
-          color="#613BF9"
-          metalness={0.4}
-          roughness={0.22}
-          side={THREE.DoubleSide}
-          envMapIntensity={0.9}
+        <meshPhysicalMaterial
+          color="#5b34f0"
+          metalness={1}
+          roughness={0.16}
+          clearcoat={1}
+          clearcoatRoughness={0.1}
+          iridescence={0.35}
+          iridescenceIOR={1.35}
+          envMapIntensity={1.5}
+          reflectivity={0.7}
         />
       </mesh>
     </group>
+  );
+}
+
+function StudioEnv() {
+  // Baked once (frames={1}) — static studio softboxes for streaky metal highlights.
+  return (
+    <Environment resolution={256} frames={1}>
+      <Lightformer form="rect" intensity={4} position={[0, 5, -6]} scale={[14, 7, 1]} />
+      <Lightformer form="rect" intensity={2.4} position={[-7, 2, 1]} scale={[3, 12, 1]} color="#c4b5fd" />
+      <Lightformer form="rect" intensity={2.4} position={[7, -1, 1]} scale={[3, 12, 1]} color="#ffffff" />
+      <Lightformer form="ring" intensity={2} position={[4, 5, -4]} scale={5} color="#a78bfa" />
+      <Lightformer form="circle" intensity={1.6} position={[-5, -4, -2]} scale={4} />
+    </Environment>
   );
 }
 
@@ -85,19 +117,40 @@ export function Logo3D({
   scrollRef: MutableRefObject<number>;
   active: boolean;
 }) {
+  const geometry = useLogoGeometry();
+
   return (
     <Canvas
-      camera={{ position: [0, 0, 4.3], fov: 42 }}
+      camera={{ position: [0, 0, 10], fov: 35 }}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-      dpr={[1, 1.75]}
+      dpr={[1, 2]}
       frameloop={active ? "always" : "demand"}
       style={{ background: "transparent" }}
     >
-      <ambientLight intensity={0.65} />
-      <directionalLight position={[3, 5, 6]} intensity={2.1} />
-      <pointLight position={[-5, -2, 3]} intensity={1.1} color="#a78bfa" />
-      <pointLight position={[4, 3, -4]} intensity={0.6} color="#ffffff" />
-      <LogoMesh scrollRef={scrollRef} />
+      <ambientLight intensity={0.35} />
+      <directionalLight position={[5, 8, 6]} intensity={1.3} />
+      <StudioEnv />
+
+      {/* top-right, bleeding off the corner */}
+      <LogoInstance
+        geometry={geometry}
+        scrollRef={scrollRef}
+        position={[5, 2.4, 0]}
+        baseRotation={-0.5}
+        spin={1.0}
+        phase={0}
+        scale={1.05}
+      />
+      {/* bottom-left, counter-rotating */}
+      <LogoInstance
+        geometry={geometry}
+        scrollRef={scrollRef}
+        position={[-5, -2.5, -0.5]}
+        baseRotation={0.6}
+        spin={-1.0}
+        phase={2.5}
+        scale={0.92}
+      />
     </Canvas>
   );
 }
