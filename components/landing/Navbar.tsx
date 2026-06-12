@@ -207,9 +207,9 @@ const NAV: NavItem[] = [
   {
     label: "Developers",
     items: [
-      { name: "GitHub", desc: "Open-source MIT", href: "https://github.com/abdullahdevrangga11/atma", Icon: IconGitHub },
-      { name: "Architecture", desc: "Vault state machine", href: "https://github.com/abdullahdevrangga11/atma#architecture", Icon: IconBook },
-      { name: "Risk Model", desc: "Defensive exit thresholds", href: "https://github.com/abdullahdevrangga11/atma/blob/main/RISK_MODEL.md", Icon: IconShield },
+      { name: "GitHub", desc: "Open-source MIT", href: "https://github.com/abdullahdevrangga11/amana", Icon: IconGitHub },
+      { name: "Architecture", desc: "Vault state machine", href: "https://github.com/abdullahdevrangga11/amana#architecture", Icon: IconBook },
+      { name: "Risk Model", desc: "Defensive exit thresholds", href: "https://github.com/abdullahdevrangga11/amana/blob/main/RISK_MODEL.md", Icon: IconShield },
       { name: "Block Explorer", desc: "Mantle Sepolia", href: "https://sepolia.mantlescan.xyz", Icon: IconBlock },
     ],
   },
@@ -226,7 +226,7 @@ const NAV: NavItem[] = [
     label: "Resources",
     items: [
       { name: "Hackathon", desc: "Mantle Turing Test 2026", href: "https://dorahacks.io/hackathon/mantleturingtesthackathon2026", Icon: IconTrophy },
-      { name: "Build Log", desc: "Daily progress notes", href: "https://github.com/abdullahdevrangga11/atma/blob/main/progress.md", Icon: IconBook },
+      { name: "Build Log", desc: "Daily progress notes", href: "https://github.com/abdullahdevrangga11/amana/blob/main/progress.md", Icon: IconBook },
       { name: "Brand", desc: "Logos and colors", href: "/about", Icon: IconBrand },
     ],
   },
@@ -294,7 +294,7 @@ export function Navbar() {
     >
       <div
         className={cn(
-          "container-atma flex items-center justify-between transition-[height] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+          "container-amana flex items-center justify-between transition-[height] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
           scrolled ? "h-12" : "h-16",
         )}
       >
@@ -306,7 +306,7 @@ export function Navbar() {
             )}
             aria-hidden
           />
-          <span className="sr-only">ATMA</span>
+          <span className="sr-only">AMANA</span>
         </Link>
 
         <div

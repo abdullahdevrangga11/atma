@@ -305,12 +305,12 @@ export function VaultDemo() {
               vault state machine
             </Badge>
             <span className="font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-text-muted)]">
-              AtmaVault.sol · 11 states
+              AmanaVault.sol · 11 states
             </span>
           </div>
           <CardTitle>{currentState ?? "Idle"}</CardTitle>
           <CardDescription>
-            Mirrors the on-chain state machine in <span className="font-mono">contracts/src/AtmaVault.sol</span>. The
+            Mirrors the on-chain state machine in <span className="font-mono">contracts/src/AmanaVault.sol</span>. The
             orchestrator emits state transitions; the diagram highlights the current node and traces the path.
           </CardDescription>
         </CardHeader>
@@ -791,7 +791,7 @@ function AttestationTrail({ steps, riskLevel }: { steps: AgentStep[]; riskLevel:
         <Badge variant="default">// erc-8004 attestation trail (this run)</Badge>
         <CardTitle>3 reputation events emitted</CardTitle>
         <CardDescription>
-          Each agent decision becomes a signed event. In production these go on-chain via the AtmaVault contract on Mantle.
+          Each agent decision becomes a signed event. In production these go on-chain via the AmanaVault contract on Mantle.
         </CardDescription>
       </CardHeader>
       <CardContent>

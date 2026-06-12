@@ -46,7 +46,7 @@ forge script script/Deploy.s.sol \
 cd ..
 ```
 
-The script logs every contract address. **Copy the AtmaVault address** — you'll need it for Step 3.
+The script logs every contract address. **Copy the AmanaVault address** — you'll need it for Step 3.
 
 ---
 
@@ -91,7 +91,7 @@ For the YouTube description, paste the contents of `YOUTUBE_DESCRIPTION.md` (aut
 ```bash
 ./scripts/finalize-submission.sh \
   https://youtu.be/YOUR_VIDEO_ID \
-  0xYOUR_ATMAVAULT_ADDRESS
+  0xYOUR_AMANAVAULT_ADDRESS
 
 git add -A
 git commit -m "docs: finalize submission URLs"
@@ -112,13 +112,13 @@ This replaces every `<TBD>` placeholder across:
 2. Click Submit Project
 3. Open `DORAHACKS_SUBMISSION.md` in a separate window
 4. Paste section by section:
-   - Name → `ATMA — Treasury Orchestration Protocol`
+   - Name → `AMANA — Treasury Orchestration Protocol`
    - Tagline → from doc
    - Description (long) → from "Description (long form)" heading
    - Demo URL → `https://atma-iota.vercel.app`
-   - Repo URL → `https://github.com/abdullahdevrangga11/atma`
+   - Repo URL → `https://github.com/abdullahdevrangga11/amana`
    - Video URL → your YouTube
-   - Contract address → your AtmaVault address
+   - Contract address → your AmanaVault address
 5. Use the cheat-sheet table at the bottom of the doc
 
 ---

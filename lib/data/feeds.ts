@@ -1,7 +1,7 @@
 /**
- * Simulated live market feeds for the ATMA demo.
+ * Simulated live market feeds for the AMANA demo.
  *
- * Real ATMA would read these from Aave Mantle pool data, Ondo's USDY oracle,
+ * Real AMANA would read these from Aave Mantle pool data, Ondo's USDY oracle,
  * Mantle's mUSD rebase events, and Mantle Index Four's NAV endpoint. For the
  * hackathon demo we synthesise them from time-seeded noise so the agents see
  * different numbers on every invocation and judges can refresh the page to

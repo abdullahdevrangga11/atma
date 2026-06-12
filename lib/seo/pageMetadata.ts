@@ -20,15 +20,15 @@ export function pageMetadata({ title, description, path }: PageMetaInput): Metad
     title,
     description,
     openGraph: {
-      title: `${title} · ATMA`,
+      title: `${title} · AMANA`,
       description,
       url,
       type: "website",
-      siteName: "ATMA",
+      siteName: "AMANA",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} · ATMA`,
+      title: `${title} · AMANA`,
       description,
       creator: "@abdullahdevrang",
     },

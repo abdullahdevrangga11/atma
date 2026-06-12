@@ -7,7 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 /**
  * Three-card pinned scroll-trigger sequence, ported from CodeGrid's
- * "RedoMedia split-card scroll animation" and re-skinned to ATMA's
+ * "RedoMedia split-card scroll animation" and re-skinned to AMANA's
  * agents.
  *
  * Phases mapped to ScrollTrigger progress:
@@ -318,7 +318,7 @@ function CardFront({ agent }: { agent: Agent }) {
         </p>
       </div>
       <div className="px-7 pb-7 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
-        <span>ATMA</span>
+        <span>AMANA</span>
         <span>read more →</span>
       </div>
     </div>

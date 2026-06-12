@@ -45,12 +45,12 @@ const MAX_RUNS = 50;
 
 declare global {
   // eslint-disable-next-line no-var
-  var __atmaRunStore: OrchestrationRun[] | undefined;
+  var __amanaRunStore: OrchestrationRun[] | undefined;
 }
 
 function backing(): OrchestrationRun[] {
-  if (!globalThis.__atmaRunStore) globalThis.__atmaRunStore = [];
-  return globalThis.__atmaRunStore;
+  if (!globalThis.__amanaRunStore) globalThis.__amanaRunStore = [];
+  return globalThis.__amanaRunStore;
 }
 
 export const runStore = {

@@ -1,4 +1,4 @@
-# ATMA — Build Log
+# AMANA — Build Log
 
 > CrossBeam-pattern build log. One section per session. Append, never rewrite.
 
@@ -17,7 +17,7 @@
 
 ## 2026-06-09 — Day 1: foundation + UI slice
 
-- Bootstrapped Next.js 16 + React 19 + Tailwind v4 + TypeScript repo at `~/Documents/code/atma`.
+- Bootstrapped Next.js 16 + React 19 + Tailwind v4 + TypeScript repo at `~/Documents/code/amana`.
 - Installed Foundry, configured `contracts/foundry.toml`.
 - Built first UI slice from base.org (light mode, pixel candlesticks, centered hero).
 - Rejected first UI (too vibecoded). Redesigned to opinionated engineering aesthetic.
@@ -31,7 +31,7 @@
 - Hard pivot to the contract + agent layer.
 
 **Shipped**:
-- `AtmaVault.sol` — 374 lines, ERC-4626 + 11-state machine + ERC-8004 reputation events + 24h rebalance cadence + defensive exit primitive.
+- `AmanaVault.sol` — 374 lines, ERC-4626 + 11-state machine + ERC-8004 reputation events + 24h rebalance cadence + defensive exit primitive.
 - 5 mock contracts (MockUSDC/USDY/mUSD/AavePool/MI4) so the demo is reproducible without depending on live RWA bridge testnets.
 - 45 Foundry tests, all green: state machine, NAV computation, weight enforcement, defensive exit under oracle deviation.
 - 3 TypeScript agents (Allocator / Risk / Reporter) on `@anthropic-ai/sdk`, model `claude-sonnet-4-5-20250929`.
@@ -46,7 +46,7 @@
 
 **Frontend surfaces**:
 - Glass scroll-shrink navbar with `rAF`-throttled scroll listener (threshold 60px → bg-white/85, full border, shadow, h-12).
-- FiddleHover digital effect ported from `codegrid-fiddle-digital` — applied to the entire hero with ATMA symbols (`$`, `bps`, `▲`, `Σ`).
+- FiddleHover digital effect ported from `codegrid-fiddle-digital` — applied to the entire hero with AMANA symbols (`$`, `bps`, `▲`, `Σ`).
 - HeroShowcase animated card: NAV count-up, +bps glow-pulse, allocation bars staggered fill, cycling tx hashes, live UTC clock.
 - shadcn/ui primitives (Button, Card, Badge, Input) with cva variants.
 - `/vault` page wired to real `/api/agent` POST with Claude. Renders proposal weights, expected APY, risk score, reasoning, hash.
@@ -67,7 +67,7 @@
 
 **Verified**:
 - `gh` CLI authenticated as `abdullahdevrangga11`.
-- Public repo live at `https://github.com/abdullahdevrangga11/atma`.
+- Public repo live at `https://github.com/abdullahdevrangga11/amana`.
 - `vercel` CLI authenticated as `devvveloper`.
 - **Production deployed**: https://atma-iota.vercel.app (dpl_HpDBALJAoRj8p4DUTvucmUJSaXHU).
 

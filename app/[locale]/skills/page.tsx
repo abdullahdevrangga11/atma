@@ -41,7 +41,7 @@ export default async function SkillsPage({
     <>
       <TopBanner />
       <Navbar />
-      <main className="container-atma py-20 md:py-28">
+      <main className="container-amana py-20 md:py-28">
         <div className="max-w-[1100px] mx-auto">
           <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-5">
             // skills-first architecture
@@ -50,7 +50,7 @@ export default async function SkillsPage({
             Policy as data, not code.
           </h1>
           <p className="text-[16px] text-[var(--color-text-secondary)] max-w-[680px] mb-14 leading-relaxed">
-            Each ATMA agent reads its Skill markdown at runtime. Policy update = file
+            Each AMANA agent reads its Skill markdown at runtime. Policy update = file
             commit. No redeploy. Inspired by CrossBeam — first prize in Anthropic&apos;s
             Built with Opus 4.6 Hackathon.
           </p>

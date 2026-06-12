@@ -20,7 +20,7 @@ export async function generateMetadata({
   if (!identity) return { title: "Agent not found" };
   return pageMetadata({
     title: `${identity.name} — Agent #${identity.displayNumber}`,
-    description: `${identity.name} on ATMA. ${identity.capabilities[0]} Reads ${identity.skillFile} at runtime.`,
+    description: `${identity.name} on AMANA. ${identity.capabilities[0]} Reads ${identity.skillFile} at runtime.`,
     path: `/agents/${slug}`,
   });
 }
@@ -59,7 +59,7 @@ export default async function AgentProfilePage({
     <>
       <TopBanner />
       <Navbar />
-      <main className="container-atma py-20 md:py-28">
+      <main className="container-amana py-20 md:py-28">
         <div className="max-w-[1100px] mx-auto">
           <AgentProfile identity={identity} skillContent={skillContent} />
         </div>

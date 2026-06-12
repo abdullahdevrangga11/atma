@@ -18,7 +18,7 @@ const PARTNERS = [
 export function LogoStrip() {
   return (
     <section className="section-snug relative bg-[var(--color-bg)]">
-      <div className="container-atma">
+      <div className="container-amana">
         <Reveal>
           <Up delay={0}>
             <p className="text-center text-[13px] text-[var(--color-text-muted)] mb-10">

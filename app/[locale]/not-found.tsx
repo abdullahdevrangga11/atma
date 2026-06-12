@@ -13,7 +13,7 @@ export default function NotFound() {
     <>
       <TopBanner />
       <Navbar />
-      <main className="container-atma py-32 md:py-44">
+      <main className="container-amana py-32 md:py-44">
         <div className="max-w-[720px] mx-auto text-center">
           <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-5">
             // 404 · route not found

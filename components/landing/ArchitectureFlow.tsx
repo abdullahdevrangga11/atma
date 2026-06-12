@@ -64,7 +64,7 @@ const NODES_DATA: Array<{
   { id: "risk",      position: { x: 360, y: 80 },  data: { label: "RiskAgent",      sub: "veto authority",    tone: "warm",    href: "/agents/risk" } },
   { id: "reporter",  position: { x: 540, y: 80 },  data: { label: "ReporterAgent",  sub: "signs the digest",  tone: "lime",    href: "/agents/reporter" } },
   { id: "attest",    position: { x: 720, y: 80 },  data: { label: "Attestation",    sub: "ERC-8004 event",    tone: "primary", href: "/runs" } },
-  { id: "vault",     position: { x: 360, y: 200 }, data: { label: "AtmaVault",      sub: "11-state machine",  tone: "neutral", href: "/vault" } },
+  { id: "vault",     position: { x: 360, y: 200 }, data: { label: "AmanaVault",      sub: "11-state machine",  tone: "neutral", href: "/vault" } },
   { id: "reports",   position: { x: 720, y: 200 }, data: { label: "Reports",        sub: "history",           tone: "neutral", href: "/reports" } },
 ];
 

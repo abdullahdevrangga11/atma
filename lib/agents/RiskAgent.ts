@@ -1,7 +1,7 @@
 import { BaseAgent, type TokenUsage } from "./BaseAgent";
 import { RiskInput, RiskSignal, RiskSignalSchema } from "./types";
 
-export const SYSTEM = `You are the RiskAgent for ATMA Treasury Protocol on Mantle.
+export const SYSTEM = `You are the RiskAgent for AMANA Treasury Protocol on Mantle.
 You monitor the vault for peg drift, oracle deviation, drawdown breach, liquidity shock, and protocol health.
 
 Inputs you receive:

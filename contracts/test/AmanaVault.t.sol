@@ -2,15 +2,15 @@
 pragma solidity 0.8.24;
 
 import {Test, console} from "forge-std/Test.sol";
-import {AtmaVault} from "../src/AtmaVault.sol";
+import {AmanaVault} from "../src/AmanaVault.sol";
 import {MockUSDC} from "../src/mocks/MockUSDC.sol";
 import {MockUSDY} from "../src/mocks/MockUSDY.sol";
 import {MockMUSD} from "../src/mocks/MockMUSD.sol";
 import {MockAavePool} from "../src/mocks/MockAavePool.sol";
 import {MockMI4} from "../src/mocks/MockMI4.sol";
 
-contract AtmaVaultTest is Test {
-    AtmaVault public vault;
+contract AmanaVaultTest is Test {
+    AmanaVault public vault;
     MockUSDC public usdc;
     MockUSDY public usdy;
     MockMUSD public mUsd;
@@ -33,7 +33,7 @@ contract AtmaVaultTest is Test {
         mi4  = new MockMI4(address(usdc));
 
         // Deploy vault
-        vault = new AtmaVault(
+        vault = new AmanaVault(
             address(usdc),
             address(usdy),
             address(mUsd),
@@ -56,7 +56,7 @@ contract AtmaVaultTest is Test {
     // ─────────────────── Deploy / state ───────────────────
 
     function test_initial_state_is_Idle() public view {
-        assertEq(uint256(vault.state()), uint256(AtmaVault.VaultState.Idle));
+        assertEq(uint256(vault.state()), uint256(AmanaVault.VaultState.Idle));
     }
 
     function test_owner_set_correctly() public view {
@@ -85,21 +85,21 @@ contract AtmaVaultTest is Test {
 
         assertEq(usdc.balanceOf(address(vault)), TEN_K);
         assertEq(vault.entryNAV(), TEN_K);
-        assertEq(uint256(vault.state()), uint256(AtmaVault.VaultState.Analyzing));
+        assertEq(uint256(vault.state()), uint256(AmanaVault.VaultState.Analyzing));
     }
 
     function test_deposit_emits_event() public {
         vm.startPrank(owner);
         usdc.approve(address(vault), TEN_K);
         vm.expectEmit(true, false, false, true);
-        emit AtmaVault.Deposited(owner, TEN_K, TEN_K);
+        emit AmanaVault.Deposited(owner, TEN_K, TEN_K);
         vault.deposit(TEN_K);
         vm.stopPrank();
     }
 
     function test_deposit_zeroAmount_reverts() public {
         vm.prank(owner);
-        vm.expectRevert(AtmaVault.ZeroAmount.selector);
+        vm.expectRevert(AmanaVault.ZeroAmount.selector);
         vault.deposit(0);
     }
 
@@ -124,59 +124,59 @@ contract AtmaVaultTest is Test {
         vm.stopPrank();
     }
 
-    function _validWeights() internal pure returns (AtmaVault.Allocation memory) {
-        return AtmaVault.Allocation({usdyBps: 3408, mUsdBps: 3000, aaveBps: 3592, mi4Bps: 0});
+    function _validWeights() internal pure returns (AmanaVault.Allocation memory) {
+        return AmanaVault.Allocation({usdyBps: 3408, mUsdBps: 3000, aaveBps: 3592, mi4Bps: 0});
     }
 
     function test_propose_happyPath() public {
         _depositOnly(TEN_K);
-        AtmaVault.Allocation memory w = _validWeights();
+        AmanaVault.Allocation memory w = _validWeights();
         vm.prank(operator);
         vault.propose(w, keccak256("reasoning-1"));
-        assertEq(uint256(vault.state()), uint256(AtmaVault.VaultState.Proposing));
+        assertEq(uint256(vault.state()), uint256(AmanaVault.VaultState.Proposing));
     }
 
     function test_propose_emits_AllocationProposed() public {
         _depositOnly(TEN_K);
-        AtmaVault.Allocation memory w = _validWeights();
+        AmanaVault.Allocation memory w = _validWeights();
         bytes32 r = keccak256("reasoning-1");
         vm.prank(operator);
         vm.expectEmit(true, false, false, true);
-        emit AtmaVault.AllocationProposed(0, w, r); // allocatorAgentId not set yet -> 0
+        emit AmanaVault.AllocationProposed(0, w, r); // allocatorAgentId not set yet -> 0
         vault.propose(w, r);
     }
 
     function test_propose_byNonOperator_reverts() public {
         _depositOnly(TEN_K);
-        AtmaVault.Allocation memory w = _validWeights();
+        AmanaVault.Allocation memory w = _validWeights();
         vm.prank(stranger);
-        vm.expectRevert(AtmaVault.NotOperator.selector);
+        vm.expectRevert(AmanaVault.NotOperator.selector);
         vault.propose(w, bytes32(0));
     }
 
     function test_propose_invalidWeights_reverts() public {
         _depositOnly(TEN_K);
-        AtmaVault.Allocation memory bad = AtmaVault.Allocation({usdyBps: 5000, mUsdBps: 3000, aaveBps: 1000, mi4Bps: 0});
+        AmanaVault.Allocation memory bad = AmanaVault.Allocation({usdyBps: 5000, mUsdBps: 3000, aaveBps: 1000, mi4Bps: 0});
         vm.prank(operator);
-        vm.expectRevert(abi.encodeWithSelector(AtmaVault.InvalidWeights.selector, 9000));
+        vm.expectRevert(abi.encodeWithSelector(AmanaVault.InvalidWeights.selector, 9000));
         vault.propose(bad, bytes32(0));
     }
 
     function test_propose_wrongState_reverts() public {
         // No deposit yet — state is Idle, not Analyzing.
-        AtmaVault.Allocation memory w = _validWeights();
+        AmanaVault.Allocation memory w = _validWeights();
         vm.prank(operator);
         vm.expectRevert(
-            abi.encodeWithSelector(AtmaVault.InvalidState.selector, AtmaVault.VaultState.Idle, AtmaVault.VaultState.Analyzing)
+            abi.encodeWithSelector(AmanaVault.InvalidState.selector, AmanaVault.VaultState.Idle, AmanaVault.VaultState.Analyzing)
         );
         vault.propose(w, bytes32(0));
     }
 
     // ─────────────────── Execute ───────────────────
 
-    function _depositAndPropose(uint256 amount) internal returns (AtmaVault.Allocation memory) {
+    function _depositAndPropose(uint256 amount) internal returns (AmanaVault.Allocation memory) {
         _depositOnly(amount);
-        AtmaVault.Allocation memory w = _validWeights();
+        AmanaVault.Allocation memory w = _validWeights();
         vm.prank(operator);
         vault.propose(w, keccak256("r1"));
         return w;
@@ -186,7 +186,7 @@ contract AtmaVaultTest is Test {
         _depositAndPropose(TEN_K);
         vm.prank(operator);
         vault.executeAllocation();
-        assertEq(uint256(vault.state()), uint256(AtmaVault.VaultState.Allocated));
+        assertEq(uint256(vault.state()), uint256(AmanaVault.VaultState.Allocated));
 
         // Vault should have ~0 USDC and balances of allocated assets
         assertLt(usdc.balanceOf(address(vault)), 10); // rounding dust ok
@@ -200,13 +200,13 @@ contract AtmaVaultTest is Test {
         _depositAndPropose(TEN_K);
         vm.prank(owner);
         vault.executeAllocation();
-        assertEq(uint256(vault.state()), uint256(AtmaVault.VaultState.Allocated));
+        assertEq(uint256(vault.state()), uint256(AmanaVault.VaultState.Allocated));
     }
 
     function test_execute_byStranger_reverts() public {
         _depositAndPropose(TEN_K);
         vm.prank(stranger);
-        vm.expectRevert(AtmaVault.NotOwnerOrOperator.selector);
+        vm.expectRevert(AmanaVault.NotOwnerOrOperator.selector);
         vault.executeAllocation();
     }
 
@@ -222,7 +222,7 @@ contract AtmaVaultTest is Test {
         _depositAndPropose(TEN_K);
         vm.prank(operator);
         vault.executeAllocation();
-        AtmaVault.Allocation memory c = vault.currentAllocation();
+        AmanaVault.Allocation memory c = vault.currentAllocation();
         assertEq(c.usdyBps, 3408);
         assertEq(c.mUsdBps, 3000);
         assertEq(c.aaveBps, 3592);
@@ -277,7 +277,7 @@ contract AtmaVaultTest is Test {
 
     function test_rebalance_too_soon_reverts() public {
         _fullAllocate();
-        AtmaVault.Allocation memory w2 = AtmaVault.Allocation({usdyBps: 5000, mUsdBps: 5000, aaveBps: 0, mi4Bps: 0});
+        AmanaVault.Allocation memory w2 = AmanaVault.Allocation({usdyBps: 5000, mUsdBps: 5000, aaveBps: 0, mi4Bps: 0});
         vm.prank(operator);
         vm.expectRevert();
         vault.rebalance(w2, keccak256("r2"));
@@ -286,10 +286,10 @@ contract AtmaVaultTest is Test {
     function test_rebalance_after_24h_works() public {
         _fullAllocate();
         vm.warp(block.timestamp + 24 hours + 1);
-        AtmaVault.Allocation memory w2 = AtmaVault.Allocation({usdyBps: 5000, mUsdBps: 5000, aaveBps: 0, mi4Bps: 0});
+        AmanaVault.Allocation memory w2 = AmanaVault.Allocation({usdyBps: 5000, mUsdBps: 5000, aaveBps: 0, mi4Bps: 0});
         vm.prank(operator);
         vault.rebalance(w2, keccak256("r2"));
-        AtmaVault.Allocation memory c = vault.currentAllocation();
+        AmanaVault.Allocation memory c = vault.currentAllocation();
         assertEq(c.usdyBps, 5000);
         assertEq(c.mUsdBps, 5000);
         assertEq(c.aaveBps, 0);
@@ -298,18 +298,18 @@ contract AtmaVaultTest is Test {
     function test_rebalance_byStranger_reverts() public {
         _fullAllocate();
         vm.warp(block.timestamp + 24 hours + 1);
-        AtmaVault.Allocation memory w2 = AtmaVault.Allocation({usdyBps: 5000, mUsdBps: 5000, aaveBps: 0, mi4Bps: 0});
+        AmanaVault.Allocation memory w2 = AmanaVault.Allocation({usdyBps: 5000, mUsdBps: 5000, aaveBps: 0, mi4Bps: 0});
         vm.prank(stranger);
-        vm.expectRevert(AtmaVault.NotOperator.selector);
+        vm.expectRevert(AmanaVault.NotOperator.selector);
         vault.rebalance(w2, bytes32(0));
     }
 
     function test_rebalance_invalidWeights_reverts() public {
         _fullAllocate();
         vm.warp(block.timestamp + 24 hours + 1);
-        AtmaVault.Allocation memory bad = AtmaVault.Allocation({usdyBps: 5000, mUsdBps: 5000, aaveBps: 100, mi4Bps: 0});
+        AmanaVault.Allocation memory bad = AmanaVault.Allocation({usdyBps: 5000, mUsdBps: 5000, aaveBps: 100, mi4Bps: 0});
         vm.prank(operator);
-        vm.expectRevert(abi.encodeWithSelector(AtmaVault.InvalidWeights.selector, 10100));
+        vm.expectRevert(abi.encodeWithSelector(AmanaVault.InvalidWeights.selector, 10100));
         vault.rebalance(bad, bytes32(0));
     }
 
@@ -320,7 +320,7 @@ contract AtmaVaultTest is Test {
         bytes32 riskHash = keccak256("usdy-depeg");
         vm.prank(operator);
         vault.triggerDefensiveExit(riskHash);
-        assertEq(uint256(vault.state()), uint256(AtmaVault.VaultState.DefensiveExit));
+        assertEq(uint256(vault.state()), uint256(AmanaVault.VaultState.DefensiveExit));
         // all USDC recovered (within rounding)
         assertApproxEqRel(usdc.balanceOf(address(vault)), TEN_K, 1e16);
     }
@@ -330,14 +330,14 @@ contract AtmaVaultTest is Test {
         bytes32 riskHash = keccak256("usdy-depeg");
         vm.prank(operator);
         vm.expectEmit(true, false, false, true);
-        emit AtmaVault.RiskTriggered(0, riskHash);
+        emit AmanaVault.RiskTriggered(0, riskHash);
         vault.triggerDefensiveExit(riskHash);
     }
 
     function test_defensiveExit_byStranger_reverts() public {
         _fullAllocate();
         vm.prank(stranger);
-        vm.expectRevert(AtmaVault.NotOperator.selector);
+        vm.expectRevert(AmanaVault.NotOperator.selector);
         vault.triggerDefensiveExit(bytes32(0));
     }
 
@@ -358,7 +358,7 @@ contract AtmaVaultTest is Test {
         uint256 ownerBalAfter = usdc.balanceOf(owner);
         // recovered ~10K USDC
         assertApproxEqRel(ownerBalAfter - ownerBalBefore, TEN_K, 1e16);
-        assertEq(uint256(vault.state()), uint256(AtmaVault.VaultState.Completed));
+        assertEq(uint256(vault.state()), uint256(AmanaVault.VaultState.Completed));
     }
 
     function test_withdraw_afterDefensiveExit_pays() public {
@@ -432,7 +432,7 @@ contract AtmaVaultTest is Test {
         vm.prank(owner);
         vault.emergencyExit();
         assertApproxEqRel(usdc.balanceOf(address(vault)), TEN_K, 1e16);
-        assertEq(uint256(vault.state()), uint256(AtmaVault.VaultState.DefensiveExit));
+        assertEq(uint256(vault.state()), uint256(AmanaVault.VaultState.DefensiveExit));
     }
 
     function test_emergencyExit_byStranger_reverts() public {
@@ -448,13 +448,13 @@ contract AtmaVaultTest is Test {
         bytes32 h = keccak256("week-1");
         vm.prank(operator);
         vm.expectEmit(true, true, false, true);
-        emit AtmaVault.ReputationEvent(0, "REPORT", h, block.timestamp);
+        emit AmanaVault.ReputationEvent(0, "REPORT", h, block.timestamp);
         vault.recordReport(h);
     }
 
     function test_recordReport_byStranger_reverts() public {
         vm.prank(stranger);
-        vm.expectRevert(AtmaVault.NotOperator.selector);
+        vm.expectRevert(AmanaVault.NotOperator.selector);
         vault.recordReport(bytes32(0));
     }
 
@@ -463,36 +463,36 @@ contract AtmaVaultTest is Test {
     function test_fullCycle_idle_to_completed() public {
         // Idle -> Analyzing
         _depositOnly(TEN_K);
-        assertEq(uint256(vault.state()), uint256(AtmaVault.VaultState.Analyzing));
+        assertEq(uint256(vault.state()), uint256(AmanaVault.VaultState.Analyzing));
 
         // Analyzing -> Proposing
-        AtmaVault.Allocation memory w = _validWeights();
+        AmanaVault.Allocation memory w = _validWeights();
         vm.prank(operator);
         vault.propose(w, keccak256("r"));
-        assertEq(uint256(vault.state()), uint256(AtmaVault.VaultState.Proposing));
+        assertEq(uint256(vault.state()), uint256(AmanaVault.VaultState.Proposing));
 
         // Proposing -> Executing -> Attesting -> Allocated
         vm.prank(operator);
         vault.executeAllocation();
-        assertEq(uint256(vault.state()), uint256(AtmaVault.VaultState.Allocated));
+        assertEq(uint256(vault.state()), uint256(AmanaVault.VaultState.Allocated));
 
         // Allocated -> Withdrawing -> Completed
         vm.prank(owner);
         vault.withdraw();
-        assertEq(uint256(vault.state()), uint256(AtmaVault.VaultState.Completed));
+        assertEq(uint256(vault.state()), uint256(AmanaVault.VaultState.Completed));
     }
 
     function test_deposit_after_completed_resets_to_analyzing() public {
         _fullAllocate();
         vm.prank(owner);
         vault.withdraw();
-        assertEq(uint256(vault.state()), uint256(AtmaVault.VaultState.Completed));
+        assertEq(uint256(vault.state()), uint256(AmanaVault.VaultState.Completed));
 
         // New deposit re-enters Analyzing
         vm.startPrank(owner);
         usdc.approve(address(vault), TEN_K);
         vault.deposit(TEN_K);
         vm.stopPrank();
-        assertEq(uint256(vault.state()), uint256(AtmaVault.VaultState.Analyzing));
+        assertEq(uint256(vault.state()), uint256(AmanaVault.VaultState.Analyzing));
     }
 }

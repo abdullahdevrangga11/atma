@@ -2,7 +2,7 @@
 
 ## Role
 
-You are the **Comms Engineer subagent** for ATMA. You own demo video script, Twitter Community Voting thread, and DoraHacks submission copy. You activate **Day 3 only**. You do not write code.
+You are the **Comms Engineer subagent** for AMANA. You own demo video script, Twitter Community Voting thread, and DoraHacks submission copy. You activate **Day 3 only**. You do not write code.
 
 ## Context
 
@@ -26,11 +26,11 @@ Read these first:
 `docs/demo-script.md`:
 
 ```markdown
-# ATMA — Demo Video Script (2:45)
+# AMANA — Demo Video Script (2:45)
 
 ## Format
 - Speaker: Devrangga Hazza Mahiswara (live narration in English, ~140 wpm)
-- Visuals: screen recording of ATMA live demo + face cam top-right corner
+- Visuals: screen recording of AMANA live demo + face cam top-right corner
 - Music: ambient instrumental, low volume (royalty-free, no copyright)
 - Subtitles: burned-in English subtitles for accessibility
 - Resolution: 1920x1080 (export from Screen Studio / Loom / OBS)
@@ -38,19 +38,19 @@ Read these first:
 ## Beat-by-beat
 
 ### Beat 1 — Problem (0:00-0:25, 25 seconds)
-**Visual**: Title card "ATMA · Treasury Orchestration for Mantle" → cut to base.org-style hero on screen
+**Visual**: Title card "AMANA · Treasury Orchestration for Mantle" → cut to base.org-style hero on screen
 **Narration**:
 "Mantle holds 4 billion dollars in community assets. But most of it is dead capital.
 USDY pays 4.65% APY. mUSD rebases yield in real-time. Aave V3 Mantle offers boosted rates.
 MI4 gives crypto-index exposure. And yet, every treasury chooses ONE asset and forgets the rest.
 A 100K USDC reserve loses 4,650 dollars per year just sitting still.
 DAO treasurers don't have time to rebalance manually. Anchorage requires a million-dollar minimum.
-There's a gap — and that gap is ATMA."
+There's a gap — and that gap is AMANA."
 
 ### Beat 2 — Solution (0:25-0:55, 30 seconds)
 **Visual**: cut to vault page, 3 agent cards revealed
 **Narration**:
-"ATMA is a treasury orchestration protocol on Mantle. Three AI agents — Allocator, Risk, Reporter —
+"AMANA is a treasury orchestration protocol on Mantle. Three AI agents — Allocator, Risk, Reporter —
 collaborate under a verifiable policy you set. They read live Mantle data. They reason about
 USDY peg, Aave oracle, MI4 NAV. They allocate, rebalance, and report — all with on-chain attestations
 via ERC-8004. Skills-first architecture means policy is data, not code. You audit the markdown."
@@ -58,11 +58,11 @@ via ERC-8004. Skills-first architecture means policy is data, not code. You audi
 ### Beat 3 — Live demo (0:55-2:15, 80 seconds)
 **Visual**: screen recording — deposit, propose, sign, view allocation, view report
 **Narration**:
-"Watch this. I'm depositing 10,000 USDC into AtmaVault on Mantle Sepolia.
+"Watch this. I'm depositing 10,000 USDC into AmanaVault on Mantle Sepolia.
 The Allocator agent reads live APYs from DefiLlama, applies my policy — balanced tolerance,
 50% liquid minimum. In 3 seconds, it proposes: 34% USDY, 30% mUSD, 36% Aave V3 supply.
 [Reasoning visible on screen] Here's the reasoning paragraph — auditable. I sign with my Privy
-wallet — embedded, no MetaMask required. AtmaVault transitions through 4 states: proposing,
+wallet — embedded, no MetaMask required. AmanaVault transitions through 4 states: proposing,
 executing, attesting, allocated. ERC-8004 emits a reputation event for the Allocator.
 Now the Risk Agent kicks in — polling every 60 seconds. Look — peg drift OK, oracle OK,
 drawdown OK. If anything trips, the Reporter shows a heartbeat.
@@ -80,7 +80,7 @@ This is built specifically for Mantle's RWA stack."
 **Visual**: contact card with Twitter handle + GitHub
 **Narration**:
 "I'm Devrangga, UGM Software Engineering '23. Built this in 3 days for the Turing Test Hackathon.
-Github link in description. If you're a DAO treasurer, try ATMA on Sepolia today. Terima kasih."
+Github link in description. If you're a DAO treasurer, try AMANA on Sepolia today. Terima kasih."
 ```
 
 ### 2. Twitter Community Voting thread
@@ -88,10 +88,10 @@ Github link in description. If you're a DAO treasurer, try ATMA on Sepolia today
 `docs/twitter-thread.md`:
 
 ```markdown
-# ATMA Launch Thread (Community Voting target)
+# AMANA Launch Thread (Community Voting target)
 
 ## Tweet 1 (hook)
-🟢 Built ATMA in 3 days for @0xMantle's Turing Test Hackathon 2026.
+🟢 Built AMANA in 3 days for @0xMantle's Turing Test Hackathon 2026.
 
 A treasury orchestration protocol on Mantle's RWA stack.
 3 AI agents. 4 assets. 1 verifiable on-chain policy.
@@ -112,7 +112,7 @@ A typical $100K stablecoin reserve loses $4,650/yr by sitting in USDC instead of
 Treasurers don't have time. 2/7
 
 ## Tweet 3 (solution architecture)
-ATMA = 3 agents under one verifiable policy:
+AMANA = 3 agents under one verifiable policy:
 
 🧠 Allocator — reasons across USDY/mUSD/Aave V3/MI4
 🛡️ Risk — monitors peg, drawdown, oracle
@@ -140,7 +140,7 @@ Auditable. Updatable. Composable.
 🟢 Deployed Mantle Sepolia: [contract address explorer link]
 🟢 ERC-8004 reputation events on Mantle Mainnet
 🟢 Vault state machine: 8 states + 4 failure stages
-🟢 Live demo: atma.vercel.app
+🟢 Live demo: amana.vercel.app
 
 This isn't a dashboard. It's a primitive.
 
@@ -159,8 +159,8 @@ No other L2 offers this surface.
 6/7
 
 ## Tweet 7 (community + CTA)
-Try ATMA on Mantle Sepolia: atma.vercel.app
-GitHub (open-source MIT): github.com/abdullahdevrangga11/atma
+Try AMANA on Mantle Sepolia: amana.vercel.app
+GitHub (open-source MIT): github.com/abdullahdevrangga11/amana
 Demo video: [youtube link]
 DoraHacks: [submission link]
 
@@ -193,10 +193,10 @@ Reply to thread with tags:
 `docs/dorahacks-submission.md`:
 
 ```markdown
-# ATMA — DoraHacks Submission
+# AMANA — DoraHacks Submission
 
 ## Project Title
-ATMA — Treasury Orchestration Protocol for Mantle RWA Stack
+AMANA — Treasury Orchestration Protocol for Mantle RWA Stack
 
 ## One-line Pitch
 3 AI agents under verifiable on-chain policy allocate idle stablecoins across USDY, mUSD, Aave V3 Mantle, and MI4 — Skills-First architecture, ERC-8004 reputation, $4K+ in foregone yield captured per $100K treasury.
@@ -217,11 +217,11 @@ USDY (Ondo's tokenized US Treasuries) + mUSD (rebasing USDY wrapper). These repr
 3 specialized agents reason about allocation, risk, and reporting using Skills-First architecture (markdown reference files inspired by Anthropic Claude Code). Each agent has its own ERC-8004 identity NFT and emits verifiable reputation events per decision.
 
 > How is it realized on Mantle?
-AtmaVault (Solidity 0.8.24) deployed on Mantle Sepolia. 53 Foundry tests passing. State machine with 8 states + 4 failure stages enforced at contract level. ERC-8004 reputation events emitted to Mantle Mainnet registry. Live frontend on Vercel with Privy embedded wallet for Web2 onboarding.
+AmanaVault (Solidity 0.8.24) deployed on Mantle Sepolia. 53 Foundry tests passing. State machine with 8 states + 4 failure stages enforced at contract level. ERC-8004 reputation events emitted to Mantle Mainnet registry. Live frontend on Vercel with Privy embedded wallet for Web2 onboarding.
 
 ## Links
-- Live App: https://atma.vercel.app
-- GitHub: https://github.com/abdullahdevrangga11/atma
+- Live App: https://amana.vercel.app
+- GitHub: https://github.com/abdullahdevrangga11/amana
 - Demo Video: [youtube link]
 - Twitter Thread: [tweet link]
 - Mantle Sepolia Contract: [explorer link]
@@ -238,7 +238,7 @@ AtmaVault (Solidity 0.8.24) deployed on Mantle Sepolia. 53 Foundry tests passing
 
 Before recording:
 - [ ] Mantle Sepolia faucet topped up
-- [ ] AtmaVault deployed + verified
+- [ ] AmanaVault deployed + verified
 - [ ] Privy embedded wallet working
 - [ ] Vercel deploy live
 - [ ] Test deposit flow end-to-end 3x to ensure no surprises

@@ -1,4 +1,4 @@
-# ATMA — Treasury Orchestration for Mantle
+# AMANA — Treasury Orchestration for Mantle
 
 **Three AI agents allocate, monitor, and report a Mantle RWA treasury. Policy as Markdown. Every decision signed on-chain via ERC-8004.**
 
@@ -13,7 +13,7 @@ Built for the [Mantle Turing Test Hackathon 2026](https://dorahacks.io/hackathon
 
 Treasuries on Mantle hold stablecoins. **USDC pays 0% APY.** USDY pays 4.42%. mUSD pays 4.6% via rebasing. Aave V3 supply moves intraday. Nobody actively manages this — so treasuries either park USDC and bleed ~4%/yr, or pick one asset and accept the rebalance work nobody has time for.
 
-ATMA closes the gap with three coordinated AI agents that run inside an ERC-4626 vault.
+AMANA closes the gap with three coordinated AI agents that run inside an ERC-4626 vault.
 
 ---
 
@@ -36,7 +36,7 @@ Edit a skill. Commit to main. The next agent invocation reads the new policy. **
 
 ### Smart contracts
 
-- `contracts/src/AtmaVault.sol` — 374-line ERC-4626 vault with 11-state machine, ERC-8004 reputation events, 24h rebalance cadence guard, and a defensive exit primitive
+- `contracts/src/AmanaVault.sol` — 374-line ERC-4626 vault with 11-state machine, ERC-8004 reputation events, 24h rebalance cadence guard, and a defensive exit primitive
 - 5 mock contracts (USDC, USDY, mUSD, Aave pool, MI4) so the demo runs without depending on live RWA bridges
 - **45 Foundry tests** covering state machine, NAV computation, weight enforcement, defensive exit, debate retries
 
@@ -184,7 +184,7 @@ The script logs every address. Copy them into `.env.local`. See `DEPLOY.md` for 
                  ┌─────────────────────────────────┐
                  │   ERC-8004 reputation events    │
                  │   emitted on Mantle Sepolia     │
-                 │      via AtmaVault.sol          │
+                 │      via AmanaVault.sol          │
                  └─────────────────────────────────┘
 ```
 

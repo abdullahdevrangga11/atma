@@ -34,20 +34,20 @@ export type SkillEntry = {
 
 declare global {
   // eslint-disable-next-line no-var
-  var __atmaMarketplace: Map<string, SkillEntry> | undefined;
+  var __amanaMarketplace: Map<string, SkillEntry> | undefined;
   // eslint-disable-next-line no-var
-  var __atmaMarketplaceSeeded: boolean | undefined;
+  var __amanaMarketplaceSeeded: boolean | undefined;
 }
 
 function backing(): Map<string, SkillEntry> {
-  if (!globalThis.__atmaMarketplace) {
-    globalThis.__atmaMarketplace = new Map<string, SkillEntry>();
+  if (!globalThis.__amanaMarketplace) {
+    globalThis.__amanaMarketplace = new Map<string, SkillEntry>();
   }
-  if (!globalThis.__atmaMarketplaceSeeded) {
-    seedDefaults(globalThis.__atmaMarketplace);
-    globalThis.__atmaMarketplaceSeeded = true;
+  if (!globalThis.__amanaMarketplaceSeeded) {
+    seedDefaults(globalThis.__amanaMarketplace);
+    globalThis.__amanaMarketplaceSeeded = true;
   }
-  return globalThis.__atmaMarketplace;
+  return globalThis.__amanaMarketplace;
 }
 
 function mkId(input: string): string {
@@ -161,7 +161,7 @@ function seedDefaults(store: Map<string, SkillEntry>) {
       title: "Treasury Boardroom",
       tagline: "Executive-summary tone. Numbers up top, plain English below.",
       body: TREASURY_BOARDROOM,
-      author: "atma-team",
+      author: "amana-team",
       stars: 16,
       forks: 2,
       runCount: 11,

@@ -20,7 +20,7 @@ import Link, { type LinkProps } from "next/link";
  * page transitions:
  *   - A grid of ~16px cells is rendered as a fixed overlay.
  *   - On navigation start, a horizontal band sweeps top→bottom across the
- *     viewport. Cells inside the band turn opaque ATMA-violet with a random
+ *     viewport. Cells inside the band turn opaque AMANA-violet with a random
  *     glyph; cells outside fade out. This produces a digital "static dissolve"
  *     transition feel.
  *   - When the new route mounts, the band sweeps bottom→top to reveal.

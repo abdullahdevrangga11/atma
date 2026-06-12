@@ -278,7 +278,7 @@ export function AgentProfile({
           address in a Mantle wire-up.
         </span>
         <a
-          href={`https://github.com/abdullahdevrangga11/atma/blob/master/lib/agents/${identity.name}.ts`}
+          href={`https://github.com/abdullahdevrangga11/amana/blob/master/lib/agents/${identity.name}.ts`}
           target="_blank"
           rel="noreferrer"
           className="inline-flex items-center gap-1 hover:text-[var(--color-text)]"

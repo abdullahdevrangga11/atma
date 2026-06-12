@@ -12,7 +12,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-REPO="abdullahdevrangga11/atma"
+REPO="abdullahdevrangga11/amana"
 DESCRIPTION="Treasury orchestration for Mantle. Three AI agents allocate, monitor, and report under a policy that lives as Markdown."
 HOMEPAGE="https://atma-iota.vercel.app"
 TOPICS=(
@@ -64,7 +64,7 @@ else
     --repo "$REPO" \
     --title "v1.0.0 — Mantle Turing Test Hackathon submission" \
     --notes "$(cat <<'EOF'
-ATMA — Treasury Orchestration Protocol for Mantle.
+AMANA — Treasury Orchestration Protocol for Mantle.
 
 Three AI agents (Allocator, Risk, Reporter) coordinate inside an ERC-4626 vault. Policy lives as Markdown. Every decision signed on-chain via ERC-8004.
 

@@ -45,7 +45,7 @@ export default async function ConversationPage({
     <>
       <TopBanner />
       <Navbar />
-      <main className="container-atma py-20 md:py-28">
+      <main className="container-amana py-20 md:py-28">
         <div className="max-w-[1000px] mx-auto">
           <ConversationView runId={id} />
         </div>

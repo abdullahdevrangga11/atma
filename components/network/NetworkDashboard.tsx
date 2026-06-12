@@ -101,7 +101,7 @@ export function NetworkDashboard() {
 
   const snapshot = data; // narrow for the closures below
   function exportJSON() {
-    downloadJSON(snapshot, `atma-network-${Date.now()}.json`);
+    downloadJSON(snapshot, `amana-network-${Date.now()}.json`);
   }
   function exportCSV() {
     downloadCSV(
@@ -112,7 +112,7 @@ export function NetworkDashboard() {
         riskLevel: t.riskLevel,
         hadDebate: t.hadDebate ? 1 : 0,
       })),
-      `atma-network-timeline-${Date.now()}.csv`,
+      `amana-network-timeline-${Date.now()}.csv`,
     );
   }
 

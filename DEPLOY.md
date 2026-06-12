@@ -1,9 +1,9 @@
-# ATMA — Deploy Guide
+# AMANA — Deploy Guide
 
 Three-step deployment for the **Mantle Turing Test Hackathon 2026** submission.
 
 Live demo: **https://atma-iota.vercel.app**
-Repo: **https://github.com/abdullahdevrangga11/atma**
+Repo: **https://github.com/abdullahdevrangga11/amana**
 
 ---
 
@@ -60,7 +60,7 @@ forge script script/Deploy.s.sol \
   -vvv
 ```
 
-`Deploy.s.sol` ships AtmaVault + 5 mock contracts (USDC, USDY, mUSD, Aave
+`Deploy.s.sol` ships AmanaVault + 5 mock contracts (USDC, USDY, mUSD, Aave
 pool, MI4) so the demo is reproducible without depending on live RWA
 bridge testnets. A mainnet cut accepts real Mantle addresses in the
 constructor.
@@ -73,7 +73,7 @@ constructor.
 vercel link                    # link to a new Vercel project
 vercel env add ANTHROPIC_API_KEY production
 vercel env add NEXT_PUBLIC_PRIVY_APP_ID production
-vercel env add NEXT_PUBLIC_ATMA_VAULT production
+vercel env add NEXT_PUBLIC_AMANA_VAULT production
 vercel env add NEXT_PUBLIC_CHAIN_ID production
 vercel --prod
 ```
@@ -133,7 +133,7 @@ proper card showing outcome + outperformance + agent signatures.
 
 ## 5. Hackathon checklist
 
-- [x] Repo public on GitHub (https://github.com/abdullahdevrangga11/atma)
+- [x] Repo public on GitHub (https://github.com/abdullahdevrangga11/amana)
 - [x] Production live (https://atma-iota.vercel.app)
 - [ ] Vault deployed + verified on Mantle Sepolia (needs PRIVATE_KEY)
 - [ ] `ANTHROPIC_API_KEY` set in Vercel

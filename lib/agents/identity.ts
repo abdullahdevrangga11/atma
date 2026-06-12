@@ -93,6 +93,6 @@ export const AGENT_BY_NAME: Record<AgentName, AgentIdentity> = Object.fromEntrie
 ) as Record<AgentName, AgentIdentity>;
 
 function addrOf(name: string): `0x${string}` {
-  const h = createHash("sha256").update(`atma-identity:${name}`).digest("hex");
+  const h = createHash("sha256").update(`amana-identity:${name}`).digest("hex");
   return `0x${h.slice(0, 40)}` as `0x${string}`;
 }

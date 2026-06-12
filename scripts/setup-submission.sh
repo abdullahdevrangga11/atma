@@ -96,7 +96,7 @@ fi
 
 if [ ! -d ".vercel" ]; then
   echo "  Linking project…"
-  vercel link --yes --project atma
+  vercel link --yes --project amana
 fi
 
 echo "  Will push the following to Vercel production:"

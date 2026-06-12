@@ -250,7 +250,7 @@ export function HeroShowcase() {
           <div className="flex items-center gap-3">
             <span className="block w-2 h-2 rounded-full bg-[var(--color-success)] pulse-soft" />
             <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-secondary)]">
-              AtmaVault.sol · Live on Mantle Sepolia
+              AmanaVault.sol · Live on Mantle Sepolia
             </p>
           </div>
           <div className="flex items-center gap-2">

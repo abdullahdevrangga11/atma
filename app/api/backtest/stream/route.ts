@@ -12,8 +12,8 @@ export const maxDuration = 300;
 const BodySchema = z
   .object({
     // Cap at 6 weeks in production to keep cost predictable. Local dev
-    // bypasses by setting ATMA_ALLOW_LONG_BACKTEST=1.
-    weeks: z.number().int().min(2).max(process.env.ATMA_ALLOW_LONG_BACKTEST === "1" ? 12 : 6).optional(),
+    // bypasses by setting AMANA_ALLOW_LONG_BACKTEST=1.
+    weeks: z.number().int().min(2).max(process.env.AMANA_ALLOW_LONG_BACKTEST === "1" ? 12 : 6).optional(),
     policy: UserPolicySchema.optional(),
     targetAmountUsdc: z.string().regex(/^\d+$/).optional(),
   })
@@ -44,7 +44,7 @@ type Event =
   | {
       type: "done";
       summary: {
-        finalNavATMA: number;
+        finalNavAMANA: number;
         finalNavDoNothing: number;
         finalNavAaveOnly: number;
         finalNavUsdyOnly: number;
@@ -201,7 +201,7 @@ export async function POST(req: NextRequest) {
         send({
           type: "done",
           summary: {
-            finalNavATMA: nav,
+            finalNavAMANA: nav,
             finalNavDoNothing: navDoNothing,
             finalNavAaveOnly: navAaveOnly,
             finalNavUsdyOnly: navUsdyOnly,

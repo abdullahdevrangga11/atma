@@ -25,7 +25,7 @@ export function Hero() {
         emptyRatio={0.30}
         scrambleRatio={0.28}
         scrambleInterval={130}
-        className="container-atma relative z-10"
+        className="container-amana relative z-10"
       >
         <div className="mx-auto max-w-[960px] text-center">
           <Reveal threshold={0.05}>
@@ -46,12 +46,12 @@ export function Hero() {
               <Button asChild size="lg" variant="default">
                 <Link href="/vault">
                   <span className="block w-3.5 h-3.5 rounded-[2px] bg-white" aria-hidden />
-                  Launch on ATMA
+                  Launch on AMANA
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link
-                  href="https://github.com/abdullahdevrangga11/atma"
+                  href="https://github.com/abdullahdevrangga11/amana"
                   target="_blank"
                   rel="noreferrer"
                 >

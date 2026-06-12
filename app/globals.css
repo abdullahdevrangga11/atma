@@ -116,7 +116,7 @@
 
 @layer components {
   /* Container — wider, base.org-style centered */
-  .container-atma {
+  .container-amana {
     width: 100%;
     max-width: 1240px;
     margin: 0 auto;
@@ -124,7 +124,7 @@
     padding-right: 24px;
   }
   @media (min-width: 768px) {
-    .container-atma {
+    .container-amana {
       padding-left: 40px;
       padding-right: 40px;
     }
@@ -528,7 +528,7 @@
   .float-stick { animation: float-stick 6s ease-in-out infinite; }
 
   /* Pulse halo around the current state in React Flow state machine */
-  @keyframes atma-state-pulse {
+  @keyframes amana-state-pulse {
     0%, 100% { transform: scale(1);    opacity: 0.5; }
     50%      { transform: scale(1.18); opacity: 0;   }
   }
@@ -537,14 +537,14 @@
 
   /* Lift on hover — used by every node in the React Flow bento
      diagrams so users feel that nodes are tactile / draggable. */
-  .atma-flow-node {
+  .amana-flow-node {
     transition:
       transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
       box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1),
       filter 220ms ease-out;
     will-change: transform;
   }
-  .atma-flow-node:hover {
+  .amana-flow-node:hover {
     transform: translateY(-2px) scale(1.05);
     box-shadow: 0 8px 24px -8px rgba(10, 10, 10, 0.18);
     filter: saturate(1.1);
@@ -552,22 +552,22 @@
   }
   /* While being dragged, drop the lift transition so it tracks the
      pointer 1:1 without bounce. */
-  .react-flow__node.dragging .atma-flow-node {
+  .react-flow__node.dragging .amana-flow-node {
     transition: none;
     cursor: grabbing;
   }
 
   /* Attestation card — the "currently being signed" one pulses */
-  @keyframes atma-attest-pulse {
+  @keyframes amana-attest-pulse {
     0%, 100% { box-shadow: 0 0 0 0   rgba(91, 61, 240, 0.40); }
     50%      { box-shadow: 0 0 0 8px rgba(91, 61, 240, 0.00); }
   }
-  .atma-attest-active {
-    animation: atma-attest-pulse 1.8s ease-out infinite;
+  .amana-attest-active {
+    animation: amana-attest-pulse 1.8s ease-out infinite;
   }
 
   /* Registry header indicator — soft green heartbeat */
-  @keyframes atma-pulse-dot {
+  @keyframes amana-pulse-dot {
     0%, 100% { transform: scale(1);    opacity: 1;   }
     50%      { transform: scale(1.35); opacity: 0.6; }
   }

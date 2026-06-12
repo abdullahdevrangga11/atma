@@ -17,7 +17,7 @@ import "@xyflow/react/dist/style.css";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * Animated React Flow diagram of the AtmaVault state machine. The orchestrator
+ * Animated React Flow diagram of the AmanaVault state machine. The orchestrator
  * emits `state` events as the vault transitions through its lifecycle; the
  * diagram highlights the current node + traces the path taken.
  *
@@ -206,7 +206,7 @@ function StateNode({ data }: NodeProps) {
             borderRadius: 12,
             border: "1.4px solid #5b3df0",
             opacity: 0.4,
-            animation: "atma-state-pulse 1.4s ease-in-out infinite",
+            animation: "amana-state-pulse 1.4s ease-in-out infinite",
           }}
         />
       )}

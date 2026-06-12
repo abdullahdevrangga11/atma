@@ -64,7 +64,7 @@ describe("hashReasoning", () => {
   });
 
   it("returns a 0x-prefixed 64-char hex string", async () => {
-    const h = await hashReasoning({ note: "atma" });
+    const h = await hashReasoning({ note: "amana" });
     expect(h.startsWith("0x")).toBe(true);
     expect(h.length).toBe(2 + 64);
     expect(/^0x[0-9a-f]{64}$/.test(h)).toBe(true);

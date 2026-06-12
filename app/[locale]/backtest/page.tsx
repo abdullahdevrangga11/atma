@@ -24,7 +24,7 @@ export default async function BacktestPage({
     <>
       <TopBanner />
       <Navbar />
-      <main className="container-atma py-20 md:py-28">
+      <main className="container-amana py-20 md:py-28">
         <div className="max-w-[1100px] mx-auto">
           <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-5">
             // backtest sandbox
@@ -33,7 +33,7 @@ export default async function BacktestPage({
             Would this have actually worked?
           </h1>
           <p className="text-[16px] text-[var(--color-text-secondary)] max-w-[640px] mb-14 leading-relaxed">
-            Pick a number of weeks. ATMA replays each one through the full agent chain
+            Pick a number of weeks. AMANA replays each one through the full agent chain
             with that week&apos;s market state, then compounds the realised return. Three
             baselines compound alongside. Each row is a real Claude reasoning trace.
           </p>

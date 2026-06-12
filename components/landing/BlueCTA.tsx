@@ -33,7 +33,7 @@ export function BlueCTA() {
         emptyRatio={0.32}
         scrambleRatio={0.26}
         scrambleInterval={150}
-        className="container-atma relative z-10 py-28 md:py-40"
+        className="container-amana relative z-10 py-28 md:py-40"
       >
         <Reveal>
           <div className="mx-auto max-w-[860px] text-center">
@@ -50,7 +50,7 @@ export function BlueCTA() {
 
             <Up delay={650} className="mt-8 mx-auto max-w-[560px]">
               <p className="text-[16px] md:text-[17px] text-white/80 leading-relaxed">
-                Audit the markdown. Compose ATMA into your own treasury contract.
+                Audit the markdown. Compose AMANA into your own treasury contract.
                 Every decision is signed by an agent identity and attested on
                 ERC-8004 — yours forever.
               </p>
@@ -63,10 +63,10 @@ export function BlueCTA() {
                     className="block w-3.5 h-3.5 rounded-[2px] bg-[var(--color-primary)]"
                     aria-hidden
                   />
-                  Launch on ATMA
+                  Launch on AMANA
                 </a>
                 <a
-                  href="https://github.com/abdullahdevrangga11/atma"
+                  href="https://github.com/abdullahdevrangga11/amana"
                   target="_blank"
                   rel="noreferrer"
                   className="btn-on-blue-outline"

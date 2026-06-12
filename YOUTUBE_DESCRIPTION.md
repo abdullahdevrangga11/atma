@@ -5,14 +5,14 @@ When uploading the 3-min demo video to YouTube, paste this whole block into the 
 ---
 
 ```
-ATMA — Treasury Orchestration for Mantle
+AMANA — Treasury Orchestration for Mantle
 
 Three AI agents (Allocator, Risk, Reporter) coordinate inside an ERC-4626 vault to allocate, monitor, and report a real-world-asset treasury on Mantle. Policy lives as Markdown. Every decision signed on-chain via ERC-8004.
 
 Built solo in 4 days for the Mantle Turing Test Hackathon 2026.
 
 🔗 Live demo: https://atma-iota.vercel.app
-💻 GitHub: https://github.com/abdullahdevrangga11/atma
+💻 GitHub: https://github.com/abdullahdevrangga11/amana
 🐦 Twitter: https://x.com/abdullahdevrang
 
 — What's inside —
@@ -59,11 +59,11 @@ Thanks to @AnthropicAI for Sonnet 4.5, @GoogleAI for Gemini Flash, and @0xMantle
 
 ## Title (paste-ready)
 
-`ATMA — Three AI Agents Managing a Mantle Treasury (Mantle Turing Test Hackathon 2026)`
+`AMANA — Three AI Agents Managing a Mantle Treasury (Mantle Turing Test Hackathon 2026)`
 
 ## Tags
 
-`mantle, hackathon, erc-8004, ai agents, rwa, defi, claude, gemini, atma, treasury, ondo usdy, anthropic, mantle sepolia`
+`mantle, hackathon, erc-8004, ai agents, rwa, defi, claude, gemini, amana, treasury, ondo usdy, anthropic, mantle sepolia`
 
 ## Thumbnail
 

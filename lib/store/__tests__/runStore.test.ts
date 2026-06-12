@@ -47,7 +47,7 @@ function mkRun(id: string, overrides: Partial<OrchestrationRun> = {}): Orchestra
 
 // Wipe the global between tests so the cap behaviour is testable.
 beforeEach(() => {
-  (globalThis as { __atmaRunStore?: OrchestrationRun[] }).__atmaRunStore = [];
+  (globalThis as { __amanaRunStore?: OrchestrationRun[] }).__amanaRunStore = [];
 });
 
 describe("runStore", () => {

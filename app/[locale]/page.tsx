@@ -27,7 +27,7 @@ export default async function LandingPage({
         <Hero />
         <LogoStrip />
         <FeatureCards />
-        <section className="container-atma py-20 md:py-28">
+        <section className="container-amana py-20 md:py-28">
           <div className="max-w-[1100px] mx-auto">
             <ArchitectureFlow />
           </div>

@@ -294,7 +294,7 @@ export function RunDetail({ runId }: { runId: string }) {
           </CardTitle>
           <CardDescription>
             Each agent decision becomes a signed event. The hashes below would be emitted on Mantle
-            via AtmaVault.sol in a production wire-up.
+            via AmanaVault.sol in a production wire-up.
           </CardDescription>
         </CardHeader>
         <CardContent>
