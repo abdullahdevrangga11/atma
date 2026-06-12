@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { LenisProvider } from "@/components/providers/LenisProvider";
 import { DissolveTransitionProvider } from "@/components/transitions/DissolveTransition";
+import { CommandPalette } from "@/components/palette/CommandPalette";
 import { Toaster } from "sonner";
 import "../globals.css";
 
@@ -75,6 +76,15 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <LenisProvider>
             <DissolveTransitionProvider>
+              {/* Skip-to-main link for screen readers + keyboard nav. Hidden
+                  off-screen until focused. */}
+              <a
+                href="#main"
+                className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[1100] focus:bg-[var(--color-text)] focus:text-white focus:px-4 focus:py-2 focus:rounded-md focus:text-[13px]"
+              >
+                Skip to main content
+              </a>
+              <CommandPalette />
               {children}
               <Toaster
                 theme="dark"

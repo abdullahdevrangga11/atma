@@ -7,6 +7,7 @@ const ROUTES = [
   "",
   "/vault",
   "/backtest",
+  "/backtest/ab",
   "/compare",
   "/anomaly",
   "/ab-test",

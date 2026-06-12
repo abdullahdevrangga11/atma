@@ -18,8 +18,11 @@ import {
   Plus,
   Upload,
   Activity,
+  LayoutGrid,
+  GitBranch,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { ForkLineage } from "./ForkLineage";
 
 /**
  * Marketplace browser — list + filter + sort + publish.
@@ -58,6 +61,7 @@ export function MarketplaceBrowser() {
   const [entries, setEntries] = useState<SkillEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [publishOpen, setPublishOpen] = useState(false);
+  const [view, setView] = useState<"grid" | "lineage">("grid");
 
   const fetchEntries = useMemo(() => {
     return async () => {
@@ -99,6 +103,44 @@ export function MarketplaceBrowser() {
 
   return (
     <div className="space-y-6">
+      {/* View switcher */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="inline-flex rounded-full border border-[var(--color-border)] bg-white p-1">
+          <button
+            onClick={() => setView("grid")}
+            className={cn(
+              "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[11px] uppercase tracking-[0.06em] transition-colors",
+              view === "grid"
+                ? "bg-[var(--color-text)] text-white"
+                : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)]",
+            )}
+          >
+            <LayoutGrid className="w-3 h-3" />
+            Grid
+          </button>
+          <button
+            onClick={() => setView("lineage")}
+            className={cn(
+              "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-mono text-[11px] uppercase tracking-[0.06em] transition-colors",
+              view === "lineage"
+                ? "bg-[var(--color-text)] text-white"
+                : "text-[var(--color-text-secondary)] hover:text-[var(--color-text)]",
+            )}
+          >
+            <GitBranch className="w-3 h-3" />
+            Lineage
+          </button>
+        </div>
+        <Button size="sm" onClick={() => setPublishOpen(true)}>
+          <Upload className="w-3 h-3" />
+          Publish skill
+        </Button>
+      </div>
+
+      {view === "lineage" ? (
+        <ForkLineage />
+      ) : (
+      <>
       {/* Filter bar */}
       <Card>
         <CardContent className="!pt-4 !pb-4">
@@ -139,10 +181,6 @@ export function MarketplaceBrowser() {
                 </button>
               ))}
             </div>
-            <Button size="sm" onClick={() => setPublishOpen(true)}>
-              <Upload className="w-3 h-3" />
-              Publish skill
-            </Button>
           </div>
         </CardContent>
       </Card>
@@ -172,6 +210,9 @@ export function MarketplaceBrowser() {
             <SkillCard key={e.id} entry={e} onStar={() => star(e.id)} />
           ))}
         </div>
+      )}
+
+      </>
       )}
 
       {publishOpen && (

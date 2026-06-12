@@ -18,8 +18,11 @@ import {
   AlertTriangle,
   Cpu,
   Zap,
+  Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { Button } from "@/components/ui/button";
+import { downloadJSON, downloadCSV } from "@/lib/utils/download";
 
 type Stats = {
   totalRuns: number;
@@ -96,8 +99,37 @@ export function NetworkDashboard() {
 
   const defExitRate = (data.defensiveExits / data.totalRuns) * 100;
 
+  const snapshot = data; // narrow for the closures below
+  function exportJSON() {
+    downloadJSON(snapshot, `atma-network-${Date.now()}.json`);
+  }
+  function exportCSV() {
+    downloadCSV(
+      snapshot.timeline.map((t) => ({
+        runId: t.id,
+        at: new Date(t.at).toISOString(),
+        outperformanceBps: t.outperformanceBps,
+        riskLevel: t.riskLevel,
+        hadDebate: t.hadDebate ? 1 : 0,
+      })),
+      `atma-network-timeline-${Date.now()}.csv`,
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {/* Export bar */}
+      <div className="flex justify-end gap-2">
+        <Button variant="outline" size="sm" onClick={exportCSV}>
+          <Download className="w-3 h-3" />
+          CSV
+        </Button>
+        <Button variant="outline" size="sm" onClick={exportJSON}>
+          <Download className="w-3 h-3" />
+          JSON
+        </Button>
+      </div>
+
       {/* Top stat strip */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatCard

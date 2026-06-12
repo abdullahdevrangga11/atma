@@ -181,6 +181,7 @@ const NAV: NavItem[] = [
     items: [
       { name: "Vault", desc: "Live multi-agent orchestration", href: "/vault", Icon: IconVault },
       { name: "Backtest", desc: "Replay N weeks vs 3 baselines", href: "/backtest", Icon: IconChartUp },
+      { name: "Backtest A/B", desc: "Two skills, same weeks, one chart", href: "/backtest/ab", Icon: IconChartUp },
       { name: "Compare", desc: "3 policies, parallel reasoning", href: "/compare", Icon: IconBalance },
       { name: "Anomaly", desc: "Stress-test the RiskAgent", href: "/anomaly", Icon: IconShield },
     ],

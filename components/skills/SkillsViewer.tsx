@@ -16,6 +16,9 @@ import {
   Sparkles,
   SplitSquareHorizontal,
   Eye,
+  ShieldCheck,
+  AlertTriangle,
+  Info,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { diffLines, type DiffLine } from "@/lib/utils/diffLines";
@@ -118,6 +121,27 @@ export function SkillsViewer({ skills }: SkillsViewerProps) {
   );
   const [editMode, setEditMode] = useState(false);
   const [diffMode, setDiffMode] = useState(false);
+  const [lintIssues, setLintIssues] = useState<LintIssue[] | null>(null);
+  const [linting, setLinting] = useState(false);
+
+  type LintIssue = { level: "error" | "warn" | "info"; rule: string; message: string; line: number; snippet?: string };
+
+  async function runLint() {
+    if (!active) return;
+    setLinting(true);
+    try {
+      const agentSlug = active.agent === "AllocatorAgent" ? "allocator" : active.agent === "RiskAgent" ? "risk" : "reporter";
+      const res = await fetch("/api/skills/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ agent: agentSlug, body: edited[active.id] ?? active.content }),
+      });
+      const j = (await res.json()) as { data: { issues: LintIssue[] } | null };
+      setLintIssues(j.data?.issues ?? []);
+    } finally {
+      setLinting(false);
+    }
+  }
 
   // Run state
   const [baselineRun, setBaselineRun] = useState<RunResult | null>(null);
@@ -244,6 +268,10 @@ export function SkillsViewer({ skills }: SkillsViewerProps) {
                   Diff
                 </Button>
               )}
+              <Button variant="ghost" size="sm" onClick={runLint} disabled={linting}>
+                <ShieldCheck className="w-3 h-3" />
+                {linting ? "Linting…" : "Lint"}
+              </Button>
               {!editMode ? (
                 <Button variant="ghost" size="sm" onClick={() => { setEditMode(true); setDiffMode(false); }}>
                   <Pencil className="w-3 h-3" />
@@ -324,6 +352,9 @@ export function SkillsViewer({ skills }: SkillsViewerProps) {
           />
         </div>
       )}
+
+      {/* Lint results panel — only renders after the user runs Lint */}
+      {lintIssues !== null && <LintPanel issues={lintIssues} onClose={() => setLintIssues(null)} />}
 
       {/* System prompt inspector — the exact bytes we send to Claude */}
       {active && (
@@ -680,6 +711,80 @@ function renderHighlighted(content: string) {
       </div>
     );
   });
+}
+
+function LintPanel({
+  issues,
+  onClose,
+}: {
+  issues: Array<{ level: "error" | "warn" | "info"; rule: string; message: string; line: number; snippet?: string }>;
+  onClose: () => void;
+}) {
+  const errors = issues.filter((i) => i.level === "error").length;
+  const warns = issues.filter((i) => i.level === "warn").length;
+  const infos = issues.filter((i) => i.level === "info").length;
+  return (
+    <Card>
+      <CardContent className="!pt-4 !pb-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-[var(--color-text-muted)]" />
+            <p className="text-[14px] font-medium">Linter results</p>
+            <span className="flex items-center gap-2 ml-2">
+              {errors > 0 && <Badge variant="danger">{errors} error{errors === 1 ? "" : "s"}</Badge>}
+              {warns > 0 && <Badge variant="warning">{warns} warn{warns === 1 ? "" : "s"}</Badge>}
+              {infos > 0 && <Badge variant="default">{infos} info</Badge>}
+              {issues.length === 0 && <Badge variant="success">all clean</Badge>}
+            </span>
+          </div>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            Hide
+          </Button>
+        </div>
+        {issues.length === 0 ? (
+          <p className="text-[12px] text-[var(--color-text-muted)]">
+            No issues detected. Lint rules are conservative — Claude may still surprise you.
+          </p>
+        ) : (
+          <ul className="space-y-2">
+            {issues.map((i, idx) => (
+              <li
+                key={idx}
+                className={cn(
+                  "rounded-md px-3 py-2.5 text-[12px] leading-snug border",
+                  i.level === "error"
+                    ? "bg-red-50 border-red-200 text-red-900"
+                    : i.level === "warn"
+                      ? "bg-amber-50 border-amber-200 text-amber-900"
+                      : "bg-[var(--color-bg-soft)] border-[var(--color-border)] text-[var(--color-text-secondary)]",
+                )}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  {i.level === "error" ? (
+                    <AlertTriangle className="w-3 h-3" />
+                  ) : i.level === "warn" ? (
+                    <AlertTriangle className="w-3 h-3" />
+                  ) : (
+                    <Info className="w-3 h-3" />
+                  )}
+                  <span className="font-mono text-[10px] uppercase tracking-[0.06em] opacity-80">
+                    {i.rule}
+                    {i.line > 0 && ` · line ${i.line}`}
+                  </span>
+                </div>
+                <p>{i.message}</p>
+                {i.snippet && (
+                  <p className="mt-1.5 font-mono text-[10.5px] opacity-70 truncate">
+                    › {i.snippet}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
+  );
 }
 
 // Lint-quiet exports
