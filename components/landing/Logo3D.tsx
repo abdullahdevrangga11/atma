@@ -59,6 +59,8 @@ function LogoInstance({
   spin,
   phase,
   scale,
+  pointerRef,
+  anchor,
 }: {
   geometry: THREE.BufferGeometry;
   scrollRef: MutableRefObject<number>;
@@ -67,22 +69,41 @@ function LogoInstance({
   spin: number;
   phase: number;
   scale: number;
+  pointerRef: MutableRefObject<{ x: number; y: number }>;
+  anchor: [number, number];
 }) {
   const group = useRef<THREE.Group>(null);
+  const material = useRef<THREE.MeshPhysicalMaterial>(null);
+  const hover = useRef(0);
 
   useFrame((state) => {
     if (!group.current) return;
     const t = state.clock.elapsedTime + phase;
     const scroll = scrollRef.current ?? 0;
-    group.current.rotation.y = baseRotation + scroll * Math.PI * spin + Math.sin(t * 0.4) * 0.16;
-    group.current.rotation.x = -0.05 + Math.sin(t * 0.3) * 0.08;
-    group.current.position.y = position[1] + Math.sin(t * 0.7) * 0.12;
+    const { x: px, y: py } = pointerRef.current;
+
+    // Proximity to this logo's corner → hover factor (1 near, 0 far), eased.
+    const dist = Math.hypot(px - anchor[0], py - anchor[1]);
+    const target = 1 - Math.min(1, Math.max(0, (dist - 0.25) / (0.95 - 0.25)));
+    hover.current = THREE.MathUtils.lerp(hover.current, target * target * (3 - 2 * target), 0.12);
+    const h = hover.current;
+
+    // Spin a touch faster + lean toward the cursor when hovered.
+    group.current.rotation.y =
+      baseRotation + scroll * Math.PI * spin + Math.sin(t * 0.4) * 0.16 + px * (0.25 + h * 0.4);
+    group.current.rotation.x = -0.05 + Math.sin(t * 0.3) * 0.08 - py * (0.18 + h * 0.3);
+    group.current.position.y = position[1] + Math.sin(t * 0.7) * 0.12 + h * 0.18;
+    group.current.scale.setScalar(scale * (1 + h * 0.14));
+
+    // Glow harder when hovered (bloom amplifies this into a real flare).
+    if (material.current) material.current.emissiveIntensity = 0.32 + h * 0.9;
   });
 
   return (
     <group ref={group} position={position} scale={scale}>
       <mesh geometry={geometry}>
         <meshPhysicalMaterial
+          ref={material}
           color="#6b46ff"
           metalness={0.9}
           roughness={0.18}
@@ -118,9 +139,11 @@ function StudioEnv() {
 
 export function Logo3D({
   scrollRef,
+  pointerRef,
   active,
 }: {
   scrollRef: MutableRefObject<number>;
+  pointerRef: MutableRefObject<{ x: number; y: number }>;
   active: boolean;
 }) {
   const geometry = useLogoGeometry();
@@ -141,6 +164,8 @@ export function Logo3D({
       <LogoInstance
         geometry={geometry}
         scrollRef={scrollRef}
+        pointerRef={pointerRef}
+        anchor={[0.7, 0.62]}
         position={[6.4, 3.0, 0]}
         baseRotation={-0.5}
         spin={1.0}
@@ -151,6 +176,8 @@ export function Logo3D({
       <LogoInstance
         geometry={geometry}
         scrollRef={scrollRef}
+        pointerRef={pointerRef}
+        anchor={[-0.7, -0.64]}
         position={[-6.4, -3.1, -0.5]}
         baseRotation={0.6}
         spin={-1.0}

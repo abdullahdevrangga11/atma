@@ -24,6 +24,7 @@ const Logo3D = dynamic(() => import("./Logo3D").then((m) => m.Logo3D), {
 export function Logo3DLazy() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef(0);
+  const pointerRef = useRef({ x: 0, y: 0 });
   const [mounted, setMounted] = useState(false);
   const [active, setActive] = useState(false);
   const [enabled, setEnabled] = useState(false);
@@ -68,6 +69,20 @@ export function Logo3DLazy() {
     };
   }, [enabled]);
 
+  useEffect(() => {
+    if (!enabled) return;
+    const onMove = (e: PointerEvent) => {
+      const el = wrapRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      // Normalised to the section: -1..1, +x right, +y up.
+      pointerRef.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointerRef.current.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => window.removeEventListener("pointermove", onMove);
+  }, [enabled]);
+
   if (!enabled) return null;
 
   return (
@@ -76,7 +91,7 @@ export function Logo3DLazy() {
       className="pointer-events-none absolute inset-0 z-0 select-none"
       aria-hidden
     >
-      {mounted ? <Logo3D scrollRef={scrollRef} active={active} /> : null}
+      {mounted ? <Logo3D scrollRef={scrollRef} pointerRef={pointerRef} active={active} /> : null}
     </div>
   );
 }
