@@ -71,13 +71,15 @@ export function Logo3DLazy() {
 
   useEffect(() => {
     if (!enabled) return;
+    const clamp = (v: number) => Math.max(-1.6, Math.min(1.6, v));
     const onMove = (e: PointerEvent) => {
       const el = wrapRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
-      // Normalised to the section: -1..1, +x right, +y up.
-      pointerRef.current.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      pointerRef.current.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+      // Normalised to the section: -1..1 inside it, clamped so the cursor being
+      // far away on the page can't drive the rotation to wild values.
+      pointerRef.current.x = clamp(((e.clientX - rect.left) / rect.width) * 2 - 1);
+      pointerRef.current.y = clamp(-(((e.clientY - rect.top) / rect.height) * 2 - 1));
     };
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);

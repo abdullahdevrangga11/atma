@@ -75,23 +75,29 @@ function LogoInstance({
   const group = useRef<THREE.Group>(null);
   const material = useRef<THREE.MeshPhysicalMaterial>(null);
   const hover = useRef(0);
+  const sp = useRef({ x: 0, y: 0 }); // smoothed pointer
 
   useFrame((state) => {
     if (!group.current) return;
     const t = state.clock.elapsedTime + phase;
     const scroll = scrollRef.current ?? 0;
-    const { x: px, y: py } = pointerRef.current;
+
+    // Ease the pointer so fast mouse moves glide instead of snapping.
+    sp.current.x = THREE.MathUtils.lerp(sp.current.x, pointerRef.current.x, 0.08);
+    sp.current.y = THREE.MathUtils.lerp(sp.current.y, pointerRef.current.y, 0.08);
+    const px = sp.current.x;
+    const py = sp.current.y;
 
     // Proximity to this logo's corner → hover factor (1 near, 0 far), eased.
     const dist = Math.hypot(px - anchor[0], py - anchor[1]);
     const target = 1 - Math.min(1, Math.max(0, (dist - 0.25) / (0.95 - 0.25)));
-    hover.current = THREE.MathUtils.lerp(hover.current, target * target * (3 - 2 * target), 0.12);
+    hover.current = THREE.MathUtils.lerp(hover.current, target * target * (3 - 2 * target), 0.1);
     const h = hover.current;
 
     // Spin a touch faster + lean toward the cursor when hovered.
     group.current.rotation.y =
-      baseRotation + scroll * Math.PI * spin + Math.sin(t * 0.4) * 0.16 + px * (0.25 + h * 0.4);
-    group.current.rotation.x = -0.05 + Math.sin(t * 0.3) * 0.08 - py * (0.18 + h * 0.3);
+      baseRotation + scroll * Math.PI * spin + Math.sin(t * 0.4) * 0.16 + px * (0.22 + h * 0.32);
+    group.current.rotation.x = -0.05 + Math.sin(t * 0.3) * 0.08 - py * (0.16 + h * 0.24);
     group.current.position.y = position[1] + Math.sin(t * 0.7) * 0.12 + h * 0.18;
     group.current.scale.setScalar(scale * (1 + h * 0.14));
 
