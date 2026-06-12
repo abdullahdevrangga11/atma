@@ -281,43 +281,52 @@ function CardFront({ agent }: { agent: Agent }) {
         borderRadius: "inherit",
         background: "#fafafa",
         border: "1px solid #e8e8e8",
+        containerType: "inline-size",
       }}
     >
       <div
-        className="absolute top-0 left-0 right-0 px-7 pt-7 flex items-center justify-between"
-        style={{ color: agent.accent }}
+        className="absolute top-0 left-0 right-0 flex items-center justify-between"
+        style={{ color: agent.accent, padding: "7% 7% 0" }}
       >
-        <span className="font-mono text-[11px] uppercase tracking-[0.08em] opacity-90">
+        <span
+          className="font-mono uppercase tracking-[0.08em] opacity-90"
+          style={{ fontSize: "clamp(9px, 3cqi, 11px)" }}
+        >
           {agent.number}
         </span>
-        <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
+        <span
+          className="font-mono uppercase tracking-[0.08em] text-[var(--color-text-muted)]"
+          style={{ fontSize: "clamp(8px, 2.6cqi, 10px)" }}
+        >
           agent
         </span>
       </div>
-      <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
-        <span style={{ color: agent.accent }} className="mb-7">
+      <div className="flex-1 flex flex-col items-center justify-center text-center" style={{ padding: "0 8%" }}>
+        <span style={{ color: agent.accent }} className="mb-[6%]">
           <agent.Icon />
         </span>
         <h3
-          className="font-semibold mb-3 leading-none"
-          style={{ fontSize: "clamp(28px, 3.8vw, 56px)", color: "#0a0a0a" }}
+          className="font-semibold mb-[4%] leading-none"
+          style={{ fontSize: "clamp(24px, 18cqi, 52px)", color: "#0a0a0a" }}
         >
           {agent.name}
         </h3>
         {/*
-          Fixed 2-line reservation so the description never causes a height
-          jump when the container width animates 75% → 60% mid-scroll. Even
-          if the text fits one line at wide widths, the slot stays the same
-          size — the card geometry is therefore stable across all three.
+          Sized in cqi so the label scales with the card's own width (the card
+          width animates 75% → 60% mid-scroll and is ~1/3 of the container).
+          Reserve ~2 lines so the card geometry stays stable across all three.
         */}
         <p
-          className="font-mono text-[12px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] max-w-[280px] leading-[1.5] text-balance"
-          style={{ minHeight: "calc(12px * 1.5 * 2)" }}
+          className="font-mono uppercase tracking-[0.08em] text-[var(--color-text-muted)] max-w-[280px] text-balance"
+          style={{ fontSize: "clamp(10px, 4cqi, 12px)", lineHeight: 1.5, minHeight: "calc(2 * 1.5em)" }}
         >
           {agent.short}
         </p>
       </div>
-      <div className="px-7 pb-7 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
+      <div
+        className="flex items-center justify-between font-mono uppercase tracking-[0.08em] text-[var(--color-text-muted)]"
+        style={{ fontSize: "clamp(8px, 2.6cqi, 10px)", padding: "0 7% 7%" }}
+      >
         <span>AMANA</span>
         <span>read more →</span>
       </div>
@@ -329,7 +338,7 @@ function CardBack({ agent }: { agent: Agent }) {
   return (
     <Link
       href={agent.href}
-      className="split-card-face absolute inset-0 overflow-hidden flex flex-col p-8 text-left"
+      className="split-card-face absolute inset-0 overflow-hidden flex flex-col text-left"
       style={{
         backfaceVisibility: "hidden",
         WebkitBackfaceVisibility: "hidden",
@@ -338,20 +347,25 @@ function CardBack({ agent }: { agent: Agent }) {
         background: agent.accent,
         color: agent.fg,
         textDecoration: "none",
+        containerType: "inline-size",
+        padding: "8%",
       }}
     >
       <div className="flex items-center justify-between" style={{ opacity: 0.6 }}>
-        <span className="font-mono text-[11px] uppercase tracking-[0.08em]">{agent.number}</span>
-        <span className="font-mono text-[10px] uppercase tracking-[0.08em]">{agent.name}</span>
+        <span className="font-mono uppercase tracking-[0.08em]" style={{ fontSize: "clamp(9px, 3cqi, 11px)" }}>{agent.number}</span>
+        <span className="font-mono uppercase tracking-[0.08em]" style={{ fontSize: "clamp(8px, 2.6cqi, 10px)" }}>{agent.name}</span>
       </div>
-      <div className="flex-1 flex flex-col justify-end">
+      <div className="flex-1 flex flex-col justify-end min-h-0">
         <p
-          className="font-medium mb-6"
-          style={{ fontSize: "clamp(20px, 2.2vw, 28px)", lineHeight: 1.15 }}
+          className="font-medium"
+          style={{ fontSize: "clamp(13px, 6.2cqi, 24px)", lineHeight: 1.3, marginBottom: "6%" }}
         >
           {agent.body}
         </p>
-        <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] underline underline-offset-4">
+        <span
+          className="inline-flex items-center gap-2 font-mono uppercase tracking-[0.08em] underline underline-offset-4 shrink-0"
+          style={{ fontSize: "clamp(9px, 3cqi, 11px)" }}
+        >
           Inspect agent
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
             <path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
