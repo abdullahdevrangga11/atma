@@ -48,8 +48,9 @@ export function Footer() {
               <svg
                 viewBox="0 0 648 972"
                 fill="currentColor"
+                preserveAspectRatio="xMidYMid meet"
                 aria-hidden
-                className="h-6 w-auto text-[var(--color-primary)]"
+                className="h-6 w-4 shrink-0 text-[var(--color-primary)]"
               >
                 <path fillRule="evenodd" clipRule="evenodd" d="M298 243V0H162C72.5312 0 0 72.5312 0 162V674L298 972V567C287.566 496.742 232.258 441.434 162 431V379C232.258 368.566 287.566 313.258 298 243Z" />
                 <path fillRule="evenodd" clipRule="evenodd" d="M350 810V567C360.434 496.742 415.742 441.434 486 431V379C415.742 368.566 360.434 313.258 350 243V0L648 298V648C648 737.469 575.469 810 486 810H350Z" />

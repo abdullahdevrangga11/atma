@@ -302,10 +302,11 @@ export function Navbar() {
           <svg
             viewBox="0 0 648 972"
             fill="currentColor"
+            preserveAspectRatio="xMidYMid meet"
             aria-hidden
             className={cn(
-              "text-[var(--color-primary)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] w-auto",
-              scrolled ? "h-5" : "h-6",
+              "shrink-0 text-[var(--color-primary)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+              scrolled ? "h-5 w-[13px]" : "h-6 w-4",
             )}
           >
             <path fillRule="evenodd" clipRule="evenodd" d="M298 243V0H162C72.5312 0 0 72.5312 0 162V674L298 972V567C287.566 496.742 232.258 441.434 162 431V379C232.258 368.566 287.566 313.258 298 243Z" />
