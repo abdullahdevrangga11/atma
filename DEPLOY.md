@@ -2,6 +2,9 @@
 
 Three-step deployment for the **Mantle Turing Test Hackathon 2026** submission.
 
+Live demo: **https://atma-iota.vercel.app**
+Repo: **https://github.com/abdullahdevrangga11/atma**
+
 ---
 
 ## 0. Prereqs
@@ -9,7 +12,7 @@ Three-step deployment for the **Mantle Turing Test Hackathon 2026** submission.
 | Tool | Version | Install |
 |---|---|---|
 | Node | 20+ | https://nodejs.org |
-| pnpm | 9+ | `npm i -g pnpm` |
+| pnpm | 9+ | `npm i -g pnpm` (or use the bundled npm install) |
 | Foundry | nightly | `curl -L https://foundry.paradigm.xyz \| bash && foundryup` |
 | Vercel CLI | latest | `npm i -g vercel` |
 | Mantle Sepolia MNT | ~0.1 MNT | https://faucet.sepolia.mantle.xyz |
@@ -21,29 +24,20 @@ Three-step deployment for the **Mantle Turing Test Hackathon 2026** submission.
 Copy `.env.local.example` to `.env.local` and fill in:
 
 ```bash
-# Anthropic — agent reasoning
+# Anthropic — agent reasoning (REQUIRED — without this the agent pages 500)
 ANTHROPIC_API_KEY=sk-ant-...
 
-# Mantle Sepolia
+# Mantle Sepolia (testnet)
 MANTLE_SEPOLIA_RPC=https://rpc.sepolia.mantle.xyz
-PRIVATE_KEY=0x...                # deployer key, holds the 0.1 MNT faucet drop
-MANTLESCAN_API_KEY=...           # for source verification (https://mantlescan.xyz)
+PRIVATE_KEY=0x...                # deployer key, holds the faucet MNT
+MANTLESCAN_API_KEY=...           # for source verification
 
-# Privy — embedded wallet for users
-NEXT_PUBLIC_PRIVY_APP_ID=...     # https://dashboard.privy.io
+# Privy — embedded wallet (UI present, hookup is optional)
+NEXT_PUBLIC_PRIVY_APP_ID=...
 ```
 
-Once deployed, the script appends contract addresses to `.env.local`:
-
-```bash
-NEXT_PUBLIC_ATMA_VAULT=0x...
-NEXT_PUBLIC_USDC=0x...
-NEXT_PUBLIC_USDY=0x...
-NEXT_PUBLIC_MUSD=0x...
-NEXT_PUBLIC_AAVE_POOL=0x...
-NEXT_PUBLIC_MI4=0x...
-NEXT_PUBLIC_CHAIN_ID=5003
-```
+The deploy script appends contract addresses to `.env.local` once the
+forge script lands.
 
 ---
 
@@ -55,70 +49,96 @@ cd contracts
 # Build
 forge build --sizes
 
-# Test (45 passing)
+# 45 Foundry tests (all green)
 forge test -vvv
 
 # Deploy + verify
 forge script script/Deploy.s.sol \
   --rpc-url $MANTLE_SEPOLIA_RPC \
-  --broadcast \
-  --verify \
+  --broadcast --verify \
   --etherscan-api-key $MANTLESCAN_API_KEY \
   -vvv
 ```
 
-The Deploy script logs every address. Copy them into `.env.local`.
-
-> **Note**: All `Mock*` contracts (USDC/USDY/mUSD/AavePool/MI4) ship with the deploy so
-> the demo is reproducible without depending on live RWA bridge testnets. In a mainnet
-> cut, the constructor accepts real Mantle addresses.
+`Deploy.s.sol` ships AtmaVault + 5 mock contracts (USDC, USDY, mUSD, Aave
+pool, MI4) so the demo is reproducible without depending on live RWA
+bridge testnets. A mainnet cut accepts real Mantle addresses in the
+constructor.
 
 ---
 
 ## 3. Frontend → Vercel
 
 ```bash
-# From repo root
 vercel link                    # link to a new Vercel project
-vercel env pull .env.local     # pull production env vars (or push yours)
-vercel --prod                  # ship
-
-# Set required secrets on Vercel
 vercel env add ANTHROPIC_API_KEY production
 vercel env add NEXT_PUBLIC_PRIVY_APP_ID production
 vercel env add NEXT_PUBLIC_ATMA_VAULT production
 vercel env add NEXT_PUBLIC_CHAIN_ID production
+vercel --prod
 ```
 
-Production URL: **https://atma-iota.vercel.app** (alias).
+Production URL: **https://atma-iota.vercel.app**
+
+The build uses Next.js 16 (Turbopack) + React 19 + Tailwind v4. All
+pages prerender for both `en` and `id` locales; agent + orchestration
+endpoints are dynamic with `runtime: "nodejs"`.
 
 ---
 
-## 4. Smoke test
+## 4. Smoke test — 8 pages, 11 API endpoints
 
-After deploy, hit these in order:
+After deploy, hit these:
 
-| Route | What you're verifying |
+### Pages (all should render 200)
+
+| Route | What it demonstrates |
 |---|---|
-| `GET /` | Landing renders, FiddleHover digital effect alive, navbar glass + shrink |
-| `GET /vault` | Vault demo loads, "Run Allocator" calls `/api/agent` |
-| `GET /reports` | Reports dashboard with 3 baselines + attestation feed |
-| `GET /skills` | Three skill markdown files render in the viewer |
-| `POST /api/agent` body `{"action":"propose", "input": {...}}` | Returns `{ data, reasoningHash }` |
+| `GET /` | Landing — FiddleHover digital scramble, animated architecture flow, bento product section, split-card pinned-scroll feature section, build log |
+| `GET /vault` | Vault state-machine viz + live feeds + token-streaming orchestration with debate loop and cost meter |
+| `GET /backtest` | 2-12 week historical replay with live Claude reasoning per agent per week |
+| `GET /compare` | 3 policies (conservative/balanced/aggressive) reasoning in parallel |
+| `GET /anomaly` | 5 sliders driving RiskAgent with rule-based vs Claude prediction comparison |
+| `GET /ab-test` | Two skill markdowns competing across N rounds |
+| `GET /reports` | Real attestation history pulled from runStore |
+| `GET /network` | Cumulative cost, runs, defensive exits, debate retries |
+| `GET /agents/[allocator\|risk\|reporter]` | Per-agent identity profile with ERC-8004 capsule |
+| `GET /skills` | Markdown viewer with edit + diff + run + system prompt inspector |
+| `GET /runs/[id]` | Forensic single-run view with debate transcript + state-machine path |
+| `GET /conversation/[id]` | Slack-thread-style multi-agent conversation rendering of the same run |
 
-If `/api/agent` returns 500 → check `ANTHROPIC_API_KEY` is set in Vercel.
+### API endpoints
+
+| Endpoint | Verb | Purpose |
+|---|---|---|
+| `/api/agent` | POST | Single-shot agent invocation; supports `overrideSkill` for playgrounds |
+| `/api/orchestrate` | POST | Atomic full Allocator → Risk → Reporter chain |
+| `/api/orchestrate/stream` | POST (SSE) | Streaming chain — token deltas, state transitions, debate events, cost |
+| `/api/backtest/stream` | POST (SSE) | N-week historical replay with per-week per-agent streaming |
+| `/api/abtest/stream` | POST (SSE) | N-round skill A vs skill B comparison |
+| `/api/feeds` | GET | Current synthetic feed snapshot |
+| `/api/prompts` | GET | The exact system prompts sent to Claude per agent |
+| `/api/runs` | GET | Latest 20 runs + aggregate stats |
+| `/api/runs/[id]` | GET | Single run lookup |
+| `/api/agent-stats/[slug]` | GET | Per-agent decision feed + stats |
+| `/api/network` | GET | Global stats across all runs (cost, count, defensive exits, debate retries) |
+
+### OpenGraph
+
+`/runs/[id]` exports a generated Twitter card via `next/og`. Any
+`/runs/[id]` URL pasted into Twitter, Slack, or Discord unfurls as a
+proper card showing outcome + outperformance + agent signatures.
 
 ---
 
 ## 5. Hackathon checklist
 
-- [ ] Repo public on GitHub (https://github.com/abdullahdevrangga11/atma)
-- [ ] Vault verified on https://sepolia.mantlescan.xyz
-- [ ] DEMO_VIDEO_SCRIPT.md recorded (≤ 3 min, founder voice — NOT AI narration)
-- [ ] DoraHacks submission form filled in
-- [ ] Twitter thread posted from `@abdullahdevrang`
-- [ ] `progress.md` build log committed (CrossBeam pattern)
+- [x] Repo public on GitHub (https://github.com/abdullahdevrangga11/atma)
+- [x] Production live (https://atma-iota.vercel.app)
+- [ ] Vault deployed + verified on Mantle Sepolia (needs PRIVATE_KEY)
+- [ ] `ANTHROPIC_API_KEY` set in Vercel
+- [ ] 3-min demo video recorded (script in `DEMO_VIDEO_SCRIPT.md`)
+- [ ] DoraHacks submission form filled (copy in `DORAHACKS_SUBMISSION.md`)
+- [ ] Twitter thread posted (template in `TWITTER_THREAD.md`)
 
-Deadline: **June 15, 2026 — 15:59 UTC**.
-
-Ship.
+**Deadline**: 2026-06-15 15:59 UTC.

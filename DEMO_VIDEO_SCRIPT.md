@@ -1,108 +1,137 @@
-# ATMA — Demo Video Script (≤ 3 minutes)
+# ATMA — Demo Video Script (3 minutes)
 
 **Recording rules**:
-- Founder voice. **No AI narration.** Judges penalize TTS heavily.
+- Founder voice. **No AI narration.** Judges actively penalise TTS.
 - Screen capture at 1920×1080. QuickTime + built-in mic is fine.
 - Cut hard between scenes. No transitions, no music underneath voice.
-- Show the actual code + actual tx hashes on-screen. Authority signal.
+- Show actual code + actual reasoning hashes on-screen. That's the authority signal.
+- Always have a fallback browser tab pre-loaded with the page open in case live calls hang.
+
+Production URL: **https://atma-iota.vercel.app**
 
 ---
 
-## SCENE 1 — Hook (0:00–0:20)
+## SCENE 1 — Hook (0:00–0:18)
 
-**On screen**: ATMA landing hero. The pixel candlesticks. FiddleHover effect alive over the hero.
+**On screen**: Landing hero. Cursor moves over hero text, FiddleHover digital scramble cells flicker.
 
 **Say**:
 
-> Treasuries that hold stablecoins on Mantle are bleeding yield right now. USDY pays 4.42 percent. mUSD pays half a percent more if you rebase weekly. Aave V3 supply moves intraday. Nobody manages this. So treasuries either park everything in USDC and lose 4 percent a year, or pick one asset and accept the rebalance work nobody has time for.
-
-> This is ATMA. Three AI agents that allocate, monitor, and report — on-chain, attested, every decision signed.
+> ATMA is treasury orchestration for Mantle. Three AI agents allocate USDC across the RWA stack — USDY, mUSD, Aave, MI4 — under a verifiable policy that lives as markdown, not code. Every decision is signed on-chain via ERC-8004. Here's a 3-minute tour.
 
 ---
 
-## SCENE 2 — The architecture in 30 seconds (0:20–0:50)
+## SCENE 2 — Architecture flow (0:18–0:40)
 
-**On screen**: Switch to the `/skills` page. Show the markdown viewer with `mantle-rwa-allocation.skill.md` highlighted.
+**On screen**: Scroll down past the hero to the animated architecture flow. A violet particle travels along the pipeline edges.
 
 **Say**:
 
-> Here's the architecture. Each agent reads its policy from a Markdown file at runtime. Not embedded in code. Not in a system prompt I edit and redeploy. A skill file in the repo.
+> Feeds in. Allocator drafts weights. Risk vetoes if needed. Reporter signs the digest. Each agent is its own ERC-8004 identity with reputation events emitted on Mantle. Click any node and you land on that agent's profile page.
 
-> This pattern is borrowed from CrossBeam, the first-prize winner of Anthropic's Built with Opus 4.6 Hackathon. Policy update equals git commit. No redeploy. No contract upgrade. Anyone can audit the policy in a normal pull request.
-
-**On screen**: Quickly swipe through Allocator → Risk → Reporter tabs in the SkillsViewer.
+> Underneath, the architecture is real — 374 lines of vault Solidity, 45 Foundry tests, three TypeScript agents on Claude Sonnet 4.5.
 
 ---
 
-## SCENE 3 — The vault contract (0:50–1:20)
+## SCENE 3 — Live orchestration with debate (0:40–1:20)
 
-**On screen**: Open `contracts/src/AtmaVault.sol` in VS Code. Scroll the State enum.
-
-**Say**:
-
-> Under the hood it's an ERC-4626 vault with an eleven-state machine. Idle, Analyzing, Proposing, Executing, Attesting, Allocated, Rebalancing, RiskTriggered, Withdrawing, DefensiveExit, Completed.
-
-**On screen**: Switch to the terminal. Run `forge test -vvv`.
+**On screen**: Navigate to `/vault`. Toggle "Debate mode" ON. Hit "Run orchestration".
 
 **Say**:
 
-> Forty-five Foundry tests, all green. They cover the full state machine, NAV computation, defensive exit under oracle deviation, and weight enforcement.
+> Debate mode forces Risk to see a stressed oracle. Hit run, and the state machine animates. Allocator's reasoning streams in live — that's actual Claude output, token by token. Allocator proposes thirty-four percent USDY, thirty percent mUSD, thirty-six percent Aave.
 
-**On screen**: Show the green test output.
+**On screen**: Veto banner pops, Allocator card flips to "attempt 2".
+
+> Risk just vetoed. The exact veto reason gets injected back into Allocator's system prompt as a constraint. Allocator re-drafts, this time with Aave reduced. Risk approves the second pass. Reporter signs the digest.
+
+> The cost meter at the top shows exactly what this orchestration cost in tokens — about three-tenths of a cent per run.
 
 ---
 
-## SCENE 4 — The agent in action (1:20–2:10)
+## SCENE 4 — The conversation view (1:20–1:50)
 
-**On screen**: Open `/vault` page.
+**On screen**: Click "Conversation view" button. New page loads.
 
 **Say**:
 
-> Now watch the Allocator agent reason. I'm going to click "Run Allocator" with ten thousand USDC and a balanced policy.
+> Here's the same run rendered as a Slack-style chat between the agents. Allocator's first message — the original proposal. Risk replies as a quoted veto, calling out the flagged signal. Allocator's second message — "honoured the veto, here's a revised proposal." Risk approves. Reporter posts the digest.
 
-**On screen**: Click the button. The proposal card animates in.
-
-> Thirty-four percent USDY, thirty percent mUSD, thirty-six percent Aave, zero MI4. Expected APY four hundred sixty-three basis points. Risk score four out of ten. And here — the reasoning. Why this split. Why MI4 is zero this round.
-
-**On screen**: Scroll down to show the reasoning text and `reasoningHash`.
-
-> Every reasoning blob gets hashed. That hash gets emitted on-chain as an ERC-8004 ReputationEvent the moment the orchestrator executes the allocation. So this allocation isn't just stored — it's attested by an agent identity, queryable on Mantle Explorer, forever.
+> This is autonomous agent coordination on a public chain. Not a chatbot wrapper. Every message has an ERC-8004 reputation hash you can verify.
 
 ---
 
-## SCENE 5 — The receipts (2:10–2:40)
+## SCENE 5 — Backtest replay (1:50–2:15)
 
-**On screen**: Switch to `/reports`.
+**On screen**: Navigate to `/backtest`. Slider on 6 weeks. Hit run.
 
 **Say**:
 
-> And here are the receipts. Plus four hundred sixty-three basis points annualized versus do-nothing. Plus forty-seven basis points versus a USDC-Aave-only baseline. Plus twenty-one versus USDY only.
+> Backtest replays N weeks of synthetic market history through the full agent chain. Real Claude calls every week. The chart draws itself as each week settles. Six weeks runs in about forty seconds.
 
-**On screen**: Scroll to the attestation feed.
+**On screen**: Chart fills, summary card lands.
 
-> Every event below is a real on-chain reputation event. Allocator number one decided. Risk number two emitted a warn signal Tuesday when Aave's oracle drifted, but the signal cleared in eighty-five minutes without action. Reporter number three signed the weekly digest at midnight UTC Sunday.
-
-> Click any tx hash, you land on Mantle Explorer. The full audit trail is public.
+> Plus three hundred twelve basis points cumulative over six weeks. Plus eighty-four versus USDC-Aave-only. One defensive exit triggered. Total cost — six and a half cents.
 
 ---
 
-## SCENE 6 — The ask (2:40–3:00)
+## SCENE 6 — Policy as data (2:15–2:40)
 
-**On screen**: Cut back to the landing hero.
+**On screen**: Navigate to `/skills`. Click Edit on the AllocatorAgent skill. Change `maxMi4Bps: 1500` to `maxMi4Bps: 0`.
 
 **Say**:
 
-> Three agents. One vault. Policy as data. Every decision attested.
+> Here's the killer demo. I edit the Allocator's skill — just markdown. I'll cap MI4 at zero. Hit "Run comparison".
 
-> ATMA fixes the exact gap Mantle has right now — yield-bearing assets that nobody is managing — using the architecture pattern that just won Anthropic's flagship hackathon.
+**On screen**: Two columns appear with different allocations.
 
-> Repo and live demo in the description. Thanks for watching.
+> Same input. Different policy. Different proposal. No redeploy. No contract upgrade. The skill is in source control — every policy change is a git commit, every git commit is queryable.
+
+**On screen**: Scroll to system prompt inspector, click "show".
+
+> And here's the exact prompt sent to Claude — with my edit live. Radical transparency.
+
+---
+
+## SCENE 7 — Receipts (2:40–2:55)
+
+**On screen**: Navigate to `/reports`. Then `/network`.
+
+**Say**:
+
+> Reports pulls from this deployment's real orchestration history. Network shows cumulative metrics — fifteen runs, forty-five attestations, four cents total cost, plus two hundred ninety-eight basis points average outperformance.
+
+**On screen**: Click any tx in the attestation feed → lands on a run permalink with the OG image.
+
+> Every run gets its own permalink. Paste it into Twitter — it unfurls as a proper card.
+
+---
+
+## SCENE 8 — The ask (2:55–3:00)
+
+**On screen**: Cut to landing hero.
+
+**Say**:
+
+> Three agents. One vault. Policy as data. Every decision attested. atma-iota dot vercel dot app. Thanks for watching.
 
 ---
 
 ## Production notes
 
 - **Mic check before take 1.** Ambient hiss is fatal.
-- Practice the 30-second architecture pitch (Scene 2) five times. That's the differentiation moment.
-- If the on-chain demo fails live, have a backup screen recording ready to splice in.
-- Keep total runtime **under 3 minutes 0 seconds**. Judges scroll past anything longer.
+- The 30-second moment is Scene 4 (conversation view). Practice it five times.
+- If a live Claude call hangs during recording, cut away to the cached browser tab.
+- Total runtime target: 2:58–3:02. Anything over 3:05 reads as undisciplined.
+- Show reasoning hashes on-screen wherever they appear — they're the proof.
+
+---
+
+## Backup demo path (1-minute cut for X/LinkedIn)
+
+If the 3-min is too long for some platforms:
+
+1. (0:00–0:10) Hero + architecture
+2. (0:10–0:30) Vault debate run + conversation view
+3. (0:30–0:50) Skills edit + comparison
+4. (0:50–1:00) Reports + cost meter + share URL

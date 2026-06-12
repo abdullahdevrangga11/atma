@@ -189,6 +189,11 @@ export function RunDetail({ runId }: { runId: string }) {
               {run.debate.length} veto{run.debate.length === 1 ? "" : "es"}
             </Badge>
           )}
+          <Link href={`/conversation/${run.id}`}>
+            <Button variant="default" size="sm">
+              Conversation view
+            </Button>
+          </Link>
           <Button onClick={share} variant="outline" size="sm">
             {copied ? <Check className="w-3 h-3" /> : <Share2 className="w-3 h-3" />}
             {copied ? "Copied" : "Share"}
