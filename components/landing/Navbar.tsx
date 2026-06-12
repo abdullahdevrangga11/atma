@@ -134,7 +134,7 @@ function IconChartUp() {
 }
 function IconCoin() {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
       <circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="1.4" />
       <path d="M9 5v8M6 7l3-2 3 2M6 11l3 2 3-2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-500 group-hover/item:translate-y-[-1px]" />
     </svg>
@@ -142,7 +142,7 @@ function IconCoin() {
 }
 function IconBank() {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
       <path d="M9 1l8 4v2H1V5l8-4z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
       <path d="M3 9v5M7 9v5M11 9v5M15 9v5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" className="transition-transform duration-500 group-hover/item:translate-y-[1px]" />
       <path d="M1 16h16" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
@@ -151,14 +151,14 @@ function IconBank() {
 }
 function IconChart() {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
       <path d="M2 14l4-5 3 3 5-7 2 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="transition-all duration-500 group-hover/item:[stroke-dasharray:30] group-hover/item:[stroke-dashoffset:60]" />
     </svg>
   );
 }
 function IconTrophy() {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
       <path d="M5 2h8v5a4 4 0 0 1-8 0V2z" stroke="currentColor" strokeWidth="1.4" />
       <path d="M5 4H3a2 2 0 0 0 2 4M13 4h2a2 2 0 0 1-2 4" stroke="currentColor" strokeWidth="1.4" />
       <path d="M6 14h6M9 11v3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
@@ -168,7 +168,7 @@ function IconTrophy() {
 }
 function IconBrand() {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[var(--color-text)]">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
       <rect x="3" y="3" width="12" height="12" stroke="currentColor" strokeWidth="1.4" className="origin-center transition-transform duration-500 group-hover/item:rotate-90" />
       <rect x="6" y="6" width="6" height="6" fill="currentColor" />
     </svg>
