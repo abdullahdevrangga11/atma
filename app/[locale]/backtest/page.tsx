@@ -3,6 +3,14 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { TopBanner } from "@/components/landing/TopBanner";
 import { BacktestRunner } from "@/components/backtest/BacktestRunner";
+import { pageMetadata } from "@/lib/seo/pageMetadata";
+
+export const metadata = pageMetadata({
+  title: "Backtest — Replay N weeks vs 3 baselines",
+  description:
+    "Synthetic historical replay with real Claude reasoning per week. Chart vs do-nothing, USDC+Aave, and USDY-only baselines.",
+  path: "/backtest",
+});
 
 export default async function BacktestPage({
   params,

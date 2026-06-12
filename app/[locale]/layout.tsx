@@ -11,10 +11,42 @@ import { Toaster } from "sonner";
 import "../globals.css";
 
 export const metadata: Metadata = {
-  title: "ATMA — Treasury Orchestration for Mantle",
+  metadataBase: new URL("https://atma-iota.vercel.app"),
+  title: {
+    default: "ATMA — Treasury Orchestration for Mantle",
+    template: "%s · ATMA",
+  },
   description:
-    "3 AI agents under a verifiable on-chain policy allocate idle stablecoins across Mantle's RWA stack.",
-  metadataBase: new URL("https://atma.vercel.app"),
+    "Three AI agents allocate, monitor, and report a Mantle RWA treasury. Policy as Markdown. Every decision signed on-chain via ERC-8004.",
+  applicationName: "ATMA",
+  authors: [{ name: "Devrangga Hazza Mahiswara" }],
+  keywords: [
+    "Mantle",
+    "RWA",
+    "treasury",
+    "AI agents",
+    "ERC-8004",
+    "USDY",
+    "mUSD",
+    "Aave",
+    "policy as data",
+    "Claude",
+  ],
+  openGraph: {
+    type: "website",
+    siteName: "ATMA",
+    title: "ATMA — Treasury Orchestration for Mantle",
+    description:
+      "Three AI agents managing your Mantle RWA treasury. Policy as Markdown. Every decision attested.",
+    url: "https://atma-iota.vercel.app",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ATMA — Treasury Orchestration for Mantle",
+    description:
+      "Three AI agents. One vault. Policy as data. Every decision attested on ERC-8004.",
+    creator: "@abdullahdevrang",
+  },
 };
 
 export function generateStaticParams() {

@@ -5,6 +5,14 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { TopBanner } from "@/components/landing/TopBanner";
 import { SkillsViewer } from "@/components/skills/SkillsViewer";
+import { pageMetadata } from "@/lib/seo/pageMetadata";
+
+export const metadata = pageMetadata({
+  title: "Skills — Policy as data",
+  description:
+    "Edit the agents' Markdown policy live. Diff view, system-prompt inspector, side-by-side run comparison. No redeploy.",
+  path: "/skills",
+});
 
 async function loadSkill(filename: string): Promise<string> {
   try {

@@ -5,6 +5,14 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { TopBanner } from "@/components/landing/TopBanner";
 import { AbTestRunner } from "@/components/abtest/AbTestRunner";
+import { pageMetadata } from "@/lib/seo/pageMetadata";
+
+export const metadata = pageMetadata({
+  title: "A/B Test — Prove a policy change pays off",
+  description:
+    "Run N rounds of Skill A vs Skill B. Same input, different policy. Win rate + average APY decides the merge.",
+  path: "/ab-test",
+});
 
 async function loadSkill(filename: string): Promise<string> {
   try {

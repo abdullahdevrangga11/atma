@@ -3,6 +3,14 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { TopBanner } from "@/components/landing/TopBanner";
 import { PolicyShowdown } from "@/components/compare/PolicyShowdown";
+import { pageMetadata } from "@/lib/seo/pageMetadata";
+
+export const metadata = pageMetadata({
+  title: "Compare — Three policies, parallel reasoning",
+  description:
+    "Conservative, balanced, and aggressive run AllocatorAgent against identical feeds. Trophy lands on the policy that won expected APY.",
+  path: "/compare",
+});
 
 export default async function ComparePage({
   params,

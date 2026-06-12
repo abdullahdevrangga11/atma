@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { readFile } from "fs/promises";
 import { join } from "path";
 import { notFound } from "next/navigation";
@@ -7,6 +8,22 @@ import { Footer } from "@/components/landing/Footer";
 import { TopBanner } from "@/components/landing/TopBanner";
 import { AgentProfile } from "@/components/agents/AgentProfile";
 import { AGENT_BY_SLUG, AGENT_IDENTITIES } from "@/lib/agents/identity";
+import { pageMetadata } from "@/lib/seo/pageMetadata";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const identity = AGENT_BY_SLUG[slug];
+  if (!identity) return { title: "Agent not found" };
+  return pageMetadata({
+    title: `${identity.name} — Agent #${identity.displayNumber}`,
+    description: `${identity.name} on ATMA. ${identity.capabilities[0]} Reads ${identity.skillFile} at runtime.`,
+    path: `/agents/${slug}`,
+  });
+}
 
 export function generateStaticParams() {
   // Cross-product across locales — built at request time anyway since the

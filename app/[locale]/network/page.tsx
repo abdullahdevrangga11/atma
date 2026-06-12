@@ -3,6 +3,14 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { TopBanner } from "@/components/landing/TopBanner";
 import { NetworkDashboard } from "@/components/network/NetworkDashboard";
+import { pageMetadata } from "@/lib/seo/pageMetadata";
+
+export const metadata = pageMetadata({
+  title: "Network — Cumulative stats",
+  description:
+    "Every orchestration this deployment has ever run. Total Claude cost, defensive exit rate, debate retries, agent call distribution.",
+  path: "/network",
+});
 
 export default async function NetworkPage({
   params,

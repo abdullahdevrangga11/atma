@@ -3,6 +3,14 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { TopBanner } from "@/components/landing/TopBanner";
 import { ReportsDashboard } from "@/components/reports/ReportsDashboard";
+import { pageMetadata } from "@/lib/seo/pageMetadata";
+
+export const metadata = pageMetadata({
+  title: "Reports — Real attestation history",
+  description:
+    "Outperformance bps vs three baselines, computed from this deployment's actual orchestration runs. CSV export. Click any row to drill in.",
+  path: "/reports",
+});
 
 export default async function ReportsPage({
   params,

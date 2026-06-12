@@ -3,6 +3,14 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { TopBanner } from "@/components/landing/TopBanner";
 import { VaultDemo } from "@/components/vault/VaultDemo";
+import { pageMetadata } from "@/lib/seo/pageMetadata";
+
+export const metadata = pageMetadata({
+  title: "Vault — Live multi-agent orchestration",
+  description:
+    "Watch AllocatorAgent, RiskAgent, and ReporterAgent reason live. Toggle debate mode to force a Risk veto and watch the orchestrator retry.",
+  path: "/vault",
+});
 
 export default async function VaultPage({
   params,

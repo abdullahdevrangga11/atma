@@ -3,6 +3,14 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { TopBanner } from "@/components/landing/TopBanner";
 import { AnomalyPlayground } from "@/components/anomaly/AnomalyPlayground";
+import { pageMetadata } from "@/lib/seo/pageMetadata";
+
+export const metadata = pageMetadata({
+  title: "Anomaly Playground — Stress-test RiskAgent",
+  description:
+    "Drag sliders to break the market — USDY peg, mUSD rebase, Aave oracle, liquidity, drawdown. See where Claude agrees with the rule predictor.",
+  path: "/anomaly",
+});
 
 export default async function AnomalyPage({
   params,

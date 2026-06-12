@@ -1,8 +1,37 @@
+import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { TopBanner } from "@/components/landing/TopBanner";
 import { ConversationView } from "@/components/conversation/ConversationView";
+import { runStore } from "@/lib/store/runStore";
+import { pageMetadata } from "@/lib/seo/pageMetadata";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const run = runStore.get(id);
+  if (!run) {
+    return pageMetadata({
+      title: "Conversation",
+      description: "An orchestration run rendered as a multi-agent chat.",
+      path: `/conversation/${id}`,
+    });
+  }
+  const title = run.debate
+    ? `Survived ${run.debate.length} veto — agent thread`
+    : run.risk.level === "trigger"
+      ? "Defensive exit — agent thread"
+      : "Clean handoff — agent thread";
+  return pageMetadata({
+    title,
+    description: `${run.steps.length} signed messages. ${run.report.outperformanceBps.vsDoNothing >= 0 ? "+" : ""}${run.report.outperformanceBps.vsDoNothing} bps vs do-nothing.`,
+    path: `/conversation/${id}`,
+  });
+}
 
 export default async function ConversationPage({
   params,
