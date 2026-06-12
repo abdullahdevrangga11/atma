@@ -244,7 +244,7 @@ export function AbTestRunner({ baselineSkill }: { baselineSkill: string }) {
             <AbChart results={results} rounds={rounds} />
             <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-[11px] font-mono">
               <LegendDot color="#0a0a0a" label="Skill A (baseline)" />
-              <LegendDot color="#5b3df0" label="Skill B (experiment)" />
+              <LegendDot color="#613BF9" label="Skill B (experiment)" />
             </div>
           </CardContent>
         </Card>
@@ -437,7 +437,7 @@ function AbChart({ results, rounds }: { results: RoundResult[]; rounds: number }
                     y={yScale(r.b.expectedAPYBps)}
                     width={barW}
                     height={innerH - (yScale(r.b.expectedAPYBps) - margin.top)}
-                    fill={r.winner === "B" ? "#5b3df0" : "#a78bfa"}
+                    fill={r.winner === "B" ? "#613BF9" : "#a78bfa"}
                     style={{ transition: "all 600ms cubic-bezier(0.16,1,0.3,1)" }}
                   />
                   {r.winner !== "tie" && (
@@ -447,7 +447,7 @@ function AbChart({ results, rounds }: { results: RoundResult[]; rounds: number }
                       textAnchor="middle"
                       fontSize="9"
                       fontFamily="ui-monospace, monospace"
-                      fill={r.winner === "A" ? "#0a0a0a" : "#5b3df0"}
+                      fill={r.winner === "A" ? "#0a0a0a" : "#613BF9"}
                     >
                       {r.winner} +{Math.abs(r.a.expectedAPYBps - r.b.expectedAPYBps)}
                     </text>

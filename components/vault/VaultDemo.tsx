@@ -549,7 +549,7 @@ function AgentCardShell({
     <Card
       className={cn(
         "h-full transition-shadow duration-300",
-        state === "done" && "shadow-[0_8px_32px_-12px_rgba(91,61,240,0.18)]",
+        state === "done" && "shadow-[0_8px_32px_-12px_rgba(97, 59, 249,0.18)]",
       )}
     >
       <CardHeader>

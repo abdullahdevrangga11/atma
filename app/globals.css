@@ -14,9 +14,9 @@
 
   /* ────────────── Brand ────────────── */
   /* Deep electric violet — "agent intelligence" coded, distinct from base.org blue */
-  --color-primary: #5b3df0;
-  --color-primary-hover: #4a2dd9;
-  --color-primary-soft: rgba(91, 61, 240, 0.07);
+  --color-primary: #613BF9;            /* AMANA brand purple */
+  --color-primary-hover: #5028e0;
+  --color-primary-soft: rgba(97, 59, 249, 0.07);
   --color-primary-tint: #ede9fe;       /* 50-level wash for chips */
   --color-primary-edge: #c7bdf9;       /* soft border accent */
   --color-primary-deep: #3d22b8;       /* darker accent for gradients */
@@ -512,8 +512,8 @@
     }
     50% {
       text-shadow:
-        0 0 14px rgba(91, 61, 240, 0.32),
-        0 0 28px rgba(91, 61, 240, 0.16);
+        0 0 14px rgba(97, 59, 249, 0.32),
+        0 0 28px rgba(97, 59, 249, 0.16);
     }
   }
   .glow-pulse {
@@ -559,8 +559,8 @@
 
   /* Attestation card — the "currently being signed" one pulses */
   @keyframes amana-attest-pulse {
-    0%, 100% { box-shadow: 0 0 0 0   rgba(91, 61, 240, 0.40); }
-    50%      { box-shadow: 0 0 0 8px rgba(91, 61, 240, 0.00); }
+    0%, 100% { box-shadow: 0 0 0 0   rgba(97, 59, 249, 0.40); }
+    50%      { box-shadow: 0 0 0 8px rgba(97, 59, 249, 0.00); }
   }
   .amana-attest-active {
     animation: amana-attest-pulse 1.8s ease-out infinite;

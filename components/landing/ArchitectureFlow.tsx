@@ -34,7 +34,7 @@ type PipelineData = {
 };
 
 const TONE_FG: Record<Tone, string> = {
-  primary: "#5b3df0",
+  primary: "#613BF9",
   warm: "#ea580c",
   lime: "#65a30d",
   neutral: "#0a0a0a",
@@ -71,17 +71,17 @@ const NODES_DATA: Array<{
 const EDGES_DATA: Edge[] = [
   // Main pipeline — animated violet
   { id: "e-feeds-allocator", source: "feeds", target: "allocator", animated: true,
-    style: { stroke: "#5b3df0", strokeWidth: 1.8 },
-    markerEnd: { type: "arrowclosed", color: "#5b3df0", width: 14, height: 14 } as Edge["markerEnd"] },
+    style: { stroke: "#613BF9", strokeWidth: 1.8 },
+    markerEnd: { type: "arrowclosed", color: "#613BF9", width: 14, height: 14 } as Edge["markerEnd"] },
   { id: "e-allocator-risk", source: "allocator", target: "risk", animated: true,
-    style: { stroke: "#5b3df0", strokeWidth: 1.8 },
-    markerEnd: { type: "arrowclosed", color: "#5b3df0", width: 14, height: 14 } as Edge["markerEnd"] },
+    style: { stroke: "#613BF9", strokeWidth: 1.8 },
+    markerEnd: { type: "arrowclosed", color: "#613BF9", width: 14, height: 14 } as Edge["markerEnd"] },
   { id: "e-risk-reporter", source: "risk", target: "reporter", animated: true,
-    style: { stroke: "#5b3df0", strokeWidth: 1.8 },
-    markerEnd: { type: "arrowclosed", color: "#5b3df0", width: 14, height: 14 } as Edge["markerEnd"] },
+    style: { stroke: "#613BF9", strokeWidth: 1.8 },
+    markerEnd: { type: "arrowclosed", color: "#613BF9", width: 14, height: 14 } as Edge["markerEnd"] },
   { id: "e-reporter-attest", source: "reporter", target: "attest", animated: true,
-    style: { stroke: "#5b3df0", strokeWidth: 1.8 },
-    markerEnd: { type: "arrowclosed", color: "#5b3df0", width: 14, height: 14 } as Edge["markerEnd"] },
+    style: { stroke: "#613BF9", strokeWidth: 1.8 },
+    markerEnd: { type: "arrowclosed", color: "#613BF9", width: 14, height: 14 } as Edge["markerEnd"] },
 
   // Side effects
   { id: "e-allocator-vault", source: "allocator", target: "vault", type: "smoothstep",
@@ -134,7 +134,7 @@ export function ArchitectureFlow() {
       </div>
 
       <div className="flex flex-wrap gap-x-6 gap-y-2 text-[11px] font-mono">
-        <LegendItem color="#5b3df0" label="Main pipeline (animated)" />
+        <LegendItem color="#613BF9" label="Main pipeline (animated)" />
         <LegendItem color="#ea580c" label="Veto / debate path" dashed />
         <LegendItem color="#c7bdf9" label="Side effects" dashed />
       </div>

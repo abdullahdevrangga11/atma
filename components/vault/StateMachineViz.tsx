@@ -123,13 +123,13 @@ function Inner({ current, visited }: Props) {
           type: "smoothstep",
           animated: isActiveEdge,
           style: {
-            stroke: isActiveEdge ? "#5b3df0" : "#c7bdf9",
+            stroke: isActiveEdge ? "#613BF9" : "#c7bdf9",
             strokeWidth: isActiveEdge ? 1.8 : 1,
             strokeDasharray: isActiveEdge ? "0" : "3 3",
           },
           markerEnd: {
             type: "arrowclosed",
-            color: isActiveEdge ? "#5b3df0" : "#c7bdf9",
+            color: isActiveEdge ? "#613BF9" : "#c7bdf9",
             width: 14,
             height: 14,
           },
@@ -190,9 +190,9 @@ function StateNode({ data }: NodeProps) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: d.current ? "#5b3df0" : d.visited ? "#ede9fe" : "#ffffff",
-        color: d.current ? "#ffffff" : d.visited ? "#5b3df0" : "#0a0a0a",
-        border: `1.4px solid ${d.current ? "#5b3df0" : d.visited ? "#c7bdf9" : "#e8e8e8"}`,
+        background: d.current ? "#613BF9" : d.visited ? "#ede9fe" : "#ffffff",
+        color: d.current ? "#ffffff" : d.visited ? "#613BF9" : "#0a0a0a",
+        border: `1.4px solid ${d.current ? "#613BF9" : d.visited ? "#c7bdf9" : "#e8e8e8"}`,
         transition: "all 360ms cubic-bezier(0.16, 1, 0.3, 1)",
         position: "relative",
       }}
@@ -204,7 +204,7 @@ function StateNode({ data }: NodeProps) {
             position: "absolute",
             inset: -6,
             borderRadius: 12,
-            border: "1.4px solid #5b3df0",
+            border: "1.4px solid #613BF9",
             opacity: 0.4,
             animation: "amana-state-pulse 1.4s ease-in-out infinite",
           }}

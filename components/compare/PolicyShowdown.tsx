@@ -232,7 +232,7 @@ function PolicyColumn({
     <Card
       className={cn(
         "h-full transition-shadow duration-300 relative",
-        state.state === "done" && "shadow-[0_8px_32px_-12px_rgba(91,61,240,0.15)]",
+        state.state === "done" && "shadow-[0_8px_32px_-12px_rgba(97, 59, 249,0.15)]",
         winner && "ring-2 ring-[var(--color-primary)]",
       )}
     >

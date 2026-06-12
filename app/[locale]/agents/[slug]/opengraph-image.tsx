@@ -38,8 +38,8 @@ export default async function AgentOg({ params }: { params: { slug: string } }) 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <svg width={32} height={48} viewBox="0 0 648 972" style={{ display: "flex" }}>
-              <path fillRule="evenodd" clipRule="evenodd" fill="#5b3df0" d="M298 243V0H162C72.5312 0 0 72.5312 0 162V674L298 972V567C287.566 496.742 232.258 441.434 162 431V379C232.258 368.566 287.566 313.258 298 243Z" />
-              <path fillRule="evenodd" clipRule="evenodd" fill="#5b3df0" d="M350 810V567C360.434 496.742 415.742 441.434 486 431V379C415.742 368.566 360.434 313.258 350 243V0L648 298V648C648 737.469 575.469 810 486 810H350Z" />
+              <path fillRule="evenodd" clipRule="evenodd" fill="#613BF9" d="M298 243V0H162C72.5312 0 0 72.5312 0 162V674L298 972V567C287.566 496.742 232.258 441.434 162 431V379C232.258 368.566 287.566 313.258 298 243Z" />
+              <path fillRule="evenodd" clipRule="evenodd" fill="#613BF9" d="M350 810V567C360.434 496.742 415.742 441.434 486 431V379C415.742 368.566 360.434 313.258 350 243V0L648 298V648C648 737.469 575.469 810 486 810H350Z" />
             </svg>
             <div style={{ fontSize: 22, fontWeight: 600 }}>AMANA</div>
             <div style={{ fontSize: 16, color: "#858585", display: "flex" }}>

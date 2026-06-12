@@ -32,7 +32,7 @@ type Entry = {
 };
 
 const AGENT_TONE: Record<Entry["agent"], { bg: string; fg: string; border: string }> = {
-  allocator: { bg: "#ede9fe", fg: "#5b3df0", border: "#c7bdf9" },
+  allocator: { bg: "#ede9fe", fg: "#613BF9", border: "#c7bdf9" },
   risk:      { bg: "#ffedd5", fg: "#ea580c", border: "#fed7aa" },
   reporter:  { bg: "#ecfccb", fg: "#65a30d", border: "#d9f99d" },
 };
@@ -213,10 +213,10 @@ function layoutLineage(entries: Entry[]): { nodes: Node[]; edges: Edge[] } {
       target: e.id,
       type: "smoothstep",
       animated: false,
-      style: { stroke: "#5b3df0", strokeWidth: 1.4, strokeDasharray: "4 4" },
+      style: { stroke: "#613BF9", strokeWidth: 1.4, strokeDasharray: "4 4" },
       markerEnd: {
         type: "arrowclosed",
-        color: "#5b3df0",
+        color: "#613BF9",
         width: 12,
         height: 12,
       } as Edge["markerEnd"],

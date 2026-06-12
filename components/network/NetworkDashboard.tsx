@@ -300,7 +300,7 @@ function TimelineChart({ timeline }: { timeline: Stats["timeline"] }) {
           const x = margin.left + i * (innerW / timeline.length);
           const isExit = t.riskLevel === "trigger";
           const isWarn = t.riskLevel === "warn";
-          const fill = isExit ? "#fca5a5" : isWarn ? "#fcd34d" : "#5b3df0";
+          const fill = isExit ? "#fca5a5" : isWarn ? "#fcd34d" : "#613BF9";
           const yTop = t.outperformanceBps >= 0 ? yScale(t.outperformanceBps) : margin.top + innerH / 2;
           const h = Math.abs(yScale(t.outperformanceBps) - (margin.top + innerH / 2));
           return (

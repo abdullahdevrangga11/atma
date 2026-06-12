@@ -42,7 +42,7 @@ const AGENTS: Agent[] = [
     short: "Treasury allocation under policy",
     body: "Reasons across USDY, mUSD, Aave V3 supply, and MI4 under your policy. Caps, risk tolerance, liquidity floors — enforced before any transaction.",
     href: "/agents/allocator",
-    accent: "#5b3df0",
+    accent: "#613BF9",
     fg: "#ffffff",
     Icon: AllocatorIcon,
   },

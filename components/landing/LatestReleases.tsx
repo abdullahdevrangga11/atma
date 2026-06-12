@@ -80,7 +80,7 @@ const KIND_META: Record<
   LogEntry["kind"],
   { label: string; bg: string; fg: string }
 > = {
-  feat:     { label: "feat",     bg: "#ede9fe", fg: "#5b3df0" },
+  feat:     { label: "feat",     bg: "#ede9fe", fg: "#613BF9" },
   fix:      { label: "fix",      bg: "#fee2e2", fg: "#b91c1c" },
   chore:    { label: "chore",    bg: "#f4f4f4", fg: "#5e5e5e" },
   refactor: { label: "refactor", bg: "#ecfccb", fg: "#3f6212" },
@@ -155,7 +155,7 @@ function FeaturedCard({ entry }: { entry: LogEntry }) {
       className={cn(
         "group block h-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card-soft)]",
         "p-7 md:p-9 transition-all duration-300",
-        "hover:bg-white hover:border-[var(--color-border-strong)] hover:shadow-[0_18px_56px_-20px_rgba(91,61,240,0.15)]",
+        "hover:bg-white hover:border-[var(--color-border-strong)] hover:shadow-[0_18px_56px_-20px_rgba(97, 59, 249,0.15)]",
       )}
     >
       {/* Eyebrow row — sha, kind, date */}

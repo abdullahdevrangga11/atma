@@ -50,7 +50,7 @@ type SkillEntry = {
 };
 
 const AGENT_META: Record<Agent, { label: string; color: string; bg: string }> = {
-  allocator: { label: "Allocator", color: "#5b3df0", bg: "#ede9fe" },
+  allocator: { label: "Allocator", color: "#613BF9", bg: "#ede9fe" },
   risk:      { label: "Risk",      color: "#ea580c", bg: "#ffedd5" },
   reporter:  { label: "Reporter",  color: "#65a30d", bg: "#ecfccb" },
 };
@@ -242,7 +242,7 @@ function SkillCard({
   return (
     <Link
       href={`/marketplace/${entry.id}`}
-      className="group block rounded-2xl border border-[var(--color-border)] bg-white p-5 hover:border-[var(--color-primary-edge)] hover:shadow-[0_8px_24px_-12px_rgba(91,61,240,0.18)] transition-all duration-200"
+      className="group block rounded-2xl border border-[var(--color-border)] bg-white p-5 hover:border-[var(--color-primary-edge)] hover:shadow-[0_8px_24px_-12px_rgba(97, 59, 249,0.18)] transition-all duration-200"
     >
       <div className="flex items-center justify-between mb-4">
         <span

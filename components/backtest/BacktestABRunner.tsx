@@ -365,11 +365,11 @@ function Chart({ a, b, entry, weeks }: { a: WeekPoint[]; b: WeekPoint[]; entry: 
         ))}
         <path d={pathFor(series.aaveBaseline)} fill="none" stroke="#fbbf24" strokeWidth="1.4" strokeDasharray="4 4" />
         <path d={pathFor(series.a)} fill="none" stroke="#0a0a0a" strokeWidth="2" />
-        <path d={pathFor(series.b)} fill="none" stroke="#5b3df0" strokeWidth="2.4" />
+        <path d={pathFor(series.b)} fill="none" stroke="#613BF9" strokeWidth="2.4" />
       </svg>
       <div className="mt-3 flex gap-5 text-[11px] font-mono text-[var(--color-text-secondary)]">
         <span className="flex items-center gap-2"><span className="block w-3 h-0.5 bg-[#0a0a0a]" /> Skill A</span>
-        <span className="flex items-center gap-2"><span className="block w-3 h-0.5 bg-[#5b3df0]" style={{ height: 2.4 }} /> Skill B</span>
+        <span className="flex items-center gap-2"><span className="block w-3 h-0.5 bg-[#613BF9]" style={{ height: 2.4 }} /> Skill B</span>
         <span className="flex items-center gap-2"><span className="block w-3 h-0.5" style={{ background: "repeating-linear-gradient(to right,#fbbf24 0 5px,transparent 5px 9px)" }} /> Aave-only baseline</span>
       </div>
     </div>

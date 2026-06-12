@@ -359,7 +359,7 @@ export function Navbar() {
 
               {openIdx === i && (
                 <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
-                  <div className="w-[360px] bg-white border border-[var(--color-border)] rounded-2xl shadow-[0_18px_56px_rgba(91,61,240,0.10),0_4px_16px_rgba(0,0,0,0.04)] p-1.5">
+                  <div className="w-[360px] bg-white border border-[var(--color-border)] rounded-2xl shadow-[0_18px_56px_rgba(97, 59, 249,0.10),0_4px_16px_rgba(0,0,0,0.04)] p-1.5">
                     {item.items.map((sub) => (
                       <TransitionLink
                         key={sub.name}
@@ -374,7 +374,7 @@ export function Navbar() {
                             // Default: neutral gray container, ink icon.
                             "bg-[var(--color-bg-soft)] text-[var(--color-text)]",
                             // Hover: white card with violet icon + soft violet shadow.
-                            "group-hover/item:bg-white group-hover/item:text-[var(--color-primary)] group-hover/item:shadow-[0_2px_8px_rgba(91,61,240,0.12)]",
+                            "group-hover/item:bg-white group-hover/item:text-[var(--color-primary)] group-hover/item:shadow-[0_2px_8px_rgba(97, 59, 249,0.12)]",
                             "transition-all duration-300",
                           )}
                         >

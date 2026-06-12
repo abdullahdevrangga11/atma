@@ -41,7 +41,7 @@ type SkillEntry = {
 };
 
 const AGENT_META: Record<Agent, { label: string; color: string; bg: string }> = {
-  allocator: { label: "Allocator", color: "#5b3df0", bg: "#ede9fe" },
+  allocator: { label: "Allocator", color: "#613BF9", bg: "#ede9fe" },
   risk:      { label: "Risk",      color: "#ea580c", bg: "#ffedd5" },
   reporter:  { label: "Reporter",  color: "#65a30d", bg: "#ecfccb" },
 };

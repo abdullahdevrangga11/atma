@@ -55,7 +55,7 @@ export function Hero() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <span className="block w-3.5 h-3.5 rounded-full bg-gradient-to-br from-[#5b3df0] to-[#a78bfa]" aria-hidden />
+                  <span className="block w-3.5 h-3.5 rounded-full bg-gradient-to-br from-[#613BF9] to-[#a78bfa]" aria-hidden />
                   View on GitHub
                 </Link>
               </Button>

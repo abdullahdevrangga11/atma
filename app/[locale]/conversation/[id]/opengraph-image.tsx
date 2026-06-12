@@ -9,7 +9,7 @@ export const alt = "AMANA agent conversation";
 
 export default async function ConversationOg({ params }: { params: { id: string } }) {
   const run = runStore.get(params.id);
-  const accent = "#5b3df0";
+  const accent = "#613BF9";
 
   if (!run) {
     return new ImageResponse(

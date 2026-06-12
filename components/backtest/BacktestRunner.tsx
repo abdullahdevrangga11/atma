@@ -57,7 +57,7 @@ type BacktestEvent =
   | { type: "error"; message: string };
 
 const SERIES = {
-  amana: { name: "AMANA", color: "#5b3df0", width: 2.4 },
+  amana: { name: "AMANA", color: "#613BF9", width: 2.4 },
   aaveOnly: { name: "USDC + Aave", color: "#fbbf24", width: 1.6 },
   usdyOnly: { name: "USDY only", color: "#a78bfa", width: 1.6 },
   doNothing: { name: "Do nothing", color: "#858585", width: 1.4 },

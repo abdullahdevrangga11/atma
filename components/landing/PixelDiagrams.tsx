@@ -38,7 +38,7 @@ const TONE: Record<
   AssetTone,
   { bg: string; fg: string; border: string }
 > = {
-  violet: { bg: "#5b3df0", fg: "#ffffff", border: "#5b3df0" },
+  violet: { bg: "#613BF9", fg: "#ffffff", border: "#613BF9" },
   lime:   { bg: "#84cc16", fg: "#ffffff", border: "#84cc16" },
   amber:  { bg: "#fbbf24", fg: "#ffffff", border: "#fbbf24" },
   pink:   { bg: "#f9a8d4", fg: "#1f1f1f", border: "#f9a8d4" },
@@ -64,8 +64,8 @@ function flowEdgeViolet(): ArrowEdgeStyle {
   return {
     type: "smoothstep",
     animated: true,
-    style: { stroke: "#5b3df0", strokeWidth: 1.6 },
-    markerEnd: { type: "arrowclosed", color: "#5b3df0", width: 10, height: 10 } as Edge["markerEnd"],
+    style: { stroke: "#613BF9", strokeWidth: 1.6 },
+    markerEnd: { type: "arrowclosed", color: "#613BF9", width: 10, height: 10 } as Edge["markerEnd"],
   };
 }
 
@@ -247,9 +247,9 @@ function TxCardNode({ data }: NodeProps) {
         flexDirection: "column",
         gap: 5,
         padding: "10px 12px",
-        background: d.active ? "#5b3df0" : "#ffffff",
+        background: d.active ? "#613BF9" : "#ffffff",
         color: d.active ? "#ffffff" : "#0a0a0a",
-        border: `1.4px solid ${d.active ? "#5b3df0" : "#e8e8e8"}`,
+        border: `1.4px solid ${d.active ? "#613BF9" : "#e8e8e8"}`,
         borderRadius: 8,
         fontFamily: "ui-monospace, SF Mono, monospace",
         fontSize: 10,

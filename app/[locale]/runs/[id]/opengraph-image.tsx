@@ -47,7 +47,7 @@ export default async function RunOg({ params }: { params: { id: string } }) {
     );
   }
 
-  const accent = "#5b3df0";
+  const accent = "#613BF9";
   const lime = "#84cc16";
   const totalMs = run.finishedAt - run.startedAt;
   const outBps = run.report.outperformanceBps.vsDoNothing;

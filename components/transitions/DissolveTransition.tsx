@@ -32,7 +32,7 @@ import Link, { type LinkProps } from "next/link";
 
 const CELL = 18;
 const CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#@+*<>/?{}[]";
-const DISSOLVE_COLOR = "#5b3df0";
+const DISSOLVE_COLOR = "#613BF9";
 const VISIBILITY_THRESHOLD = 0.65;
 const SPREAD = 0.28;
 const SCATTER = 0.18;
