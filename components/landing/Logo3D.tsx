@@ -2,6 +2,7 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { useMemo, useRef, type MutableRefObject } from "react";
 import * as THREE from "three";
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
@@ -82,15 +83,17 @@ function LogoInstance({
     <group ref={group} position={position} scale={scale}>
       <mesh geometry={geometry}>
         <meshPhysicalMaterial
-          color="#5b34f0"
-          metalness={1}
-          roughness={0.16}
+          color="#6b46ff"
+          metalness={0.9}
+          roughness={0.18}
           clearcoat={1}
-          clearcoatRoughness={0.1}
-          iridescence={0.35}
-          iridescenceIOR={1.35}
-          envMapIntensity={1.5}
-          reflectivity={0.7}
+          clearcoatRoughness={0.08}
+          iridescence={0.45}
+          iridescenceIOR={1.4}
+          emissive="#3a1d9e"
+          emissiveIntensity={0.32}
+          envMapIntensity={2.1}
+          reflectivity={0.85}
         />
       </mesh>
     </group>
@@ -98,14 +101,17 @@ function LogoInstance({
 }
 
 function StudioEnv() {
-  // Baked once (frames={1}) — static studio softboxes for streaky metal highlights.
+  // Baked once (frames={1}) — studio softboxes for streaky metal highlights.
+  // A large dim fill keeps the metal body from ever reading as black.
   return (
     <Environment resolution={256} frames={1}>
-      <Lightformer form="rect" intensity={4} position={[0, 5, -6]} scale={[14, 7, 1]} />
-      <Lightformer form="rect" intensity={2.4} position={[-7, 2, 1]} scale={[3, 12, 1]} color="#c4b5fd" />
-      <Lightformer form="rect" intensity={2.4} position={[7, -1, 1]} scale={[3, 12, 1]} color="#ffffff" />
-      <Lightformer form="ring" intensity={2} position={[4, 5, -4]} scale={5} color="#a78bfa" />
-      <Lightformer form="circle" intensity={1.6} position={[-5, -4, -2]} scale={4} />
+      <color attach="background" args={["#0a0a16"]} />
+      <Lightformer form="rect" intensity={0.6} position={[0, 0, -8]} scale={[20, 20, 1]} color="#3a2f6e" />
+      <Lightformer form="rect" intensity={5} position={[0, 6, -6]} scale={[16, 8, 1]} color="#ffffff" />
+      <Lightformer form="rect" intensity={3.2} position={[-8, 2, 2]} scale={[3, 14, 1]} color="#c4b5fd" />
+      <Lightformer form="rect" intensity={3.2} position={[8, -1, 2]} scale={[3, 14, 1]} color="#ffffff" />
+      <Lightformer form="ring" intensity={3} position={[5, 6, -4]} scale={6} color="#a78bfa" />
+      <Lightformer form="circle" intensity={2.4} position={[-6, -5, -2]} scale={5} color="#8b6dff" />
     </Environment>
   );
 }
@@ -127,30 +133,39 @@ export function Logo3D({
       frameloop={active ? "always" : "demand"}
       style={{ background: "transparent" }}
     >
-      <ambientLight intensity={0.35} />
-      <directionalLight position={[5, 8, 6]} intensity={1.3} />
+      <ambientLight intensity={0.4} />
+      <directionalLight position={[5, 8, 6]} intensity={1.5} />
       <StudioEnv />
 
-      {/* top-right, bleeding off the corner */}
+      {/* top-right, bigger, bleeding well off the corner */}
       <LogoInstance
         geometry={geometry}
         scrollRef={scrollRef}
-        position={[5, 2.4, 0]}
+        position={[6.4, 3.0, 0]}
         baseRotation={-0.5}
         spin={1.0}
         phase={0}
-        scale={1.05}
+        scale={1.7}
       />
-      {/* bottom-left, counter-rotating */}
+      {/* bottom-left, counter-rotating, bigger */}
       <LogoInstance
         geometry={geometry}
         scrollRef={scrollRef}
-        position={[-5, -2.5, -0.5]}
+        position={[-6.4, -3.1, -0.5]}
         baseRotation={0.6}
         spin={-1.0}
         phase={2.5}
-        scale={0.92}
+        scale={1.5}
       />
+
+      <EffectComposer>
+        <Bloom
+          intensity={0.9}
+          luminanceThreshold={0.55}
+          luminanceSmoothing={0.3}
+          mipmapBlur
+        />
+      </EffectComposer>
     </Canvas>
   );
 }
