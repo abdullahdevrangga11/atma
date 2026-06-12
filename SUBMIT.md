@@ -10,22 +10,37 @@ Deadline: **2026-06-15 15:59 UTC** · You have ~75 hours.
 
 Without this, `/vault` returns 500 and judges see broken pages.
 
+> **Why this is REQUIRED**: Vercel project rename `atma → amana` wiped all
+> env vars on the deployed project. `/api/orchestrate` currently returns
+> `ANTHROPIC_API_KEY is not set`. Re-add the env vars below.
+
 ```bash
 ./scripts/setup-submission.sh
 ```
 
 That single command:
 - Generates a fresh Mantle Sepolia deployer wallet
-- Prompts you for your `GEMINI_API_KEY`
+- Prompts you for your `GEMINI_API_KEY` (re-adds to Vercel production)
 - Pushes env vars to Vercel production
 - Optionally runs the forge deploy
 - Triggers `vercel --prod` redeploy
 
 After it finishes, verify:
 ```bash
-./scripts/smoke-test.sh
+./scripts/smoke-test.sh https://amana-iota.vercel.app
 # Should print: ok=27 fail=0
 ```
+
+### (Optional) Step 0b — Swap to custom domain
+
+Once you buy `amana.finance` (~$45/yr on Porkbun), wire it up:
+
+```bash
+./scripts/swap-to-domain.sh amana.finance
+```
+
+Adds domain to Vercel, walks you through DNS records, aliases the deployment,
+rewrites every `amana-iota.vercel.app` reference, commits + pushes.
 
 ---
 
