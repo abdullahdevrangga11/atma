@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { Orchestrator } from "@/lib/agents/Orchestrator";
 import { UserPolicySchema } from "@/lib/agents/types";
+import { rateCheck, ipFrom } from "@/lib/cost/rateLimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -34,6 +35,13 @@ function getOrchestrator() {
  * so the caller can render it without a follow-up fetch.
  */
 export async function POST(req: NextRequest) {
+  const rl = rateCheck("orchestrate", ipFrom(req.headers));
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { data: null, error: `Rate limit. Retry in ${rl.retryAfterSec}s.` },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfterSec) } },
+    );
+  }
   let raw: unknown = {};
   try {
     const text = await req.text();

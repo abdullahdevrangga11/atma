@@ -191,7 +191,7 @@ export function BacktestABRunner({ baselineSkill }: { baselineSkill: string }) {
               <input
                 type="range"
                 min={2}
-                max={8}
+                max={5}
                 value={weeks}
                 disabled={streaming !== "none"}
                 onChange={(e) => setWeeks(Number(e.target.value))}

@@ -4,6 +4,7 @@ import { AllocatorAgent } from "@/lib/agents/AllocatorAgent";
 import { readHistoricalFeeds } from "@/lib/data/feeds";
 import { UserPolicySchema } from "@/lib/agents/types";
 import { hashReasoning } from "@/lib/agents/BaseAgent";
+import { rateCheck, ipFrom } from "@/lib/cost/rateLimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -73,6 +74,15 @@ type Event =
  * Streams per-round results then a summary.
  */
 export async function POST(req: NextRequest) {
+  const rl = rateCheck("abtest", ipFrom(req.headers));
+  if (!rl.allowed) {
+    return new Response(
+      `event: error\ndata: ${JSON.stringify({
+        message: `A/B rate-limited. Retry in ${rl.retryAfterSec}s.`,
+      })}\n\n`,
+      { status: 429, headers: { "Content-Type": "text/event-stream", "Retry-After": String(rl.retryAfterSec) } },
+    );
+  }
   let raw: unknown = {};
   try {
     const text = await req.text();

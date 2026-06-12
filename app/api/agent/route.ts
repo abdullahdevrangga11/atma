@@ -9,6 +9,7 @@ import {
   ReportInputSchema,
 } from "@/lib/agents/types";
 import { hashReasoning } from "@/lib/agents/BaseAgent";
+import { rateCheck, ipFrom } from "@/lib/cost/rateLimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -33,6 +34,13 @@ const RequestSchema = z.discriminatedUnion("action", [
 ]);
 
 export async function POST(req: NextRequest) {
+  const rl = rateCheck("agent", ipFrom(req.headers));
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { data: null, error: `Rate limit. Retry in ${rl.retryAfterSec}s.` },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfterSec) } },
+    );
+  }
   let body: unknown;
   try {
     body = await req.json();

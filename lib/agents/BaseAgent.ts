@@ -81,7 +81,9 @@ export abstract class BaseAgent {
     const client = getClient();
     const response = await client.messages.create({
       model: MODEL,
-      max_tokens: 1024,
+      // 700 tokens is enough for any of our agent JSON outputs and
+      // shaves ~30% off output cost vs the previous 1024 cap.
+      max_tokens: 700,
       system: this.buildSystem(systemContext),
       messages: [
         {
@@ -118,7 +120,7 @@ export abstract class BaseAgent {
     const client = getClient();
     const stream = client.messages.stream({
       model: MODEL,
-      max_tokens: 1024,
+      max_tokens: 700,
       system: this.buildSystem(systemContext),
       messages: [
         {

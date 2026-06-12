@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { z } from "zod";
 import { Orchestrator, type OrchestrationEvent } from "@/lib/agents/Orchestrator";
 import { UserPolicySchema } from "@/lib/agents/types";
+import { rateCheck, ipFrom } from "@/lib/cost/rateLimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -31,6 +32,23 @@ let _orchestrator: Orchestrator | null = null;
  *   event: error      → { message }
  */
 export async function POST(req: NextRequest) {
+  // Rate limit before we spend a single Claude token
+  const rl = rateCheck("orchestrate", ipFrom(req.headers));
+  if (!rl.allowed) {
+    return new Response(
+      `event: error\ndata: ${JSON.stringify({
+        message: `Rate limit: ${rl.reason === "cooldown" ? "wait a few seconds" : "hourly cap reached"}. Retry in ${rl.retryAfterSec}s.`,
+      })}\n\n`,
+      {
+        status: 429,
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Retry-After": String(rl.retryAfterSec),
+        },
+      },
+    );
+  }
+
   let raw: unknown = {};
   try {
     const text = await req.text();

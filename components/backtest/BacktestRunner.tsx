@@ -205,7 +205,7 @@ export function BacktestRunner() {
               <input
                 type="range"
                 min={2}
-                max={12}
+                max={6}
                 step={1}
                 value={weeks}
                 disabled={streaming}
@@ -214,8 +214,8 @@ export function BacktestRunner() {
               />
               <div className="flex justify-between font-mono text-[10px] uppercase tracking-[0.06em] text-[var(--color-text-muted)]">
                 <span>2</span>
+                <span>4</span>
                 <span>6</span>
-                <span>12</span>
               </div>
             </div>
             <div className="md:col-span-3 flex flex-col justify-end gap-2">

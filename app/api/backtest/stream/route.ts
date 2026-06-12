@@ -3,6 +3,7 @@ import { z } from "zod";
 import { Orchestrator } from "@/lib/agents/Orchestrator";
 import { UserPolicySchema } from "@/lib/agents/types";
 import { readHistoricalFeeds } from "@/lib/data/feeds";
+import { rateCheck, ipFrom } from "@/lib/cost/rateLimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -10,7 +11,9 @@ export const maxDuration = 300;
 
 const BodySchema = z
   .object({
-    weeks: z.number().int().min(2).max(12).optional(),
+    // Cap at 6 weeks in production to keep cost predictable. Local dev
+    // bypasses by setting ATMA_ALLOW_LONG_BACKTEST=1.
+    weeks: z.number().int().min(2).max(process.env.ATMA_ALLOW_LONG_BACKTEST === "1" ? 12 : 6).optional(),
     policy: UserPolicySchema.optional(),
     targetAmountUsdc: z.string().regex(/^\d+$/).optional(),
   })
@@ -62,6 +65,15 @@ type Event =
  * model thinking even during a multi-minute replay.
  */
 export async function POST(req: NextRequest) {
+  const rl = rateCheck("backtest", ipFrom(req.headers));
+  if (!rl.allowed) {
+    return new Response(
+      `event: error\ndata: ${JSON.stringify({
+        message: `Backtest rate-limited. Retry in ${rl.retryAfterSec}s. (Backtests are expensive — please be gentle.)`,
+      })}\n\n`,
+      { status: 429, headers: { "Content-Type": "text/event-stream", "Retry-After": String(rl.retryAfterSec) } },
+    );
+  }
   let raw: unknown = {};
   try {
     const text = await req.text();
