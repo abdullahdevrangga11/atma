@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
+    "@google/generative-ai": "^0.24.1",
     "@privy-io/react-auth": "^3.23.1",
     "@radix-ui/react-slot": "^1.2.5",
     "@xyflow/react": "^12.11.0",
