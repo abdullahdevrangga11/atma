@@ -124,13 +124,43 @@ Copy tweets 1-4 + the closing paragraph from the bottom of `TWITTER_THREAD.md`. 
 
 ---
 
-## ✅ Step 7 — Final sanity check (2 min)
+## ✅ Step 5b — GitHub repo polish (1 min, optional but recommended)
+
+Makes the repo look professional when judges click through.
 
 ```bash
-./scripts/smoke-test.sh
+./scripts/github-setup.sh
 ```
 
-Should still print `ok=26 fail=0`. If anything fails, fix before walking away.
+Sets description, homepage, topics, and cuts a v1.0.0 release tag.
+
+---
+
+## ✅ Step 5c — Tweet via intent URLs (10 min, fastest path)
+
+Instead of manually copy-pasting from `TWITTER_THREAD.md`:
+
+```bash
+./scripts/post-tweets.sh open
+```
+
+Opens each of the 9 tweets in `twitter.com/intent/tweet?text=...` — pre-filled composer windows. Hit Send 9 times. Pin tweet 1.
+
+For each tweet after the first, click "Reply" on your previous tweet to thread them.
+
+---
+
+## ✅ Step 7 — Final sanity check (10 sec)
+
+One command runs every verification:
+
+```bash
+./scripts/submission-check.sh
+```
+
+Verifies all 26 routes, env vars, tests (vitest + foundry), TBD placeholders, git state, and external services. Prints a green/yellow/red verdict.
+
+Exits 0 = GO. Anything else = fix before submitting.
 
 ---
 

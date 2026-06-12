@@ -53,21 +53,37 @@ sedi() {
   fi
 }
 
+VID_HOST="${VIDEO#https://}"
+VID_HOST="${VID_HOST#http://}"
+
 for f in "${DOCS[@]}"; do
   if [ ! -f "$f" ]; then continue; fi
-  sedi "s|<youtu\.be/TBD>|$VIDEO|g" "$f"
-  sedi "s|youtu\.be/TBD|${VIDEO#https://}|g" "$f"
-  sedi "s|youtu\.be/<TBD>|${VIDEO#https://}|g" "$f"
-  sedi "s|<TBD — record before submission>|$VIDEO|g" "$f"
-  sedi "s|<TBD>|$VIDEO|g" "$f"
-  # Also replace the literal token "TBD" *only* when it appears near
-  # "address" or "0x" to avoid mangling other TBDs.
+  # Address patterns FIRST (more specific)
   sedi "s|0x<TBD>|$ADDR|g" "$f"
   sedi "s|0x<TBD — deploy before submission>|$ADDR|g" "$f"
   sedi "s|\`<TBD>\` (Mantle Sepolia|\`$ADDR\` (Mantle Sepolia|g" "$f"
   sedi "s|/address/<TBD>|/address/$ADDR|g" "$f"
+  sedi "s|sepolia.mantlescan.xyz/address/TBD|sepolia.mantlescan.xyz/address/$ADDR|g" "$f"
+
+  # Video URL patterns
+  sedi "s|<youtu\.be/TBD>|$VIDEO|g" "$f"
+  sedi "s|youtu\.be/<TBD>|$VID_HOST|g" "$f"
+  sedi "s|youtu\.be/TBD|$VID_HOST|g" "$f"
+  sedi "s|<TBD — record before submission>|$VIDEO|g" "$f"
+
+  # Catch-all <TBD>
+  sedi "s|<TBD>|$VIDEO|g" "$f"
+
   echo "  ✓ $f"
 done
+
+# Sanity check
+REMAINING=$(grep -nE "TBD" "${DOCS[@]}" 2>/dev/null | grep -v "^Binary" || true)
+if [ -n "$REMAINING" ]; then
+  echo
+  echo "  ⚠ Some TBD tokens remain (Twitter thread URL is normal — it doesn't exist yet):"
+  echo "$REMAINING" | sed 's/^/    /'
+fi
 
 echo
 echo "Replaced:"
