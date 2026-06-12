@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "ATMA agent profile";
+export const alt = "AMANA agent profile";
 
 export default async function AgentOg({ params }: { params: { slug: string } }) {
   const identity = AGENT_BY_SLUG[params.slug];
@@ -38,7 +38,7 @@ export default async function AgentOg({ params }: { params: { slug: string } }) 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <div style={{ width: 32, height: 32, background: "#5b3df0", borderRadius: 6 }} />
-            <div style={{ fontSize: 22, fontWeight: 600 }}>ATMA</div>
+            <div style={{ fontSize: 22, fontWeight: 600 }}>AMANA</div>
             <div style={{ fontSize: 16, color: "#858585", display: "flex" }}>
               // erc-8004 identity #{identity.identityId}
             </div>

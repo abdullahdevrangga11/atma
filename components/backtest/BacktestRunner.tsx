@@ -36,7 +36,7 @@ type WeekPoint = {
 type AgentName = "AllocatorAgent" | "RiskAgent" | "ReporterAgent";
 
 type Summary = {
-  finalNavATMA: number;
+  finalNavAMANA: number;
   finalNavDoNothing: number;
   finalNavAaveOnly: number;
   finalNavUsdyOnly: number;
@@ -57,7 +57,7 @@ type BacktestEvent =
   | { type: "error"; message: string };
 
 const SERIES = {
-  atma: { name: "ATMA", color: "#5b3df0", width: 2.4 },
+  amana: { name: "AMANA", color: "#5b3df0", width: 2.4 },
   aaveOnly: { name: "USDC + Aave", color: "#fbbf24", width: 1.6 },
   usdyOnly: { name: "USDY only", color: "#a78bfa", width: 1.6 },
   doNothing: { name: "Do nothing", color: "#858585", width: 1.4 },
@@ -256,7 +256,7 @@ export function BacktestRunner() {
             </div>
             <CardTitle>Compounded NAV over {weeks} weeks</CardTitle>
             <CardDescription>
-              Each line is the running NAV under one strategy. ATMA = the agents&apos; live
+              Each line is the running NAV under one strategy. AMANA = the agents&apos; live
               allocations; baselines compound at their feed APY.
             </CardDescription>
           </CardHeader>
@@ -327,10 +327,10 @@ export function BacktestRunner() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <Stat label="final NAV (ATMA)" value={`$${summary.finalNavATMA.toFixed(2)}`} primary />
-              <Stat label="vs do-nothing" value={`+${bpsDelta(summary.finalNavATMA, summary.finalNavDoNothing, entry)} bps`} />
-              <Stat label="vs Aave only" value={`${bpsDelta(summary.finalNavATMA, summary.finalNavAaveOnly, entry) >= 0 ? "+" : ""}${bpsDelta(summary.finalNavATMA, summary.finalNavAaveOnly, entry)} bps`} />
-              <Stat label="vs USDY only" value={`${bpsDelta(summary.finalNavATMA, summary.finalNavUsdyOnly, entry) >= 0 ? "+" : ""}${bpsDelta(summary.finalNavATMA, summary.finalNavUsdyOnly, entry)} bps`} />
+              <Stat label="final NAV (AMANA)" value={`$${summary.finalNavAMANA.toFixed(2)}`} primary />
+              <Stat label="vs do-nothing" value={`+${bpsDelta(summary.finalNavAMANA, summary.finalNavDoNothing, entry)} bps`} />
+              <Stat label="vs Aave only" value={`${bpsDelta(summary.finalNavAMANA, summary.finalNavAaveOnly, entry) >= 0 ? "+" : ""}${bpsDelta(summary.finalNavAMANA, summary.finalNavAaveOnly, entry)} bps`} />
+              <Stat label="vs USDY only" value={`${bpsDelta(summary.finalNavAMANA, summary.finalNavUsdyOnly, entry) >= 0 ? "+" : ""}${bpsDelta(summary.finalNavAMANA, summary.finalNavUsdyOnly, entry)} bps`} />
               <Stat label="avg weekly bps" value={`${summary.avgWeeklyBps >= 0 ? "+" : ""}${summary.avgWeeklyBps}`} />
               <Stat label="max drawdown" value={`${summary.maxDrawdownBps} bps`} />
               <Stat label="defensive exits" value={String(summary.defensiveExits)} />
@@ -359,7 +359,7 @@ function BacktestChart({
   // Domain
   const xs = Array.from({ length: weeks + 1 }, (_, i) => i);
   const series = {
-    atma: [entry, ...points.map((p) => p.navEnd)],
+    amana: [entry, ...points.map((p) => p.navEnd)],
     aaveOnly: [entry, ...points.map((p) => p.baselineNav.aaveOnly)],
     usdyOnly: [entry, ...points.map((p) => p.baselineNav.usdyOnly)],
     doNothing: [entry, ...points.map((p) => p.baselineNav.doNothing)],
@@ -438,7 +438,7 @@ function BacktestChart({
         ))}
 
         {/* Lines */}
-        {(["doNothing", "aaveOnly", "usdyOnly", "atma"] as const).map((k) => (
+        {(["doNothing", "aaveOnly", "usdyOnly", "amana"] as const).map((k) => (
           <path
             key={k}
             d={pathFor(series[k])}
@@ -451,13 +451,13 @@ function BacktestChart({
           />
         ))}
 
-        {/* End dot for ATMA */}
-        {series.atma.length > 1 && (
+        {/* End dot for AMANA */}
+        {series.amana.length > 1 && (
           <circle
-            cx={xScale(xs[series.atma.length - 1])}
-            cy={yScale(series.atma[series.atma.length - 1])}
+            cx={xScale(xs[series.amana.length - 1])}
+            cy={yScale(series.amana[series.amana.length - 1])}
             r="4"
-            fill={SERIES.atma.color}
+            fill={SERIES.amana.color}
             stroke="white"
             strokeWidth="2"
           />

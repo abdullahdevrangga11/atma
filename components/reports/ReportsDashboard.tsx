@@ -121,7 +121,7 @@ export function ReportsDashboard() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `atma-attestations-${Date.now()}.csv`;
+    a.download = `amana-attestations-${Date.now()}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "ATMA — Treasury Orchestration for Mantle",
+    "title": "AMANA — Treasury Orchestration for Mantle",
     "description": "3 AI agents under a verifiable on-chain policy allocate idle stablecoins across Mantle's RWA stack."
   },
   "nav": {
@@ -14,7 +14,7 @@
     "eyebrow": "MANTLE TURING TEST HACKATHON 2026 · AI × RWA",
     "title": "Treasury Orchestration for the Mantle RWA Stack",
     "subtitleTyped": "3 agents. 4 assets. 1 verifiable on-chain policy.",
-    "subtitle": "ATMA composes Allocator, Risk, and Reporter agents under a Skills-First policy. Every decision is signed by an ERC-8004 agent identity NFT, recorded permanently on Mantle.",
+    "subtitle": "AMANA composes Allocator, Risk, and Reporter agents under a Skills-First policy. Every decision is signed by an ERC-8004 agent identity NFT, recorded permanently on Mantle.",
     "ctaPrimary": "Launch Vault",
     "ctaSecondary": "View on GitHub",
     "statTvl": "$1.07B+",
@@ -52,7 +52,7 @@
   },
   "counters": {
     "title": "Built on Mantle's $4B+ RWA Stack.",
-    "subtitle": "ATMA composes the primitives that already work."
+    "subtitle": "AMANA composes the primitives that already work."
   },
   "marquee": {
     "label": "Powered by"

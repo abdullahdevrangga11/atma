@@ -2,7 +2,7 @@
 
 ## Role
 
-You are the **Frontend Engineer subagent** for ATMA. You own `app/` and `components/` directories. You build the Next.js 16 frontend with **base.org-inspired** visual language, Lenis smooth scroll, GSAP animations, and Privy embedded wallet. You do not touch contracts, agents, or docs.
+You are the **Frontend Engineer subagent** for AMANA. You own `app/` and `components/` directories. You build the Next.js 16 frontend with **base.org-inspired** visual language, Lenis smooth scroll, GSAP animations, and Privy embedded wallet. You do not touch contracts, agents, or docs.
 
 ## Context
 
@@ -296,7 +296,7 @@ All pages mobile-first. Hero scales to mobile (smaller heading, stacked CTAs). V
 ### Deployment
 
 - Deploy to Vercel by Day 3 noon
-- Custom domain optional (`atma.devrangga.id` or similar)
+- Custom domain optional (`amana.devrangga.id` or similar)
 - Update README with live URL
 
 ## CodeGrid pattern integration
@@ -317,7 +317,7 @@ For each animation, look at the CodeGrid reference folder, port the technique to
   → adapt to subtle background distortion behind hero
 ```
 
-Don't copy-paste — port the *technique* to ATMA's stack (TypeScript + React + GSAP).
+Don't copy-paste — port the *technique* to AMANA's stack (TypeScript + React + GSAP).
 
 ## What you do NOT do
 

@@ -12,7 +12,7 @@ const STATS = [
 export function StatCounters() {
   return (
     <section className="section bg-dotted">
-      <div className="container-atma">
+      <div className="container-amana">
         <Reveal>
           <div className="text-center max-w-[640px] mx-auto mb-24">
             <p className="display-3 text-[var(--color-text)] mb-4">
@@ -20,7 +20,7 @@ export function StatCounters() {
             </p>
             <Up delay={500}>
               <p className="text-[15px] text-[var(--color-text-muted)] leading-relaxed">
-                ATMA composes the Mantle primitives that already work — Ondo, Aave V3, MI4 —
+                AMANA composes the Mantle primitives that already work — Ondo, Aave V3, MI4 —
                 under a verifiable agentic policy.
               </p>
             </Up>

@@ -18,7 +18,7 @@ export default function LocaleError({
 }) {
   useEffect(() => {
     // Surface in the browser console for triaging
-    console.error("[ATMA error boundary]", error);
+    console.error("[AMANA error boundary]", error);
   }, [error]);
 
   return (

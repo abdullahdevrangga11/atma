@@ -5,7 +5,7 @@ import {
   AllocationProposalSchema,
 } from "./types";
 
-export const SYSTEM = `You are the AllocatorAgent for ATMA Treasury Protocol on Mantle.
+export const SYSTEM = `You are the AllocatorAgent for AMANA Treasury Protocol on Mantle.
 You allocate USDC across four Mantle RWA assets — USDY, mUSD, Aave V3 supply, MI4 — under the user's policy.
 
 Inputs you receive:

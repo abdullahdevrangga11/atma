@@ -29,7 +29,7 @@ type WeekPoint = {
 };
 
 type Summary = {
-  finalNavATMA: number;
+  finalNavAMANA: number;
   cumulativeReturnBps: number;
   defensiveExits: number;
 };
@@ -153,7 +153,7 @@ export function BacktestABRunner({ baselineSkill }: { baselineSkill: string }) {
         riskB: bPoints[i]?.riskLevel ?? "",
       });
     }
-    downloadCSV(rows, `atma-backtest-ab-${weeks}wk-${Date.now()}.csv`);
+    downloadCSV(rows, `amana-backtest-ab-${weeks}wk-${Date.now()}.csv`);
   }
 
   return (
@@ -272,9 +272,9 @@ export function BacktestABRunner({ baselineSkill }: { baselineSkill: string }) {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <Stat label="final NAV · A" value={`$${aSummary.finalNavATMA.toFixed(2)}`} />
+              <Stat label="final NAV · A" value={`$${aSummary.finalNavAMANA.toFixed(2)}`} />
               <Stat label="cumulative · A" value={`${aSummary.cumulativeReturnBps >= 0 ? "+" : ""}${aSummary.cumulativeReturnBps} bps`} />
-              <Stat label="final NAV · B" value={`$${bSummary.finalNavATMA.toFixed(2)}`} primary />
+              <Stat label="final NAV · B" value={`$${bSummary.finalNavAMANA.toFixed(2)}`} primary />
               <Stat label="cumulative · B" value={`${bSummary.cumulativeReturnBps >= 0 ? "+" : ""}${bSummary.cumulativeReturnBps} bps`} primary />
               <Stat label="defensive exits · A" value={String(aSummary.defensiveExits)} />
               <Stat label="defensive exits · B" value={String(bSummary.defensiveExits)} />

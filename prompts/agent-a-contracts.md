@@ -2,7 +2,7 @@
 
 ## Role
 
-You are the **Contract Engineer subagent** for ATMA. You own the `contracts/` directory. You write Solidity, Foundry tests, and deploy scripts. You do not touch frontend, agent orchestrator, or docs.
+You are the **Contract Engineer subagent** for AMANA. You own the `contracts/` directory. You write Solidity, Foundry tests, and deploy scripts. You do not touch frontend, agent orchestrator, or docs.
 
 ## Context
 
@@ -51,9 +51,9 @@ mantle_mainnet = "https://rpc.mantle.xyz"
 mantle_sepolia = { key = "${MANTLESCAN_API_KEY}", url = "https://api-sepolia.mantlescan.xyz/api" }
 ```
 
-### 2. AtmaVault.sol
+### 2. AmanaVault.sol
 
-Implement per the storage layout + functions in `ARCHITECTURE.md` § "Smart Contract: AtmaVault.sol":
+Implement per the storage layout + functions in `ARCHITECTURE.md` § "Smart Contract: AmanaVault.sol":
 
 - ERC-4626-compatible vault accepting USDC (mock USDC on Sepolia)
 - State machine enforcing transitions (see ARCHITECTURE.md § "Vault Lifecycle State Machine")
@@ -84,7 +84,7 @@ Document these as MOCKS in NatSpec. Reality on Mainnet: real Ondo USDY + real Aa
 
 ### 4. Foundry tests
 
-`contracts/test/AtmaVault.t.sol` — target **50+ passing tests**:
+`contracts/test/AmanaVault.t.sol` — target **50+ passing tests**:
 
 - Deposit happy path
 - Deposit zero amount (revert)
@@ -133,7 +133,7 @@ contract DeployScript is Script {
     MockAaveAUSDC aave = new MockAaveAUSDC(address(usdc));
     MockMI4 mi4 = new MockMI4();
     // Deploy vault
-    AtmaVault vault = new AtmaVault(
+    AmanaVault vault = new AmanaVault(
       address(usdc), address(usdy), address(mUsd), address(aave), address(mi4),
       msg.sender,         // owner
       msg.sender          // initial operator
@@ -144,7 +144,7 @@ contract DeployScript is Script {
     console.log("mUSD:", address(mUsd));
     console.log("Aave:", address(aave));
     console.log("MI4:", address(mi4));
-    console.log("AtmaVault:", address(vault));
+    console.log("AmanaVault:", address(vault));
   }
 }
 ```
@@ -169,7 +169,7 @@ forge test --json > out/test-results.json
 ## Day 2 deliverables
 
 - ERC-8004 integration: emit `ReputationEvent` to Mantle Mainnet registry on each allocation
-  - The agent ID is set per ATMA agent (Allocator, Risk, Reporter) — vault includes a setter `setAgentIds(uint256 allocatorId, uint256 riskId, uint256 reporterId)`
+  - The agent ID is set per AMANA agent (Allocator, Risk, Reporter) — vault includes a setter `setAgentIds(uint256 allocatorId, uint256 riskId, uint256 reporterId)`
   - Use Mantle Mainnet ERC-8004 registry address (get from organizer via DoraHacks Q&A; if not yet public by Day 2, stub with deployed mainnet address and document in README)
 - Gas optimization: aim for deposit < 200k gas, allocate < 400k gas
 - Add fuzz tests (Foundry built-in)

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "ATMA — Orkestrasi Treasury untuk Mantle",
+    "title": "AMANA — Orkestrasi Treasury untuk Mantle",
     "description": "3 agen AI di bawah policy on-chain yang dapat diverifikasi mengalokasikan stablecoin menganggur lintas stack RWA Mantle."
   },
   "nav": {
@@ -14,7 +14,7 @@
     "eyebrow": "MANTLE TURING TEST HACKATHON 2026 · AI × RWA",
     "title": "Orkestrasi Treasury untuk Stack RWA Mantle",
     "subtitleTyped": "3 agen. 4 aset. 1 policy on-chain yang terverifikasi.",
-    "subtitle": "ATMA menyusun agen Allocator, Risk, dan Reporter di bawah policy Skills-First. Setiap keputusan ditandatangani oleh NFT identitas ERC-8004, tercatat permanen di Mantle.",
+    "subtitle": "AMANA menyusun agen Allocator, Risk, dan Reporter di bawah policy Skills-First. Setiap keputusan ditandatangani oleh NFT identitas ERC-8004, tercatat permanen di Mantle.",
     "ctaPrimary": "Buka Vault",
     "ctaSecondary": "Lihat di GitHub",
     "statTvl": "$1.07B+",
@@ -52,7 +52,7 @@
   },
   "counters": {
     "title": "Dibangun di atas Stack RWA $4B+ Mantle.",
-    "subtitle": "ATMA menyusun primitif yang sudah bekerja."
+    "subtitle": "AMANA menyusun primitif yang sudah bekerja."
   },
   "marquee": {
     "label": "Didukung oleh"

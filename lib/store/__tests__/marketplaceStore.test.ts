@@ -3,8 +3,8 @@ import { marketplaceStore } from "../marketplaceStore";
 
 beforeEach(() => {
   // Wipe globals so each test starts with a fresh + reseeded store
-  (globalThis as Record<string, unknown>).__atmaMarketplace = undefined;
-  (globalThis as Record<string, unknown>).__atmaMarketplaceSeeded = undefined;
+  (globalThis as Record<string, unknown>).__amanaMarketplace = undefined;
+  (globalThis as Record<string, unknown>).__amanaMarketplaceSeeded = undefined;
 });
 
 describe("marketplaceStore", () => {

@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "ATMA agent conversation";
+export const alt = "AMANA agent conversation";
 
 export default async function ConversationOg({ params }: { params: { id: string } }) {
   const run = runStore.get(params.id);
@@ -60,7 +60,7 @@ export default async function ConversationOg({ params }: { params: { id: string 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <div style={{ width: 32, height: 32, background: accent, borderRadius: 6 }} />
-            <div style={{ fontSize: 22, fontWeight: 600 }}>ATMA</div>
+            <div style={{ fontSize: 22, fontWeight: 600 }}>AMANA</div>
             <div style={{ fontSize: 16, color: "#858585" }}>// agent conversation</div>
           </div>
           <div

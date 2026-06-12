@@ -1,7 +1,7 @@
 /**
  * Skill markdown linter — static analysis of policy text.
  *
- * Designed for the three ATMA agent skills. Surfaces ambiguities that
+ * Designed for the three AMANA agent skills. Surfaces ambiguities that
  * would otherwise blow up at Claude inference time (vague language,
  * missing bounds, internal contradictions, forbidden terms from sibling
  * style guides).
@@ -112,7 +112,7 @@ export function lintSkill(body: string, agent: Agent): LintIssue[] {
         level: "info",
         rule: "R-004",
         message:
-          "Em-dash detected. ATMA writing style prefers commas, parens, or sentence breaks.",
+          "Em-dash detected. AMANA writing style prefers commas, parens, or sentence breaks.",
         line: i + 1,
         snippet: lines[i].trim(),
       });

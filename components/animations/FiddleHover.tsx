@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils/cn";
  * each tick.
  *
  * Tuned for compact UI nav buttons by default — block size 14, cluster up to 4,
- * brand-blue palette using ATMA tokens.
+ * brand-blue palette using AMANA tokens.
  */
 
 const DEFAULT_SYMBOLS = ["0", "1", "+", "*", ">", "▲", "$", "/"];

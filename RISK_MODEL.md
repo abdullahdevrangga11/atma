@@ -1,8 +1,8 @@
-# ATMA — Risk Model
+# AMANA — Risk Model
 
 ## Overview
 
-ATMA's Risk Agent monitors the vault's allocation continuously and triggers defensive exits when thresholds are breached. This document defines the signals, thresholds, and defensive actions.
+AMANA's Risk Agent monitors the vault's allocation continuously and triggers defensive exits when thresholds are breached. This document defines the signals, thresholds, and defensive actions.
 
 ## Risk Signal Levels
 
@@ -36,7 +36,7 @@ ATMA's Risk Agent monitors the vault's allocation continuously and triggers defe
 - **Computed**: at each snapshot
 - **Warn threshold**: drawdown > 1.5%
 - **Trigger threshold**: drawdown > 5.0%
-- **Rationale**: ATMA targets capital preservation; > 5% in a 7-day window indicates protocol failure, not market
+- **Rationale**: AMANA targets capital preservation; > 5% in a 7-day window indicates protocol failure, not market
 
 ### 3. Oracle Deviation
 
@@ -44,7 +44,7 @@ ATMA's Risk Agent monitors the vault's allocation continuously and triggers defe
 - **Source**: Aave V3 Mantle pool oracle vs Chainlink USDC/USD
 - **Warn threshold**: deviation > 0.5% sustained 5 min
 - **Trigger threshold**: deviation > 2.0% sustained 2 min
-- **Rationale**: March 10, 2026 wstETH glitch caused $27M unfair liquidations; ATMA defends against this exact failure mode
+- **Rationale**: March 10, 2026 wstETH glitch caused $27M unfair liquidations; AMANA defends against this exact failure mode
 
 ### 4. Liquidity Shock
 
@@ -59,13 +59,13 @@ ATMA's Risk Agent monitors the vault's allocation continuously and triggers defe
 - **Source**: external oracle (Hypernative or Mantle ecosystem watcher)
 - **Signals**: Aave V3 Mantle paused, USDY redemption paused, Ondo bridge incident
 - **Trigger**: any of the above
-- **Rationale**: April 18, 2026 Kelp DAO bridge exploit froze rsETH for 30 days; ATMA refuses to be a victim
+- **Rationale**: April 18, 2026 Kelp DAO bridge exploit froze rsETH for 30 days; AMANA refuses to be a victim
 
 ## Defensive Exit Procedure
 
 When Risk Agent emits `trigger`:
 
-1. Orchestrator calls `AtmaVault.triggerDefensiveExit(riskSignalHash)`
+1. Orchestrator calls `AmanaVault.triggerDefensiveExit(riskSignalHash)`
 2. Vault transitions: `Allocated → RiskTriggered`
 3. Vault unwinds positions in order:
    - First: redeem MI4 → USDC (lowest priority)
@@ -87,13 +87,13 @@ The agent uses **sustained signal** windows to avoid false positives:
 ## Manual Override
 
 The vault owner can always:
-- `pause()` ATMA operator (no more rebalances)
+- `pause()` AMANA operator (no more rebalances)
 - `emergencyExit()` (immediate USDC conversion, bypasses risk agent)
-- `revokeOperator()` (revoke ATMA's allocation authority permanently)
+- `revokeOperator()` (revoke AMANA's allocation authority permanently)
 
 ## Stress-Test Scenarios
 
-| Scenario | Expected ATMA action |
+| Scenario | Expected AMANA action |
 |---|---|
 | USDY depegs to 0.97 USD | Trigger defensive exit (deviation > 2%) |
 | Mantle Aave V3 oracle glitches like March 10, 2026 | Trigger defensive exit before unfair liquidation |
@@ -103,11 +103,11 @@ The vault owner can always:
 
 ## Limitations (honest disclosure)
 
-- ATMA cannot defend against **smart contract exploits** of underlying protocols (USDY, Aave, MI4) faster than the exploit itself
-- ATMA cannot defend against **flash loan attacks** on Mantle DEXs (Merchant Moe, Agni)
-- ATMA's risk model **uses oracle data**; if oracles are themselves compromised, ATMA's reasoning is compromised
-- ATMA's defensive exit **takes time** — if Mantle network is congested, recovery may be partial
-- For maximum safety, users should keep portion of treasury **outside ATMA** as cold reserve
+- AMANA cannot defend against **smart contract exploits** of underlying protocols (USDY, Aave, MI4) faster than the exploit itself
+- AMANA cannot defend against **flash loan attacks** on Mantle DEXs (Merchant Moe, Agni)
+- AMANA's risk model **uses oracle data**; if oracles are themselves compromised, AMANA's reasoning is compromised
+- AMANA's defensive exit **takes time** — if Mantle network is congested, recovery may be partial
+- For maximum safety, users should keep portion of treasury **outside AMANA** as cold reserve
 
 ## Audit Trail
 

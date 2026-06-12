@@ -6,13 +6,13 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import {IMockUSDY, IMockMUSD, IMockAavePool, IMockMI4} from "./interfaces/IAtmaAssets.sol";
+import {IMockUSDY, IMockMUSD, IMockAavePool, IMockMI4} from "./interfaces/IAmanaAssets.sol";
 
-/// @title AtmaVault — Treasury Orchestration Protocol on Mantle
+/// @title AmanaVault — Treasury Orchestration Protocol on Mantle
 /// @notice ERC-4626-style vault that accepts USDC, allocates across USDY/mUSD/Aave V3/MI4 under an off-chain
-///         policy operator (the ATMA agent orchestrator), and emits ERC-8004-style attestations per decision.
+///         policy operator (the AMANA agent orchestrator), and emits ERC-8004-style attestations per decision.
 /// @dev    Single-user vault per deployment (kept simple for hackathon; multi-user comes in V2).
-contract AtmaVault is Ownable, Pausable, ReentrancyGuard {
+contract AmanaVault is Ownable, Pausable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     // ─────────────────────────────────────────────────────────────────────
@@ -43,7 +43,7 @@ contract AtmaVault is Ownable, Pausable, ReentrancyGuard {
     IMockAavePool public immutable aavePool;
     IMockMI4 public immutable mi4;
 
-    /// @notice Off-chain operator (ATMA orchestrator) authorized to propose/execute allocations.
+    /// @notice Off-chain operator (AMANA orchestrator) authorized to propose/execute allocations.
     address public operator;
 
     /// @notice ERC-8004 agent identity IDs (set after registration on Mantle Mainnet).

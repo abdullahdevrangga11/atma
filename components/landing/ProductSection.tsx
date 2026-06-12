@@ -68,12 +68,12 @@ export function ProductSection() {
 
   return (
     <section className="section bg-[var(--color-bg)]">
-      <div className="container-atma">
+      <div className="container-amana">
         <Reveal>
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-10 mb-20">
             <h2 className="display-2 max-w-[680px]">
               <span className="font-semibold">
-                <WordMask text="ATMA" staggerMs={70} />
+                <WordMask text="AMANA" staggerMs={70} />
               </span>{" "}
               <span className="text-[var(--color-text-secondary)] font-normal">
                 <WordMask text="is the protocol for treasury at scale." staggerMs={60} baseDelayMs={120} />

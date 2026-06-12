@@ -17,7 +17,7 @@ import "@xyflow/react/dist/style.css";
 /**
  * Four small React Flow scenes used as the diagram decor inside the
  * `ProductSection` bento grid:
- *   - VaultStateDiagram   — ATMA at the centre, 4 RWA assets orbiting
+ *   - VaultStateDiagram   — AMANA at the centre, 4 RWA assets orbiting
  *   - AgentSwarmDiagram   — 3 agent circles converging on SKILLS
  *   - PolicyAsDataDiagram — SKILL.md → CLAUDE arrow with subtitle
  *   - AttestationDiagram  — registry at top, 5 tx events fanning out
@@ -28,7 +28,7 @@ import "@xyflow/react/dist/style.css";
  *     dragging it — small tactile signal that this is a real graph.
  *   - Marks every edge `animated: true` for React Flow's hardware-
  *     accelerated dash-flow (data-flowing-through-pipe feel).
- *   - Wraps node content with `.atma-flow-node` so the CSS hover rule
+ *   - Wraps node content with `.amana-flow-node` so the CSS hover rule
  *     lifts the node on pointer enter.
  */
 
@@ -78,7 +78,7 @@ function PillNode({ data }: NodeProps) {
   const tone = TONE[d.tone];
   return (
     <div
-      className="atma-flow-node"
+      className="amana-flow-node"
       style={{
         padding: "6px 12px",
         borderRadius: 6,
@@ -112,7 +112,7 @@ function CircleNode({ data }: NodeProps) {
   const d = data as unknown as CircleData;
   return (
     <div
-      className="atma-flow-node"
+      className="amana-flow-node"
       style={{
         width: 56,
         height: 56,
@@ -142,7 +142,7 @@ function FileNode({ data }: NodeProps) {
   const d = data as unknown as FileData;
   return (
     <div
-      className="atma-flow-node"
+      className="amana-flow-node"
       style={{
         width: 84,
         height: 100,
@@ -201,7 +201,7 @@ function RegistryHeaderNode({ data }: NodeProps) {
   const d = data as unknown as { label: string };
   return (
     <div
-      className="atma-flow-node"
+      className="amana-flow-node"
       style={{
         padding: "10px 18px 10px 16px",
         background: "#0a0a0a",
@@ -225,7 +225,7 @@ function RegistryHeaderNode({ data }: NodeProps) {
           borderRadius: "50%",
           background: "#84cc16",
           boxShadow: "0 0 8px #84cc16",
-          animation: "atma-pulse-dot 2.2s ease-in-out infinite",
+          animation: "amana-pulse-dot 2.2s ease-in-out infinite",
         }}
       />
       {d.label}
@@ -241,7 +241,7 @@ function TxCardNode({ data }: NodeProps) {
   };
   return (
     <div
-      className={`atma-flow-node${d.active ? " atma-attest-active" : ""}`}
+      className={`amana-flow-node${d.active ? " amana-attest-active" : ""}`}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -356,13 +356,13 @@ function InnerFlow({ nodes, edges }: { nodes: Node[]; edges: Edge[] }) {
 }
 
 // ───────────────────────────────────────────────────────────
-//  1. Vault state diagram — ATMA + 4 RWA satellites
+//  1. Vault state diagram — AMANA + 4 RWA satellites
 // ───────────────────────────────────────────────────────────
 
 export function VaultStateDiagram() {
   const nodes = useMemo<Node[]>(
     () => [
-      { id: "atma",  type: "pill", position: { x: 150, y: 100 }, data: { label: "ATMA",  tone: "violet" } },
+      { id: "amana",  type: "pill", position: { x: 150, y: 100 }, data: { label: "AMANA",  tone: "violet" } },
       { id: "usdy",  type: "pill", position: { x: 0,    y: 40  }, data: { label: "USDY",  tone: "violet" } },
       { id: "musd",  type: "pill", position: { x: 300,  y: 40  }, data: { label: "mUSD",  tone: "lime"   } },
       { id: "aave",  type: "pill", position: { x: 0,    y: 160 }, data: { label: "AAVE",  tone: "amber"  } },
@@ -372,10 +372,10 @@ export function VaultStateDiagram() {
   );
   const edges = useMemo<Edge[]>(
     () => [
-      { id: "e-usdy", source: "usdy", target: "atma", ...flowEdge() },
-      { id: "e-musd", source: "musd", target: "atma", ...flowEdge() },
-      { id: "e-aave", source: "aave", target: "atma", ...flowEdge() },
-      { id: "e-mi4",  source: "mi4",  target: "atma", ...flowEdge() },
+      { id: "e-usdy", source: "usdy", target: "amana", ...flowEdge() },
+      { id: "e-musd", source: "musd", target: "amana", ...flowEdge() },
+      { id: "e-aave", source: "aave", target: "amana", ...flowEdge() },
+      { id: "e-mi4",  source: "mi4",  target: "amana", ...flowEdge() },
     ],
     [],
   );

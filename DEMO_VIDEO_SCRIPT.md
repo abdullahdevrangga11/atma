@@ -1,4 +1,4 @@
-# ATMA — Demo Video Script (3 minutes)
+# AMANA — Demo Video Script (3 minutes)
 
 **Recording rules**:
 - Founder voice. **No AI narration.** Judges actively penalise TTS.
@@ -17,7 +17,7 @@ Production URL: **https://atma-iota.vercel.app**
 
 **Say**:
 
-> ATMA is treasury orchestration for Mantle. Three AI agents allocate USDC across the RWA stack — USDY, mUSD, Aave, MI4 — under a verifiable policy that lives as markdown, not code. Every decision is signed on-chain via ERC-8004. Here's a 3-minute tour.
+> AMANA is treasury orchestration for Mantle. Three AI agents allocate USDC across the RWA stack — USDY, mUSD, Aave, MI4 — under a verifiable policy that lives as markdown, not code. Every decision is signed on-chain via ERC-8004. Here's a 3-minute tour.
 
 ---
 
@@ -113,7 +113,7 @@ Production URL: **https://atma-iota.vercel.app**
 
 **Say**:
 
-> Three agents. One vault. Policy as data. Every decision attested. atma-iota dot vercel dot app. Thanks for watching.
+> Three agents. One vault. Policy as data. Every decision attested. amana-iota dot vercel dot app. Thanks for watching.
 
 ---
 

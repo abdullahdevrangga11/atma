@@ -1,4 +1,4 @@
-# Twitter / X Thread — ATMA Launch
+# Twitter / X Thread — AMANA Launch
 
 Thread template for posting from `@abdullahdevrang` once submission is in.
 
@@ -9,7 +9,7 @@ Thread template for posting from `@abdullahdevrang` once submission is in.
 ## Tweet 1 (the hook)
 
 ```
-i built ATMA — a treasury orchestration protocol on @0xMantle.
+i built AMANA — a treasury orchestration protocol on @0xMantle.
 
 three AI agents (allocator, risk, reporter) coordinate inside an
 ERC-4626 vault. policy lives as markdown. every decision signed
@@ -42,7 +42,7 @@ or pick one asset and accept the rebalance work nobody has time for.
 ## Tweet 3 (the architecture)
 
 ```
-ATMA runs three claude sonnet 4.5 agents inside an ERC-4626 vault:
+AMANA runs three claude sonnet 4.5 agents inside an ERC-4626 vault:
 
 → AllocatorAgent proposes weights under your policy
 → RiskAgent monitors pegs, oracles, NAV; has VETO AUTHORITY
@@ -112,7 +112,7 @@ Attach: screenshot of `/backtest` with the summary stats.
 ```
 proof of work:
 
-- AtmaVault.sol: 374 lines, 11-state machine, ERC-8004 events
+- AmanaVault.sol: 374 lines, 11-state machine, ERC-8004 events
 - 45 foundry tests, all green
 - 3 typescript agents w/ zod-validated schemas
 - 39 vitest unit tests
@@ -120,7 +120,7 @@ proof of work:
 - next.js 16 + tailwind v4 + viem + react flow
 - 11 page routes, 11 API endpoints
 
-repo: github.com/abdullahdevrangga11/atma
+repo: github.com/abdullahdevrangga11/amana
 ```
 
 ---

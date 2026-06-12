@@ -10,7 +10,7 @@ test = "test"
 script = "script"
 cache_path = "cache"
 verbosity = 2
-gas_reports = ["AtmaVault"]
+gas_reports = ["AmanaVault"]
 
 [rpc_endpoints]
 mantle_sepolia = "https://rpc.sepolia.mantle.xyz"

@@ -1,12 +1,12 @@
-# ATMA — Architecture
+# AMANA — Architecture
 
 ## Overview
 
-ATMA is a Treasury Orchestration Protocol that composes 3 AI agents under verifiable on-chain policy to allocate idle stablecoins across the Mantle RWA stack. The system has 4 layers:
+AMANA is a Treasury Orchestration Protocol that composes 3 AI agents under verifiable on-chain policy to allocate idle stablecoins across the Mantle RWA stack. The system has 4 layers:
 
 1. **Frontend** (Next.js 16) — user deposits/withdraws, views allocation + reports
 2. **Agent Orchestrator** (TypeScript) — 3 specialized agents reason about allocation + risk + reporting
-3. **Smart Contract** (Solidity / Foundry) — AtmaVault holds funds, enforces state machine, emits ERC-8004 attestations
+3. **Smart Contract** (Solidity / Foundry) — AmanaVault holds funds, enforces state machine, emits ERC-8004 attestations
 4. **Mantle Chain** (Sepolia testnet + Mainnet ERC-8004 registry) — settlement + reputation
 
 ## Component Diagram
@@ -49,7 +49,7 @@ ATMA is a Treasury Orchestration Protocol that composes 3 AI agents under verifi
 │                       MANTLE SEPOLIA                             │
 │                                                                  │
 │   ┌──────────────────────────────────────────────────────────┐   │
-│   │  AtmaVault.sol (ERC-4626 vault + state machine)          │   │
+│   │  AmanaVault.sol (ERC-4626 vault + state machine)          │   │
 │   │                                                          │   │
 │   │  • deposit(usdc)                                         │   │
 │   │  • allocate(weights, attestation)                        │   │
@@ -76,7 +76,7 @@ ATMA is a Treasury Orchestration Protocol that composes 3 AI agents under verifi
 
 ## Vault State Machine
 
-The `AtmaVault` contract enforces a strict state machine. Every transition is gas-cheap (single SSTORE) and emits an event indexed by ERC-8004 agent ID.
+The `AmanaVault` contract enforces a strict state machine. Every transition is gas-cheap (single SSTORE) and emits an event indexed by ERC-8004 agent ID.
 
 ```
                       ┌─────────┐
@@ -174,14 +174,14 @@ The `AtmaVault` contract enforces a strict state machine. Every transition is ga
 
 **Output**: `WeeklyReport { actualPnL, baselinePnL, outperformanceBps, csvUrl }`
 
-## Smart Contract: AtmaVault.sol
+## Smart Contract: AmanaVault.sol
 
 ### Storage Layout
 
 ```solidity
 struct Vault {
   address owner;                      // DAO / startup multisig
-  address policyOperator;             // ATMA orchestrator
+  address policyOperator;             // AMANA orchestrator
   uint256 totalShares;                // ERC-4626 shares
   uint256 totalAssets;                // virtual USDC equivalent
   Allocation currentAllocation;       // active weights
@@ -243,7 +243,7 @@ event DefensiveExit(uint256 indexed agentId, uint256 totalRecovered);
 4. User signs proposal (Privy wallet)
    ↓
 5. orchestrator.execute()
-   ├── viem call to AtmaVault.executeAllocation()
+   ├── viem call to AmanaVault.executeAllocation()
    ├── Vault transitions: Proposing → Executing
    ├── Routes USDC to {USDY 40%, mUSD 20%, Aave 30%, MI4 10%}
    ├── Vault transitions: Executing → Attesting
@@ -270,7 +270,7 @@ Each Skill file is read by its agent at runtime and injected into the LLM contex
 
 1. **Auditable**: judges can read the decision tree in markdown.
 2. **Updatable**: change allocation logic by editing markdown.
-3. **Composable**: future ATMA users can fork + customize per their DAO policy.
+3. **Composable**: future AMANA users can fork + customize per their DAO policy.
 4. **Honest**: avoids the "hardcoded script dressed as agent" anti-pattern that loses hackathons.
 
 ## Frontend Architecture
@@ -298,7 +298,7 @@ Each Skill file is read by its agent at runtime and injected into the LLM contex
 ## Security Model
 
 - **Vault owner** = user's multisig / EOA. Only they can `withdraw`, `emergencyExit`.
-- **Policy operator** = ATMA orchestrator address (rotatable). Only they can `propose`, `rebalance`, `triggerDefensiveExit`.
+- **Policy operator** = AMANA orchestrator address (rotatable). Only they can `propose`, `rebalance`, `triggerDefensiveExit`.
 - **Defensive exit auto-triggered** if Risk Agent emits `trigger` level — converts all positions to USDC, transitions vault to terminal `DefensiveExit`.
 - **No unbounded approvals** — vault uses `approve(spender, amount)` per-tx, not `approve(spender, MAX)`.
 - **Reentrancy guards** on all external entrypoints.

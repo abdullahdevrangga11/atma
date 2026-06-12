@@ -21,12 +21,12 @@ type Bucket = {
 
 declare global {
   // eslint-disable-next-line no-var
-  var __atmaRateLimit: Map<string, Bucket> | undefined;
+  var __amanaRateLimit: Map<string, Bucket> | undefined;
 }
 
 function store(): Map<string, Bucket> {
-  if (!globalThis.__atmaRateLimit) globalThis.__atmaRateLimit = new Map();
-  return globalThis.__atmaRateLimit;
+  if (!globalThis.__amanaRateLimit) globalThis.__amanaRateLimit = new Map();
+  return globalThis.__amanaRateLimit;
 }
 
 export type RateLimitConfig = {

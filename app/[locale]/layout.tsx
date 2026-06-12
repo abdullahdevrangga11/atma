@@ -14,12 +14,12 @@ import "../globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://atma-iota.vercel.app"),
   title: {
-    default: "ATMA — Treasury Orchestration for Mantle",
-    template: "%s · ATMA",
+    default: "AMANA — Treasury Orchestration for Mantle",
+    template: "%s · AMANA",
   },
   description:
     "Three AI agents allocate, monitor, and report a Mantle RWA treasury. Policy as Markdown. Every decision signed on-chain via ERC-8004.",
-  applicationName: "ATMA",
+  applicationName: "AMANA",
   authors: [{ name: "Devrangga Hazza Mahiswara" }],
   keywords: [
     "Mantle",
@@ -35,15 +35,15 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: "website",
-    siteName: "ATMA",
-    title: "ATMA — Treasury Orchestration for Mantle",
+    siteName: "AMANA",
+    title: "AMANA — Treasury Orchestration for Mantle",
     description:
       "Three AI agents managing your Mantle RWA treasury. Policy as Markdown. Every decision attested.",
     url: "https://atma-iota.vercel.app",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ATMA — Treasury Orchestration for Mantle",
+    title: "AMANA — Treasury Orchestration for Mantle",
     description:
       "Three AI agents. One vault. Policy as data. Every decision attested on ERC-8004.",
     creator: "@abdullahdevrang",

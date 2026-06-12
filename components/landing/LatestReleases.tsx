@@ -92,7 +92,7 @@ export function LatestReleases() {
 
   return (
     <section className="section bg-[var(--color-bg)]">
-      <div className="container-atma">
+      <div className="container-amana">
         <Reveal>
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
             <div>
@@ -105,7 +105,7 @@ export function LatestReleases() {
             </div>
             <Up delay={400}>
               <Link
-                href="https://github.com/abdullahdevrangga11/atma/commits/master"
+                href="https://github.com/abdullahdevrangga11/amana/commits/master"
                 target="_blank"
                 rel="noreferrer"
                 className="btn-outline whitespace-nowrap inline-flex items-center gap-2"

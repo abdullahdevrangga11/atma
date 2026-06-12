@@ -2,7 +2,7 @@
 
 ## Role
 
-You are the **Agent Engineer subagent** for ATMA. You own `lib/agents/` and `app/api/agent/`. You write the TypeScript orchestrator + 3 specialized agents (Allocator, Risk, Reporter). You do not touch Solidity, frontend, or docs.
+You are the **Agent Engineer subagent** for AMANA. You own `lib/agents/` and `app/api/agent/`. You write the TypeScript orchestrator + 3 specialized agents (Allocator, Risk, Reporter). You do not touch Solidity, frontend, or docs.
 
 ## Context
 
@@ -101,7 +101,7 @@ export class AllocatorAgent extends BaseAgent {
     liveAPYs: { usdy: number; mUsd: number; aaveSupply: number; mi4Yield: number };
     liveRiskSignals: { usdyPeg: string; mUsdPeg: string; aaveOracle: string; mi4NAV: string };
   }): Promise<AllocationProposal> {
-    const systemContext = `You are the AllocatorAgent for ATMA Treasury Protocol on Mantle.
+    const systemContext = `You are the AllocatorAgent for AMANA Treasury Protocol on Mantle.
 You allocate USDC across USDY, mUSD, Aave V3 supply, and MI4 per the user policy and the skill reference below.
 Output STRICT JSON matching this schema:
 ${AllocationProposal.toString()}`;

@@ -24,7 +24,7 @@ export default async function ReportsPage({
     <>
       <TopBanner />
       <Navbar />
-      <main className="container-atma py-20 md:py-28">
+      <main className="container-amana py-20 md:py-28">
         <div className="max-w-[1100px] mx-auto">
           <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-5">
             // reports
@@ -33,7 +33,7 @@ export default async function ReportsPage({
             Outperformance, attested.
           </h1>
           <p className="text-[16px] text-[var(--color-text-secondary)] max-w-[640px] mb-14 leading-relaxed">
-            ATMA's actual P&amp;L against three baselines: do-nothing, USDC-Aave only,
+            AMANA's actual P&amp;L against three baselines: do-nothing, USDC-Aave only,
             USDY only. Every snapshot signed by ReporterAgent and emitted as an
             ERC-8004 reputation event on Mantle.
           </p>

@@ -42,7 +42,7 @@ import {
 } from "@/lib/store/runStore";
 
 // ───────────────────────────────────────────────────────────
-//  Vault state machine — mirrors AtmaVault.sol
+//  Vault state machine — mirrors AmanaVault.sol
 // ───────────────────────────────────────────────────────────
 
 export const VAULT_STATES = [

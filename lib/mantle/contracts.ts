@@ -1,9 +1,9 @@
 /**
- * Minimal ABI fragments for AtmaVault — keeps API small for read calls and writes.
- * Full ABI lives in contracts/out/AtmaVault.sol/AtmaVault.json after `forge build`.
+ * Minimal ABI fragments for AmanaVault — keeps API small for read calls and writes.
+ * Full ABI lives in contracts/out/AmanaVault.sol/AmanaVault.json after `forge build`.
  */
 
-export const atmaVaultAbi = [
+export const amanaVaultAbi = [
   // Reads
   {
     type: "function",

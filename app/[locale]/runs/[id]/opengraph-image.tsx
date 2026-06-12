@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "ATMA orchestration run";
+export const alt = "AMANA orchestration run";
 
 /**
  * Open Graph image for a specific run permalink.
@@ -36,7 +36,7 @@ export default async function RunOg({ params }: { params: { id: string } }) {
         >
           <div style={{ fontSize: 22, color: "#858585" }}>// run not found</div>
           <div style={{ fontSize: 64, fontWeight: 600, lineHeight: 1.05 }}>
-            ATMA · run expired
+            AMANA · run expired
           </div>
           <div style={{ fontSize: 22, color: "#858585" }}>
             atma-iota.vercel.app
@@ -76,7 +76,7 @@ export default async function RunOg({ params }: { params: { id: string } }) {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <div style={{ width: 36, height: 36, background: accent, borderRadius: 6 }} />
-            <div style={{ fontSize: 24, fontWeight: 600 }}>ATMA</div>
+            <div style={{ fontSize: 24, fontWeight: 600 }}>AMANA</div>
             <div style={{ fontSize: 18, color: "#858585" }}>
               treasury orchestration · mantle
             </div>

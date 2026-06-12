@@ -1,4 +1,4 @@
-# ATMA — DoraHacks Submission Copy
+# AMANA — DoraHacks Submission Copy
 
 Paste-ready text for the **Mantle Turing Test Hackathon 2026** submission form.
 
@@ -6,7 +6,7 @@ Paste-ready text for the **Mantle Turing Test Hackathon 2026** submission form.
 
 ## Project name
 
-**ATMA — Treasury Orchestration Protocol**
+**AMANA — Treasury Orchestration Protocol**
 
 ## Tagline (140 chars)
 
@@ -25,7 +25,7 @@ AI Agents · DeFi · RWA
 
 ## Description (long form, ~280 words)
 
-ATMA is a treasury orchestration protocol for Mantle's real-world asset stack — USDY, mUSD, Aave V3, MI4. Three Claude Sonnet 4.5 agents coordinate inside an ERC-4626 vault:
+AMANA is a treasury orchestration protocol for Mantle's real-world asset stack — USDY, mUSD, Aave V3, MI4. Three Claude Sonnet 4.5 agents coordinate inside an ERC-4626 vault:
 
 - **AllocatorAgent** proposes weights across the four assets under user policy.
 - **RiskAgent** monitors USDY peg, mUSD rebase, Aave oracle deviation, MI4 NAV, and protocol health. Has authority to veto Allocator's proposals and trigger defensive exit.
@@ -39,12 +39,12 @@ The Allocator → Risk → Reporter chain has a **debate loop**: if Risk emits l
 
 ## The pain point
 
-Treasuries on Mantle hold stablecoins. USDC pays zero. USDY pays 4.42%. mUSD pays 4.6% via rebasing. Aave V3 supply moves intraday. Nobody manages this. So treasuries either park USDC and bleed ~4% APY annually, or pick one asset and accept the rebalance work nobody has time for. ATMA closes the gap.
+Treasuries on Mantle hold stablecoins. USDC pays zero. USDY pays 4.42%. mUSD pays 4.6% via rebasing. Aave V3 supply moves intraday. Nobody manages this. So treasuries either park USDC and bleed ~4% APY annually, or pick one asset and accept the rebalance work nobody has time for. AMANA closes the gap.
 
 ## What we built (in 3 days)
 
 ### Contracts (Solidity 0.8.24, Foundry)
-- `AtmaVault.sol` — 374 lines, ERC-4626 + 11-state machine + ERC-8004 reputation events + 24h rebalance cadence guard + defensive exit primitive.
+- `AmanaVault.sol` — 374 lines, ERC-4626 + 11-state machine + ERC-8004 reputation events + 24h rebalance cadence guard + defensive exit primitive.
 - 5 mock contracts (USDC, USDY, mUSD, AavePool, MI4) so the demo runs without depending on live RWA bridges.
 - **45 Foundry tests** covering state machine, NAV computation, weight enforcement, defensive exit, debate retries.
 
@@ -72,7 +72,7 @@ Treasuries on Mantle hold stablecoins. USDC pays zero. USDY pays 4.42%. mUSD pay
 ## Links
 
 - **Live demo**: https://atma-iota.vercel.app
-- **GitHub**: https://github.com/abdullahdevrangga11/atma
+- **GitHub**: https://github.com/abdullahdevrangga11/amana
 - **Demo video** (3 min): https://youtu.be/<TBD — record before submission>
 - **Vault contract** (Mantle Sepolia): `0x<TBD — deploy before submission>`
 - **Twitter thread**: https://x.com/abdullahdevrang/status/<TBD>
@@ -83,7 +83,7 @@ Solidity 0.8.24 · Foundry · OpenZeppelin v5 · ERC-4626 · ERC-8004 (reputatio
 
 ## Why we'll win
 
-| Judging axis | ATMA |
+| Judging axis | AMANA |
 |---|---|
 | **Real pain point** | Mantle treasuries are leaving 4 bps/day on the table. Verified with on-chain TVL data + real APY snapshots. |
 | **AI-agent uniqueness** | Three coordinated agents with on-chain attested reasoning AND a debate loop. Risk has VETO AUTHORITY over Allocator. This is autonomy, not orchestration of LLM calls. |
@@ -114,12 +114,12 @@ Solidity 0.8.24 · Foundry · OpenZeppelin v5 · ERC-4626 · ERC-8004 (reputatio
 
 | Field | Value |
 |---|---|
-| Project name | ATMA |
+| Project name | AMANA |
 | Slogan | Three AI agents managing your Mantle RWA treasury. Policy as Markdown. Every decision attested. |
 | Description | Use "Description (long form)" above. |
 | Tracks | Mantle AI Agents · Mantle RWA & DeFi |
 | Demo URL | https://atma-iota.vercel.app |
-| Repo URL | https://github.com/abdullahdevrangga11/atma |
+| Repo URL | https://github.com/abdullahdevrangga11/amana |
 | Video URL | https://youtu.be/<TBD> |
 | Team | Devrangga Hazza Mahiswara (abdullahdevrangga@gmail.com) |
 | Contract address | `<TBD>` (Mantle Sepolia, chainId 5003) |

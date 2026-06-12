@@ -7,9 +7,9 @@ export function TopBanner() {
   if (!open) return null;
   return (
     <div className="top-banner relative">
-      <div className="container-atma flex items-center justify-center gap-3 py-2.5 text-center">
+      <div className="container-amana flex items-center justify-center gap-3 py-2.5 text-center">
         <p className="text-[13px]">
-          <span className="font-medium">Introducing ATMA.</span>{" "}
+          <span className="font-medium">Introducing AMANA.</span>{" "}
           <span className="text-[var(--color-text-secondary)]">
             Treasury orchestration as a primitive on Mantle.
           </span>{" "}

@@ -15,15 +15,15 @@ export async function generateMetadata({
   const run = runStore.get(id);
   const title = run
     ? `${run.risk.level === "trigger" ? "Defensive exit" : run.debate ? "Survived a veto" : "Clean allocation"} · +${run.report.outperformanceBps.vsDoNothing} bps`
-    : "Run · ATMA";
+    : "Run · AMANA";
   return {
     title,
     description:
-      "ATMA orchestration run — 3 agents, on-chain attested reasoning, real outperformance numbers.",
+      "AMANA orchestration run — 3 agents, on-chain attested reasoning, real outperformance numbers.",
     openGraph: {
       title,
       description:
-        "ATMA orchestration run — 3 agents, on-chain attested reasoning.",
+        "AMANA orchestration run — 3 agents, on-chain attested reasoning.",
     },
     twitter: {
       card: "summary_large_image",
@@ -44,7 +44,7 @@ export default async function RunDetailPage({
     <>
       <TopBanner />
       <Navbar />
-      <main className="container-atma py-20 md:py-28">
+      <main className="container-amana py-20 md:py-28">
         <div className="max-w-[1100px] mx-auto">
           <RunDetail runId={id} />
         </div>

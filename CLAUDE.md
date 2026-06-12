@@ -1,13 +1,13 @@
-# ATMA — CLAUDE.md
+# AMANA — CLAUDE.md
 
-> AI context file for Claude Code sessions in the ATMA repo.
+> AI context file for Claude Code sessions in the AMANA repo.
 > Read this first before touching any code. Always grep `docs/`, `runbooks/`, `skills/`, `README.md`, and `ARCHITECTURE.md` before guessing.
 
 ---
 
-## What is ATMA?
+## What is AMANA?
 
-**ATMA** is a **Treasury Orchestration Protocol for the Mantle RWA Stack**. It composes 3 AI agents under a verifiable on-chain policy to allocate idle stablecoins across USDY, mUSD, Aave V3 Mantle supply, and MI4.
+**AMANA** is a **Treasury Orchestration Protocol for the Mantle RWA Stack**. It composes 3 AI agents under a verifiable on-chain policy to allocate idle stablecoins across USDY, mUSD, Aave V3 Mantle supply, and MI4.
 
 **Core promise**: lift treasury policy out of human attention into a composable on-chain primitive.
 
@@ -88,7 +88,7 @@ Loaded via `next/font/google` (or local `public/fonts/`).
 ### Card recipe (glass + soft border + subtle hover lift)
 
 ```css
-.card-atma {
+.card-amana {
   background: rgba(19, 26, 61, 0.60);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -99,7 +99,7 @@ Loaded via `next/font/google` (or local `public/fonts/`).
   transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1),
               border-color 200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-.card-atma:hover {
+.card-amana:hover {
   transform: translateY(-2px);
   border-color: rgba(0, 82, 255, 0.30);
 }
@@ -199,7 +199,7 @@ lib/
 │   └── orchestrator.ts           # Composes 3 agents
 ├── mantle/
 │   ├── client.ts                 # viem client + Mantle Sepolia
-│   ├── contracts.ts              # AtmaVault + USDY + mUSD + Aave V3 ABIs
+│   ├── contracts.ts              # AmanaVault + USDY + mUSD + Aave V3 ABIs
 │   └── erc8004.ts                # Identity registry helper
 ├── animations/
 │   ├── lenis.ts                  # Lenis init + cleanup
@@ -237,7 +237,7 @@ BYBIT_API_KEY=
 BYBIT_API_SECRET=
 
 # === Contracts (after deploy) ===
-NEXT_PUBLIC_ATMA_VAULT_ADDRESS=
+NEXT_PUBLIC_AMANA_VAULT_ADDRESS=
 NEXT_PUBLIC_ALLOCATOR_AGENT_ID=
 NEXT_PUBLIC_RISK_AGENT_ID=
 NEXT_PUBLIC_REPORTER_AGENT_ID=
@@ -248,7 +248,7 @@ MANTLESCAN_API_KEY=
 
 # === App ===
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_APP_NAME=ATMA
+NEXT_PUBLIC_APP_NAME=AMANA
 NEXT_PUBLIC_DEFAULT_LOCALE=en
 ```
 
@@ -258,7 +258,7 @@ NEXT_PUBLIC_DEFAULT_LOCALE=en
 
 ### Day 1 (Wed Jun 12) — Foundation
 - [ ] Spawn subagents per `prompts/` files in parallel
-- [ ] Agent A: Foundry init + AtmaVault.sol + 30 tests + deploy Mantle Sepolia
+- [ ] Agent A: Foundry init + AmanaVault.sol + 30 tests + deploy Mantle Sepolia
 - [ ] Agent B: TypeScript orchestrator skeleton with 3 agent base classes + mock data
 - [ ] Agent C: Next.js 16 + Tailwind v4 + Geist fonts + Privy + Lenis init
 - [ ] Agent D: README polish + ARCHITECTURE.md + 3 Skill files

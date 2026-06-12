@@ -24,13 +24,13 @@ export default async function NetworkPage({
     <>
       <TopBanner />
       <Navbar />
-      <main className="container-atma py-20 md:py-28">
+      <main className="container-amana py-20 md:py-28">
         <div className="max-w-[1100px] mx-auto">
           <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-5">
             // network
           </p>
           <h1 className="display-2 max-w-[720px] mb-5">
-            Everything ATMA has done.
+            Everything AMANA has done.
           </h1>
           <p className="text-[16px] text-[var(--color-text-secondary)] max-w-[640px] mb-14 leading-relaxed">
             Cumulative metrics across every orchestration this deployment has run.

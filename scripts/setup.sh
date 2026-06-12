@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# ATMA Day 1 setup script
+# AMANA Day 1 setup script
 # Run from repo root: bash scripts/setup.sh
 
 set -e
 
-echo "🟢 ATMA Day 1 Setup"
+echo "🟢 AMANA Day 1 Setup"
 echo "=================="
 
 # Check prerequisites
@@ -21,7 +21,7 @@ echo "Step 2/6 — Initializing git..."
 if [ ! -d .git ]; then
   git init
   git add .
-  git commit -m "chore: initial ATMA scaffold (README + skills + subagent prompts)"
+  git commit -m "chore: initial AMANA scaffold (README + skills + subagent prompts)"
   echo "✅ Git initialized"
 else
   echo "ℹ️  Git already initialized"
@@ -80,13 +80,13 @@ echo "   - Agent D (Docs):       cat prompts/agent-d-docs.md"
 echo "   - Agent E (Comms):      cat prompts/agent-e-comms.md (Day 3 only)"
 echo ""
 echo "3. Day 1 priorities:"
-echo "   - Agent A: forge init in contracts/ + AtmaVault.sol + 30 tests + deploy Sepolia"
+echo "   - Agent A: forge init in contracts/ + AmanaVault.sol + 30 tests + deploy Sepolia"
 echo "   - Agent C: Next.js init + Tailwind theme + Privy + Lenis"
 echo "   - Agent B: Skeleton agent classes + Skill files reading"
 echo "   - Agent D: Polish README + ARCHITECTURE + runbooks"
 echo ""
 echo "4. Twitter Day 1 announce:"
-echo "   '🟢 Building ATMA — Treasury Orchestration Protocol for @0xMantle"
+echo "   '🟢 Building AMANA — Treasury Orchestration Protocol for @0xMantle"
 echo "    3 AI agents. 4 RWA assets. 1 verifiable on-chain policy."
 echo "    3-day sprint for #MantleAIHackathon. Day 1 GO.'"
 echo ""

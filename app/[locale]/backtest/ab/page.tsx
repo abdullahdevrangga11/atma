@@ -36,7 +36,7 @@ export default async function BacktestABPage({
     <>
       <TopBanner />
       <Navbar />
-      <main id="main" className="container-atma py-20 md:py-28">
+      <main id="main" className="container-amana py-20 md:py-28">
         <div className="max-w-[1200px] mx-auto">
           <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-5">
             // backtest a/b

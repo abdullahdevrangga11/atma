@@ -85,7 +85,7 @@ levels = [usdyPeg, mUsdPeg, drawdown, oracle, liquidity, protocol]
 worst = max(levels)  // trigger > warn > ok
 ```
 
-If `worst == "trigger"`: call `triggerDefensiveExit()` on AtmaVault.
+If `worst == "trigger"`: call `triggerDefensiveExit()` on AmanaVault.
 If `worst == "warn"`: alert user via frontend toast + optional Telegram/email.
 If `worst == "ok"`: emit heartbeat (every 5 min) to ERC-8004 ReputationRegistry.
 
@@ -144,6 +144,6 @@ This reasoning is hashed (`bytes32`) and stored on-chain via ERC-8004 Reputation
 
 ## Reference real-world events (from Q1-Q2 2026)
 
-- **March 10, 2026**: Aave V3 Mantle wstETH oracle glitch → $27M unfair liquidations. ATMA would have triggered defensive exit at 2 min sustained deviation.
-- **April 18, 2026**: Kelp DAO LayerZero bridge exploit → $292M drained from rsETH → $5.4B panic Aave flight. ATMA would have triggered on `protocol_health = trigger`.
-- **October 10, 2025**: $19B liquidation cascade during Asian session. ATMA's hysteresis avoids false triggers during volatility but catches real protocol failures.
+- **March 10, 2026**: Aave V3 Mantle wstETH oracle glitch → $27M unfair liquidations. AMANA would have triggered defensive exit at 2 min sustained deviation.
+- **April 18, 2026**: Kelp DAO LayerZero bridge exploit → $292M drained from rsETH → $5.4B panic Aave flight. AMANA would have triggered on `protocol_health = trigger`.
+- **October 10, 2025**: $19B liquidation cascade during Asian session. AMANA's hysteresis avoids false triggers during volatility but catches real protocol failures.
