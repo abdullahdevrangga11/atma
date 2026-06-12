@@ -106,7 +106,16 @@ export type OrchestrationEvent =
       attempt: number;
     }
   | { type: "reporter"; step: AgentStep; report: WeeklyReport }
-  | { type: "cost"; total: TokenUsage }
+  | {
+      type: "cost";
+      total: {
+        inputTokens: number;
+        outputTokens: number;
+        costCents: number;
+        provider?: TokenUsage["provider"];
+        model?: TokenUsage["model"];
+      };
+    }
   | { type: "done"; run: OrchestrationRun }
   | { type: "error"; message: string };
 
@@ -146,13 +155,23 @@ export class Orchestrator {
     let totalInput = 0;
     let totalOutput = 0;
     let totalCostCents = 0;
+    let lastProvider: TokenUsage["provider"] | undefined;
+    let lastModel: TokenUsage["model"] | undefined;
     const addUsage = (u: TokenUsage) => {
       totalInput += u.inputTokens;
       totalOutput += u.outputTokens;
       totalCostCents += u.costCents;
+      lastProvider = u.provider;
+      lastModel = u.model;
       onEvent({
         type: "cost",
-        total: { inputTokens: totalInput, outputTokens: totalOutput, costCents: totalCostCents },
+        total: {
+          inputTokens: totalInput,
+          outputTokens: totalOutput,
+          costCents: totalCostCents,
+          provider: lastProvider,
+          model: lastModel,
+        },
       });
     };
     const setState = (state: VaultState) =>
