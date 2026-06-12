@@ -298,14 +298,27 @@ export function Navbar() {
           scrolled ? "h-12" : "h-16",
         )}
       >
-        <Link href="/" className="flex items-center gap-2 shrink-0">
+        <Link href="/" className="flex items-center gap-2 shrink-0 group">
+          <svg
+            viewBox="0 0 648 972"
+            fill="currentColor"
+            aria-hidden
+            className={cn(
+              "text-[var(--color-primary)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] w-auto",
+              scrolled ? "h-5" : "h-6",
+            )}
+          >
+            <path fillRule="evenodd" clipRule="evenodd" d="M298 243V0H162C72.5312 0 0 72.5312 0 162V674L298 972V567C287.566 496.742 232.258 441.434 162 431V379C232.258 368.566 287.566 313.258 298 243Z" />
+            <path fillRule="evenodd" clipRule="evenodd" d="M350 810V567C360.434 496.742 415.742 441.434 486 431V379C415.742 368.566 360.434 313.258 350 243V0L648 298V648C648 737.469 575.469 810 486 810H350Z" />
+          </svg>
           <span
             className={cn(
-              "block rounded-[3px] bg-[var(--color-primary)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
-              scrolled ? "w-5 h-5" : "w-6 h-6",
+              "font-semibold tracking-tight text-[color:var(--color-foreground)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hidden sm:inline",
+              scrolled ? "text-[13px]" : "text-[15px]",
             )}
-            aria-hidden
-          />
+          >
+            AMANA
+          </span>
           <span className="sr-only">AMANA</span>
         </Link>
 
