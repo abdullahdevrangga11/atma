@@ -93,7 +93,7 @@ export default async function AgentOg({ params }: { params: { slug: string } }) 
             color: "#858585",
           }}
         >
-          <div>atma-iota.vercel.app/agents/{identity.slug}</div>
+          <div>amana-iota.vercel.app/agents/{identity.slug}</div>
           <div style={{ display: "flex", gap: 6 }}>
             {["Allocator", "Risk", "Reporter"].map((n, i) => (
               <span

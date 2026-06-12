@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const BASE = "https://atma-iota.vercel.app";
+const BASE = "https://amana-iota.vercel.app";
 const LOCALES = ["en", "id"] as const;
 const AGENT_SLUGS = ["allocator", "risk", "reporter"] as const;
 const ROUTES = [

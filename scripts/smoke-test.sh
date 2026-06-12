@@ -2,13 +2,13 @@
 # scripts/smoke-test.sh — verify the production deploy serves every route.
 #
 # Usage:
-#   ./scripts/smoke-test.sh                     # uses default atma-iota.vercel.app
+#   ./scripts/smoke-test.sh                     # uses default amana-iota.vercel.app
 #   ./scripts/smoke-test.sh https://other.host  # override
 #
 # Exits non-zero if any route doesn't return 200.
 
 set -u
-BASE="${1:-https://atma-iota.vercel.app}"
+BASE="${1:-https://amana-iota.vercel.app}"
 
 PAGES=(
   "/en"

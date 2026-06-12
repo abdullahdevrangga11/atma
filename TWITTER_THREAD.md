@@ -65,7 +65,7 @@ as a constraint. it's not a chatbot wrapper — it's autonomous
 coordination on a public chain.
 
 view it as a chat ↓
-atma-iota.vercel.app/conversation/[id]
+amana-iota.vercel.app/conversation/[id]
 ```
 
 Attach: screenshot of `/conversation/[runId]` showing Risk's quoted reply to Allocator.
@@ -129,7 +129,7 @@ repo: github.com/abdullahdevrangga11/amana
 
 ```
 3-min demo: <youtu.be/TBD>
-live app:   atma-iota.vercel.app
+live app:   amana-iota.vercel.app
 contract:   <sepolia.mantlescan.xyz/address/TBD>
 
 submission for @0xMantle Turing Test Hackathon 2026.
@@ -170,7 +170,7 @@ skills-first agent design — DM. always interested in comparing notes.
 Keep tweets 1–4 (the hook + pain + architecture + debate). Add a single LinkedIn-style closing paragraph:
 
 ```
-Open-source MIT. Live demo at atma-iota.vercel.app. Repo on GitHub.
+Open-source MIT. Live demo at amana-iota.vercel.app. Repo on GitHub.
 If you're working on autonomous-agent treasuries, on-chain attestation,
 or skills-first agent design, I'd love to compare notes.
 ```

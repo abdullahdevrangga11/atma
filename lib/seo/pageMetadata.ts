@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const BASE = "https://atma-iota.vercel.app";
+const BASE = "https://amana-iota.vercel.app";
 
 type PageMetaInput = {
   title: string;

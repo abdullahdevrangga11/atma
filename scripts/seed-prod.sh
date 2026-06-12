@@ -6,13 +6,13 @@
 # on Gemini Flash, so the full seed run is well under one cent.
 #
 # Usage:
-#   ./scripts/seed-prod.sh              # 3 runs against atma-iota.vercel.app
+#   ./scripts/seed-prod.sh              # 3 runs against amana-iota.vercel.app
 #   ./scripts/seed-prod.sh 5            # 5 runs
 #   ./scripts/seed-prod.sh 3 https://my-preview.vercel.app
 
 set -u
 COUNT="${1:-3}"
-BASE="${2:-https://atma-iota.vercel.app}"
+BASE="${2:-https://amana-iota.vercel.app}"
 
 GRN="\033[32m"; RED="\033[31m"; YEL="\033[33m"; CYAN="\033[36m"; RST="\033[0m"
 

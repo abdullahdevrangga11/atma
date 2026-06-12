@@ -11,7 +11,7 @@ Three AI agents (Allocator, Risk, Reporter) coordinate inside an ERC-4626 vault 
 
 Built solo in 4 days for the Mantle Turing Test Hackathon 2026.
 
-🔗 Live demo: https://atma-iota.vercel.app
+🔗 Live demo: https://amana-iota.vercel.app
 💻 GitHub: https://github.com/abdullahdevrangga11/amana
 🐦 Twitter: https://x.com/abdullahdevrang
 

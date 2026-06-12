@@ -10,7 +10,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/"],
       },
     ],
-    sitemap: "https://atma-iota.vercel.app/sitemap.xml",
-    host: "https://atma-iota.vercel.app",
+    sitemap: "https://amana-iota.vercel.app/sitemap.xml",
+    host: "https://amana-iota.vercel.app",
   };
 }

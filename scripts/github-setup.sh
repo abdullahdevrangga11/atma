@@ -14,7 +14,7 @@ cd "$(dirname "$0")/.."
 
 REPO="abdullahdevrangga11/amana"
 DESCRIPTION="Treasury orchestration for Mantle. Three AI agents allocate, monitor, and report under a policy that lives as Markdown."
-HOMEPAGE="https://atma-iota.vercel.app"
+HOMEPAGE="https://amana-iota.vercel.app"
 TOPICS=(
   "mantle"
   "hackathon"
@@ -79,7 +79,7 @@ Three AI agents (Allocator, Risk, Reporter) coordinate inside an ERC-4626 vault.
 - 55 vitest + 45 Foundry tests, all green
 
 ## Live
-- Demo: https://atma-iota.vercel.app
+- Demo: https://amana-iota.vercel.app
 - Submission: https://dorahacks.io/hackathon/mantleturingtesthackathon2026
 
 Built solo in 4 days. Yogyakarta, June 2026.

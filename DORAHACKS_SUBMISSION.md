@@ -71,7 +71,7 @@ Treasuries on Mantle hold stablecoins. USDC pays zero. USDY pays 4.42%. mUSD pay
 
 ## Links
 
-- **Live demo**: https://atma-iota.vercel.app
+- **Live demo**: https://amana-iota.vercel.app
 - **GitHub**: https://github.com/abdullahdevrangga11/amana
 - **Demo video** (3 min): https://youtu.be/<TBD — record before submission>
 - **Vault contract** (Mantle Sepolia): `0x<TBD — deploy before submission>`
@@ -118,7 +118,7 @@ Solidity 0.8.24 · Foundry · OpenZeppelin v5 · ERC-4626 · ERC-8004 (reputatio
 | Slogan | Three AI agents managing your Mantle RWA treasury. Policy as Markdown. Every decision attested. |
 | Description | Use "Description (long form)" above. |
 | Tracks | Mantle AI Agents · Mantle RWA & DeFi |
-| Demo URL | https://atma-iota.vercel.app |
+| Demo URL | https://amana-iota.vercel.app |
 | Repo URL | https://github.com/abdullahdevrangga11/amana |
 | Video URL | https://youtu.be/<TBD> |
 | Team | Devrangga Hazza Mahiswara (abdullahdevrangga@gmail.com) |

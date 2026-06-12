@@ -12,7 +12,7 @@ import { Toaster } from "sonner";
 import "../globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://atma-iota.vercel.app"),
+  metadataBase: new URL("https://amana-iota.vercel.app"),
   title: {
     default: "AMANA — Treasury Orchestration for Mantle",
     template: "%s · AMANA",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     title: "AMANA — Treasury Orchestration for Mantle",
     description:
       "Three AI agents managing your Mantle RWA treasury. Policy as Markdown. Every decision attested.",
-    url: "https://atma-iota.vercel.app",
+    url: "https://amana-iota.vercel.app",
   },
   twitter: {
     card: "summary_large_image",

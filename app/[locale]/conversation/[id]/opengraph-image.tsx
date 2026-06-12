@@ -31,7 +31,7 @@ export default async function ConversationOg({ params }: { params: { id: string 
           <div style={{ fontSize: 64, fontWeight: 600, lineHeight: 1.05 }}>
             Conversation expired
           </div>
-          <div style={{ fontSize: 22, color: "#858585" }}>atma-iota.vercel.app</div>
+          <div style={{ fontSize: 22, color: "#858585" }}>amana-iota.vercel.app</div>
         </div>
       ),
       { ...size },
@@ -130,7 +130,7 @@ export default async function ConversationOg({ params }: { params: { id: string 
             color: "#858585",
           }}
         >
-          <div>atma-iota.vercel.app/conversation/{params.id.slice(0, 16)}…</div>
+          <div>amana-iota.vercel.app/conversation/{params.id.slice(0, 16)}…</div>
           <div style={{ display: "flex" }}>{run.totalCostCents !== undefined ? `cost $${(run.totalCostCents / 100).toFixed(4)}` : ""}</div>
         </div>
       </div>

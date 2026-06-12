@@ -2,7 +2,7 @@
 
 Three-step deployment for the **Mantle Turing Test Hackathon 2026** submission.
 
-Live demo: **https://atma-iota.vercel.app**
+Live demo: **https://amana-iota.vercel.app**
 Repo: **https://github.com/abdullahdevrangga11/amana**
 
 ---
@@ -78,7 +78,7 @@ vercel env add NEXT_PUBLIC_CHAIN_ID production
 vercel --prod
 ```
 
-Production URL: **https://atma-iota.vercel.app**
+Production URL: **https://amana-iota.vercel.app**
 
 The build uses Next.js 16 (Turbopack) + React 19 + Tailwind v4. All
 pages prerender for both `en` and `id` locales; agent + orchestration
@@ -134,7 +134,7 @@ proper card showing outcome + outperformance + agent signatures.
 ## 5. Hackathon checklist
 
 - [x] Repo public on GitHub (https://github.com/abdullahdevrangga11/amana)
-- [x] Production live (https://atma-iota.vercel.app)
+- [x] Production live (https://amana-iota.vercel.app)
 - [ ] Vault deployed + verified on Mantle Sepolia (needs PRIVATE_KEY)
 - [ ] `ANTHROPIC_API_KEY` set in Vercel
 - [ ] 3-min demo video recorded (script in `DEMO_VIDEO_SCRIPT.md`)

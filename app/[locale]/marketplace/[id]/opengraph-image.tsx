@@ -121,7 +121,7 @@ export default async function MarketplaceOg({ params }: { params: { id: string }
             color: "#858585",
           }}
         >
-          <div>atma-iota.vercel.app/marketplace/{params.id.slice(0, 14)}…</div>
+          <div>amana-iota.vercel.app/marketplace/{params.id.slice(0, 14)}…</div>
           <div style={{ display: "flex" }}>policy is forkable</div>
         </div>
       </div>

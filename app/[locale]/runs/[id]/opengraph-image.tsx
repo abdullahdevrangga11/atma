@@ -39,7 +39,7 @@ export default async function RunOg({ params }: { params: { id: string } }) {
             AMANA · run expired
           </div>
           <div style={{ fontSize: 22, color: "#858585" }}>
-            atma-iota.vercel.app
+            amana-iota.vercel.app
           </div>
         </div>
       ),
@@ -135,7 +135,7 @@ export default async function RunOg({ params }: { params: { id: string } }) {
             color: "#858585",
           }}
         >
-          <div>atma-iota.vercel.app/runs/{params.id.slice(0, 16)}…</div>
+          <div>amana-iota.vercel.app/runs/{params.id.slice(0, 16)}…</div>
           <div style={{ display: "flex", gap: 8 }}>
             <span style={{ background: "#a78bfa", color: "white", padding: "4px 10px", borderRadius: 999 }}>Allocator</span>
             <span style={{ background: "#fbbf24", color: "white", padding: "4px 10px", borderRadius: 999 }}>Risk</span>

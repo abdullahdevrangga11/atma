@@ -25,8 +25,8 @@ warn() { printf "  ${YEL}⚠${RST} %s\n" "$1"; WARN=$((WARN + 1)); }
 section() { echo; printf "${CYAN}==> %s${RST}\n" "$1"; }
 
 # ─── 1. Production smoke ────────────────────────────────────────────
-section "1. Production routes (atma-iota.vercel.app)"
-if ./scripts/smoke-test.sh https://atma-iota.vercel.app >/tmp/smoke.log 2>&1; then
+section "1. Production routes (amana-iota.vercel.app)"
+if ./scripts/smoke-test.sh https://amana-iota.vercel.app >/tmp/smoke.log 2>&1; then
   pass "All 27 routes return expected status"
 else
   fail "Smoke test failed — see /tmp/smoke.log"
@@ -34,7 +34,7 @@ fi
 
 # ─── 2. /api/llm-info reports a provider ───────────────────────────
 section "2. LLM provider"
-PROVIDER=$(curl -s --max-time 10 https://atma-iota.vercel.app/api/llm-info | grep -o '"provider":"[^"]*"' | cut -d'"' -f4 || echo "")
+PROVIDER=$(curl -s --max-time 10 https://amana-iota.vercel.app/api/llm-info | grep -o '"provider":"[^"]*"' | cut -d'"' -f4 || echo "")
 if [ -n "$PROVIDER" ]; then
   pass "Production reports provider: $PROVIDER"
 else

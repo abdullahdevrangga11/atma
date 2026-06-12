@@ -7,7 +7,7 @@
 - Show actual code + actual reasoning hashes on-screen. That's the authority signal.
 - Always have a fallback browser tab pre-loaded with the page open in case live calls hang.
 
-Production URL: **https://atma-iota.vercel.app**
+Production URL: **https://amana-iota.vercel.app**
 
 ---
 

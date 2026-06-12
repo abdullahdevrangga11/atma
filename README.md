@@ -4,7 +4,7 @@
 
 Built for the [Mantle Turing Test Hackathon 2026](https://dorahacks.io/hackathon/mantleturingtesthackathon2026).
 
-→ **Live demo**: [atma-iota.vercel.app](https://atma-iota.vercel.app)
+→ **Live demo**: [amana-iota.vercel.app](https://amana-iota.vercel.app)
 → **Twitter**: [@abdullahdevrang](https://x.com/abdullahdevrang)
 
 ---

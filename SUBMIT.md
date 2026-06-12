@@ -60,7 +60,7 @@ So `/reports` and `/network` aren't empty when judges arrive.
 # Costs under 2 cents on Gemini Flash.
 ```
 
-Verify: `curl https://atma-iota.vercel.app/api/status` should now show `runs.total ≥ 3`.
+Verify: `curl https://amana-iota.vercel.app/api/status` should now show `runs.total ≥ 3`.
 
 ---
 
@@ -68,7 +68,7 @@ Verify: `curl https://atma-iota.vercel.app/api/status` should now show `runs.tot
 
 1. Open `scripts/teleprompter.html` in a second window (auto-scrolls the lines as you talk)
 2. Open `DEMO_VIDEO_SCRIPT.md` if you need full notes
-3. Pre-load `https://atma-iota.vercel.app` in your browser
+3. Pre-load `https://amana-iota.vercel.app` in your browser
 4. QuickTime → New Screen Recording
 5. Record 4–5 takes, target 2:58–3:02
 6. Pick the best, trim ends if needed
@@ -115,7 +115,7 @@ This replaces every `<TBD>` placeholder across:
    - Name → `AMANA — Treasury Orchestration Protocol`
    - Tagline → from doc
    - Description (long) → from "Description (long form)" heading
-   - Demo URL → `https://atma-iota.vercel.app`
+   - Demo URL → `https://amana-iota.vercel.app`
    - Repo URL → `https://github.com/abdullahdevrangga11/amana`
    - Video URL → your YouTube
    - Contract address → your AmanaVault address
@@ -183,7 +183,7 @@ Exits 0 = GO. Anything else = fix before submitting.
 
 ## 📊 What you have
 
-- ✅ Live production at https://atma-iota.vercel.app
+- ✅ Live production at https://amana-iota.vercel.app
 - ✅ 15 pages, 16 API endpoints, 55 vitest + 45 Foundry tests green
 - ✅ Real Claude/Gemini orchestration with debate loop, streaming, cost meter
 - ✅ Skills marketplace + linter + fork lineage viz + A/B + backtest
