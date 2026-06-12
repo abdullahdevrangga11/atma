@@ -24,7 +24,7 @@ That single command:
 After it finishes, verify:
 ```bash
 ./scripts/smoke-test.sh
-# Should print: ok=26 fail=0
+# Should print: ok=27 fail=0
 ```
 
 ---
@@ -50,15 +50,32 @@ The script logs every contract address. **Copy the AtmaVault address** — you'l
 
 ---
 
+## ✅ Step 1b — Seed runStore (~1 min)
+
+So `/reports` and `/network` aren't empty when judges arrive.
+
+```bash
+./scripts/seed-prod.sh 3
+# 3 orchestration runs (1 normal, 1 debate, 1 normal). ~1 min total.
+# Costs under 2 cents on Gemini Flash.
+```
+
+Verify: `curl https://atma-iota.vercel.app/api/status` should now show `runs.total ≥ 3`.
+
+---
+
 ## ✅ Step 2 — Record demo video (90 min)
 
-1. Open `DEMO_VIDEO_SCRIPT.md` in a separate window
-2. Pre-load `https://atma-iota.vercel.app` in your browser
-3. QuickTime → New Screen Recording
-4. Record 4–5 takes, target 2:58–3:02
-5. Pick the best, trim ends if needed
-6. Upload to YouTube as **unlisted**
-7. Copy the YouTube URL
+1. Open `scripts/teleprompter.html` in a second window (auto-scrolls the lines as you talk)
+2. Open `DEMO_VIDEO_SCRIPT.md` if you need full notes
+3. Pre-load `https://atma-iota.vercel.app` in your browser
+4. QuickTime → New Screen Recording
+5. Record 4–5 takes, target 2:58–3:02
+6. Pick the best, trim ends if needed
+7. Upload to YouTube as **unlisted**
+8. Copy the YouTube URL
+
+**Teleprompter shortcuts**: Space = play/pause, R = reset, ↑/↓ = nudge speed. Speed 55 pacing ≈ 3 min total.
 
 **Tone reminders**:
 - Founder voice. NO TTS. Judges actively penalise AI narration.

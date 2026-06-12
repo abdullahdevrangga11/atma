@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>ATMA — Demo Teleprompter</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --fg: #f3f3f1;
+    --dim: #888;
+    --accent: #a78bfa;
+    --warn: #fbbf24;
+    --cue: #84cc16;
+    --bar: #1a1a1a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Inter", sans-serif;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* Control bar */
+  .bar {
+    position: fixed; inset: 0 0 auto 0;
+    background: var(--bar);
+    border-bottom: 1px solid #222;
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 20px;
+    z-index: 10;
+    font-size: 14px;
+  }
+  .bar button {
+    background: #2a2a2a; color: var(--fg);
+    border: 1px solid #333; border-radius: 6px;
+    padding: 6px 12px;
+    font: inherit; cursor: pointer;
+  }
+  .bar button:hover { background: #333; }
+  .bar button.primary { background: var(--accent); color: #000; border-color: var(--accent); }
+  .bar input[type=range] { width: 140px; accent-color: var(--accent); }
+  .bar label { color: var(--dim); font-size: 13px; }
+  .bar .stat { font-variant-numeric: tabular-nums; }
+  .bar .stat strong { color: var(--accent); }
+  .bar .right { margin-left: auto; }
+
+  /* Stage */
+  .stage {
+    position: absolute; inset: 56px 0 0 0;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    padding: 40vh 8vw 60vh;
+  }
+  .stage::-webkit-scrollbar { width: 0; }
+
+  /* Mirror mode (flip horizontally for actual teleprompter glass) */
+  body.mirror .stage { transform: scaleX(-1); }
+
+  .scene { margin-bottom: 18vh; }
+  .scene-head {
+    color: var(--accent);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  .scene-meta {
+    color: var(--dim);
+    font-size: 14px;
+    margin-bottom: 22px;
+    font-variant-numeric: tabular-nums;
+  }
+  .scene-cue {
+    color: var(--cue);
+    font-size: 18px;
+    margin-bottom: 22px;
+    font-style: italic;
+    border-left: 3px solid var(--cue);
+    padding-left: 14px;
+  }
+  .scene-say {
+    font-size: clamp(28px, 3.4vw, 48px);
+    line-height: 1.35;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .scene-say em { color: var(--warn); font-style: normal; font-weight: 700; }
+  .scene-say + .scene-say { margin-top: 24px; }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <button id="play" class="primary">▶ Play</button>
+  <button id="reset">⟲ Reset</button>
+  <label>Speed
+    <input id="speed" type="range" min="20" max="120" value="55" />
+    <span id="speedVal" class="stat">55</span>
+  </label>
+  <label>Mirror
+    <input id="mirror" type="checkbox" />
+  </label>
+  <span class="stat right">Elapsed <strong id="elapsed">0:00</strong> / target <strong>3:00</strong></span>
+</div>
+
+<div class="stage" id="stage">
+
+<div class="scene">
+  <div class="scene-head">Scene 1 · Hook</div>
+  <div class="scene-meta">0:00 – 0:18 · Landing hero, cursor over FiddleHover</div>
+  <div class="scene-cue">Cursor over hero text. Scramble cells flicker.</div>
+  <div class="scene-say">
+    ATMA is treasury orchestration for <em>Mantle</em>. Three AI agents allocate USDC across the RWA stack — USDY, mUSD, Aave, MI4 — under a verifiable policy that lives as <em>markdown, not code</em>. Every decision is signed on-chain via ERC-8004. Here's a 3-minute tour.
+  </div>
+</div>
+
+<div class="scene">
+  <div class="scene-head">Scene 2 · Architecture flow</div>
+  <div class="scene-meta">0:18 – 0:40 · Scroll past hero to animated flow</div>
+  <div class="scene-cue">Violet particle traces the pipeline edges.</div>
+  <div class="scene-say">
+    Feeds in. Allocator drafts weights. Risk vetoes if needed. Reporter signs the digest. Each agent is its own ERC-8004 identity with reputation events emitted on Mantle. Click any node and you land on that agent's profile page.
+  </div>
+  <div class="scene-say">
+    Underneath, the architecture is real — <em>374 lines</em> of vault Solidity, <em>45 Foundry tests</em>, three TypeScript agents on Claude Sonnet 4.5.
+  </div>
+</div>
+
+<div class="scene">
+  <div class="scene-head">Scene 3 · Live orchestration with debate</div>
+  <div class="scene-meta">0:40 – 1:20 · /vault · Debate mode ON · Run</div>
+  <div class="scene-cue">Toggle Debate mode. Hit Run orchestration.</div>
+  <div class="scene-say">
+    Debate mode forces Risk to see a stressed oracle. Hit run, and the state machine animates. Allocator's reasoning streams in live — that's actual <em>Claude output, token by token</em>. Allocator proposes thirty-four percent USDY, thirty percent mUSD, thirty-six percent Aave.
+  </div>
+  <div class="scene-cue">Veto banner pops. Allocator card flips to "attempt 2".</div>
+  <div class="scene-say">
+    Risk just vetoed. The exact veto reason gets injected back into Allocator's system prompt as a constraint. Allocator re-drafts, this time with Aave reduced. Risk approves the second pass. Reporter signs the digest.
+  </div>
+  <div class="scene-say">
+    The cost meter at the top shows exactly what this orchestration cost in tokens — about <em>three-tenths of a cent</em> per run.
+  </div>
+</div>
+
+<div class="scene">
+  <div class="scene-head">Scene 4 · The conversation view  ⚠ THE 30-SEC MOMENT</div>
+  <div class="scene-meta">1:20 – 1:50 · Click "Conversation view"</div>
+  <div class="scene-cue">Slack-style chat between the three agents loads.</div>
+  <div class="scene-say">
+    Here's the same run rendered as a Slack-style chat between the agents. Allocator's first message — the original proposal. Risk replies as a quoted veto, calling out the flagged signal. Allocator's second message — "honoured the veto, here's a revised proposal." Risk approves. Reporter posts the digest.
+  </div>
+  <div class="scene-say">
+    This is <em>autonomous agent coordination on a public chain</em>. Not a chatbot wrapper. Every message has an ERC-8004 reputation hash you can verify.
+  </div>
+</div>
+
+<div class="scene">
+  <div class="scene-head">Scene 5 · Backtest replay</div>
+  <div class="scene-meta">1:50 – 2:15 · /backtest · Slider on 6 weeks</div>
+  <div class="scene-cue">Hit run. Chart draws as each week settles.</div>
+  <div class="scene-say">
+    Backtest replays N weeks of synthetic market history through the full agent chain. <em>Real Claude calls every week.</em> The chart draws itself as each week settles. Six weeks runs in about forty seconds.
+  </div>
+  <div class="scene-cue">Chart fills. Summary card lands.</div>
+  <div class="scene-say">
+    Plus <em>three hundred twelve basis points</em> cumulative over six weeks. Plus eighty-four versus USDC-Aave-only. One defensive exit triggered. Total cost — six and a half cents.
+  </div>
+</div>
+
+<div class="scene">
+  <div class="scene-head">Scene 6 · Policy as data</div>
+  <div class="scene-meta">2:15 – 2:40 · /skills · Edit AllocatorAgent</div>
+  <div class="scene-cue">Change maxMi4Bps: 1500 → maxMi4Bps: 0. Hit Run comparison.</div>
+  <div class="scene-say">
+    Here's the killer demo. I edit the Allocator's skill — just markdown. I'll cap MI4 at zero. Hit "Run comparison".
+  </div>
+  <div class="scene-cue">Two columns appear with different allocations.</div>
+  <div class="scene-say">
+    Same input. Different policy. Different proposal. <em>No redeploy. No contract upgrade.</em> The skill is in source control — every policy change is a git commit, every git commit is queryable.
+  </div>
+  <div class="scene-cue">Scroll to system prompt inspector. Click "show".</div>
+  <div class="scene-say">
+    And here's the exact prompt sent to Claude — with my edit live. <em>Radical transparency.</em>
+  </div>
+</div>
+
+<div class="scene">
+  <div class="scene-head">Scene 7 · Receipts</div>
+  <div class="scene-meta">2:40 – 2:55 · /reports → /network</div>
+  <div class="scene-cue">Click any tx in attestation feed → run permalink with OG card.</div>
+  <div class="scene-say">
+    Reports pulls from this deployment's real orchestration history. Network shows cumulative metrics — fifteen runs, forty-five attestations, four cents total cost, plus two hundred ninety-eight basis points average outperformance.
+  </div>
+  <div class="scene-say">
+    Every run gets its own permalink. Paste it into Twitter — it unfurls as a proper card.
+  </div>
+</div>
+
+<div class="scene">
+  <div class="scene-head">Scene 8 · The ask</div>
+  <div class="scene-meta">2:55 – 3:00 · Cut to landing hero</div>
+  <div class="scene-say">
+    Three agents. One vault. Policy as data. Every decision attested. <em>atma-iota dot vercel dot app</em>. Thanks for watching.
+  </div>
+</div>
+
+</div>
+
+<script>
+  const stage   = document.getElementById('stage');
+  const playBtn = document.getElementById('play');
+  const reset   = document.getElementById('reset');
+  const speedEl = document.getElementById('speed');
+  const speedV  = document.getElementById('speedVal');
+  const mirror  = document.getElementById('mirror');
+  const elapsed = document.getElementById('elapsed');
+
+  let playing = false;
+  let startedAt = 0;
+  let raf = 0;
+
+  function tick() {
+    if (!playing) return;
+    const dt = 1 / 60;
+    stage.scrollTop += (+speedEl.value) * dt;
+    const e = Math.floor((Date.now() - startedAt) / 1000);
+    elapsed.textContent = `${Math.floor(e/60)}:${String(e%60).padStart(2,'0')}`;
+    raf = requestAnimationFrame(tick);
+  }
+
+  function play()  {
+    playing = true;
+    playBtn.textContent = '⏸ Pause';
+    playBtn.classList.remove('primary');
+    startedAt = startedAt || Date.now();
+    tick();
+  }
+  function pause() {
+    playing = false;
+    playBtn.textContent = '▶ Play';
+    playBtn.classList.add('primary');
+    cancelAnimationFrame(raf);
+  }
+
+  playBtn.addEventListener('click', () => (playing ? pause() : play()));
+  reset.addEventListener('click', () => {
+    pause();
+    stage.scrollTop = 0;
+    startedAt = 0;
+    elapsed.textContent = '0:00';
+  });
+  speedEl.addEventListener('input', () => (speedV.textContent = speedEl.value));
+  mirror.addEventListener('change', () => document.body.classList.toggle('mirror', mirror.checked));
+
+  // Spacebar = play/pause, R = reset, ↑/↓ = nudge speed
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play(); }
+    if (e.key === 'r' || e.key === 'R') reset.click();
+    if (e.key === 'ArrowUp')   { speedEl.value = Math.min(+speedEl.value + 5, 120); speedV.textContent = speedEl.value; }
+    if (e.key === 'ArrowDown') { speedEl.value = Math.max(+speedEl.value - 5, 20);  speedV.textContent = speedEl.value; }
+  });
+</script>
+</body>
+</html>

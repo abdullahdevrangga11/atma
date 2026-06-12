@@ -29,6 +29,7 @@ PAGES=(
 
 APIS=(
   "/api/llm-info"
+  "/api/status"
   "/api/feeds"
   "/api/runs"
   "/api/network"

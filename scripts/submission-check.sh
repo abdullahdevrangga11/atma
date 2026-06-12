@@ -2,7 +2,7 @@
 # scripts/submission-check.sh — single command, go/no-go verdict.
 #
 # Runs every verification before you hit Submit on DoraHacks:
-#   1. Production smoke test (all 26 routes)
+#   1. Production smoke test (all 27 routes)
 #   2. Vercel env vars present (GEMINI_API_KEY or ANTHROPIC_API_KEY)
 #   3. Live /api/llm-info returns a provider
 #   4. Foundry tests pass
@@ -27,7 +27,7 @@ section() { echo; printf "${CYAN}==> %s${RST}\n" "$1"; }
 # ─── 1. Production smoke ────────────────────────────────────────────
 section "1. Production routes (atma-iota.vercel.app)"
 if ./scripts/smoke-test.sh https://atma-iota.vercel.app >/tmp/smoke.log 2>&1; then
-  pass "All 26 routes return expected status"
+  pass "All 27 routes return expected status"
 else
   fail "Smoke test failed — see /tmp/smoke.log"
 fi
