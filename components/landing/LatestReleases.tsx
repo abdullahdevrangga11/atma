@@ -119,10 +119,14 @@ export function LatestReleases() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-            {/* Featured entry — left, tall, full content */}
-            <Up delay={300} className="lg:col-span-7">
-              <FeaturedCard entry={featured} />
-            </Up>
+            {/* Featured entry — left, tall, full content. Col-span lives on
+                this wrapper because Up clones its single child and merges
+                className onto the child element, not its own wrapper. */}
+            <div className="lg:col-span-7">
+              <Up delay={300}>
+                <FeaturedCard entry={featured} />
+              </Up>
+            </div>
 
             {/* Right column — compact ledger of older entries */}
             <div className="lg:col-span-5 flex flex-col gap-3">
