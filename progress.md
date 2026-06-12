@@ -84,3 +84,80 @@
 - [ ] Post thread from `@abdullahdevrang` using `TWITTER_THREAD.md`.
 
 **Deadline**: 2026-06-15 15:59 UTC.
+
+---
+
+## 2026-06-12 — Day 4: features explosion + bulletproofing + submission prep
+
+Massive day. Everything below was added today.
+
+**New surfaces** (4):
+- `/conversation/[id]` — Slack-thread-style multi-agent chat view of any orchestration run. Veto replies render as quoted indents.
+- `/marketplace` + `/marketplace/[id]` — community skill marketplace with publish/fork/star + lineage view (React Flow graph of fork relationships).
+- `/backtest/ab` — two-skill comparison through the same N weeks with overlaid NAV curves.
+- `/` — landing redesigned with React Flow architecture, animated split-card pinned scroll on the agents section, KVS-style dissolve page transitions.
+
+**New API endpoints** (5):
+- `/api/skills/validate` — pure-synchronous policy markdown linter (no Claude call). 10 rules surfacing missing bounds, vague language, contradictions, forbidden terms.
+- `/api/marketplace` + 4 sub-routes (publish, get, star, fork).
+- `/api/llm-info` — exposes the current LLM provider for the cost meter UI.
+- `/api/network` — global stats roll-up across all runs.
+- `/api/agent-stats/[slug]` — per-agent decision feed.
+
+**LLM provider abstraction** (the cost-saver):
+- New `lib/agents/llm.ts` lets us swap Anthropic ↔ Gemini via env var.
+- Gemini 2.5 Flash is ~7× cheaper than Claude Sonnet 4.5.
+- BaseAgent now provider-agnostic; all 3 agents + orchestrator + debate loop + streaming work unchanged with either backend.
+
+**Cost guardrails**:
+- Per-IP rate limiter (`lib/cost/rateLimit.ts`) — 4 named buckets (orchestrate, backtest, abtest, agent).
+- `max_tokens` trimmed 1024 → 700.
+- Backtest weeks capped server-side at 6 (was 12).
+- Combined with Anthropic dashboard hard cap, keeps total spend well under $5.
+
+**Cmd+K command palette** — keyboard-jumps to any page or recent run from anywhere.
+
+**OpenGraph image generation** for every dynamic route — `/runs/[id]`, `/conversation/[id]`, `/agents/[slug]`, `/marketplace/[id]`. Twitter/Slack/Discord unfurl as proper cards.
+
+**React Flow refactor** — `StateMachineViz`, `ArchitectureFlow`, `ForkLineage`, all 4 `PixelDiagrams` ported from hand-rolled SVG to typed React Flow nodes with auto-refit, drag interactions, animated edges.
+
+**Polish pass**:
+- Custom 404 page (`app/[locale]/not-found.tsx`)
+- Error boundary (`app/[locale]/error.tsx`)
+- Loading state (`app/[locale]/loading.tsx`)
+- Sitemap + robots.txt
+- Per-page OG metadata via `lib/seo/pageMetadata.ts`
+- Skip-to-main link
+- A11y improvements
+
+**Submission automation** (today's polish):
+- `scripts/setup-submission.sh` — interactive bootstrap that generates a deployer wallet, prompts for Gemini key, pushes Vercel env vars, optionally runs forge deploy, redeploys.
+- `scripts/finalize-submission.sh` — templates video URL + contract address into all 4 submission docs in one command.
+- `scripts/smoke-test.sh` — verifies all 26 routes return expected status codes.
+- `SUBMIT.md` — single-page submission day checklist.
+- `YOUTUBE_DESCRIPTION.md` — paste-ready video description.
+
+**Tests**: 39 vitest → 55 vitest (+8 linter, +8 marketplace store). 45 Foundry still green.
+
+**Final numbers**:
+- 15 pages (was 12 starting today)
+- 16 API endpoints (was 11)
+- 100 vitest + Foundry tests, all green
+- Single-binary deploy via `scripts/setup-submission.sh`
+- Total submission cost: <$2 (Vercel free tier + Gemini 2.5 Flash)
+
+**Verified**:
+- Production smoke test: **26/26 routes green**.
+- `/api/llm-info` returns provider info.
+- Build clean, no warnings.
+
+## What's left (manual / requires user)
+
+- [ ] `./scripts/setup-submission.sh` (single command — does env vars, wallet, faucet prompt, optional deploy, redeploy)
+- [ ] Record demo video (script in `DEMO_VIDEO_SCRIPT.md`)
+- [ ] `./scripts/finalize-submission.sh <video-url> <contract-addr>` (templates all 4 docs)
+- [ ] Submit DoraHacks form using `DORAHACKS_SUBMISSION.md`
+- [ ] Post thread from `@abdullahdevrang` using `TWITTER_THREAD.md`
+- [ ] Cross-post LinkedIn (template at bottom of `TWITTER_THREAD.md`)
+
+See `SUBMIT.md` for the printable day-of checklist.
