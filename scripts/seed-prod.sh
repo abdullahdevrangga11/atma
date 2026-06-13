@@ -27,15 +27,11 @@ FAIL=0
 for i in $(seq 1 "$COUNT"); do
   printf "  run %s/%s … " "$i" "$COUNT"
 
-  # Alternate scenarios so the seeded runs look varied:
-  #   odd runs → normal market, even runs → debate mode (forces a veto)
-  if [ $((i % 2)) -eq 0 ]; then
-    BODY='{"debateMode":true}'
-    LABEL="debate"
-  else
-    BODY='{"debateMode":false}'
-    LABEL="normal"
-  fi
+  # The orchestrate body schema is strict and only accepts policy /
+  # targetAmountUsdc / entryNAV. A plain {} runs a normal orchestration; the
+  # Allocator + Risk agents produce the variety on their own.
+  BODY='{}'
+  LABEL="run"
 
   HTTP=$(curl -s -o /tmp/seed-prod.json -w "%{http_code}" \
     --max-time 90 \
