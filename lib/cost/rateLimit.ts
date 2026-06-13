@@ -55,6 +55,11 @@ export type RateCheckResult =
  * responsible for short-circuiting with a 429 when denied.
  */
 export function rateCheck(name: LimitName, ip: string): RateCheckResult {
+  // Temporary global bypass for demo recording. Set ATMA_RATE_LIMIT_OFF=1 on
+  // the deployment while filming multiple takes, then remove it for judging.
+  if (process.env.ATMA_RATE_LIMIT_OFF === "1") {
+    return { allowed: true };
+  }
   const cfg = LIMITS[name];
   const key = `${name}:${ip}`;
   const now = Date.now();
