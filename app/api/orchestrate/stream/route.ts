@@ -13,6 +13,9 @@ const BodySchema = z
     policy: UserPolicySchema.optional(),
     targetAmountUsdc: z.string().regex(/^\d+$/).optional(),
     entryNAV: z.string().regex(/^\d+$/).optional(),
+    // Demo "Debate mode" toggle: forces a stressed oracle so Risk vetoes and
+    // the orchestrator retries. The VaultDemo UI sends this.
+    forceDebate: z.boolean().optional(),
   })
   .strict();
 

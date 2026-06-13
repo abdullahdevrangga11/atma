@@ -19,6 +19,8 @@ const BodySchema = z
       .string()
       .regex(/^\d+$/, "entryNAV must be a base-10 integer string")
       .optional(),
+    // Demo "Debate mode": forces a stressed oracle so Risk vetoes and retries.
+    forceDebate: z.boolean().optional(),
   })
   .strict();
 
