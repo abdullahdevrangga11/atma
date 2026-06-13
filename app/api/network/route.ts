@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
  * Powers /network.
  */
 export async function GET() {
-  const runs = runStore.list(50);
+  const runs = await runStore.list(50);
   if (runs.length === 0) {
     return NextResponse.json({
       data: {

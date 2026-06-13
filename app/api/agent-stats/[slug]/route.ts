@@ -21,7 +21,7 @@ export async function GET(
     return NextResponse.json({ data: null, error: "Unknown agent" }, { status: 404 });
   }
   const agentName = identity.name;
-  const runs = runStore.list(50);
+  const runs = await runStore.list(50);
 
   const decisions = runs.flatMap((r) => {
     const stepIdx = r.steps.findIndex((s) => s.agent === agentName);

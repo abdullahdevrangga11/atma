@@ -14,7 +14,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const run = runStore.get(id);
+  const run = await runStore.get(id);
   if (!run) {
     return NextResponse.json(
       { data: null, error: "Run not found" },

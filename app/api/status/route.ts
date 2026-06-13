@@ -17,12 +17,17 @@ export const dynamic = "force-dynamic";
 const BOOT_AT = Date.now();
 
 export async function GET() {
-  const agg = runStore.aggregate();
+  const [agg, recentRuns, total] = await Promise.all([
+    runStore.aggregate(),
+    runStore.list(50),
+    runStore.size(),
+  ]);
   const latest = agg?.latest;
 
-  const totalCostCents = runStore
-    .list(50)
-    .reduce((acc, r) => acc + (r.totalCostCents ?? 0), 0);
+  const totalCostCents = recentRuns.reduce(
+    (acc, r) => acc + (r.totalCostCents ?? 0),
+    0,
+  );
 
   return NextResponse.json({
     data: {
@@ -31,7 +36,7 @@ export async function GET() {
       uptimeSec: Math.floor((Date.now() - BOOT_AT) / 1000),
       llm: currentProvider(),
       runs: {
-        total: runStore.size(),
+        total,
         attestations: agg?.totalAttestations ?? 0,
         totalCostCents: Number(totalCostCents.toFixed(4)),
         latest: latest

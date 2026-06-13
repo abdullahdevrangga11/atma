@@ -12,7 +12,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const run = runStore.get(id);
+  const run = await runStore.get(id);
   const title = run
     ? `${run.risk.level === "trigger" ? "Defensive exit" : run.debate ? "Survived a veto" : "Clean allocation"} · +${run.report.outperformanceBps.vsDoNothing} bps`
     : "Run · AMANA";

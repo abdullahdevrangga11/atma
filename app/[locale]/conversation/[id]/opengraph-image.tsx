@@ -8,7 +8,7 @@ export const contentType = "image/png";
 export const alt = "AMANA agent conversation";
 
 export default async function ConversationOg({ params }: { params: { id: string } }) {
-  const run = runStore.get(params.id);
+  const run = await runStore.get(params.id);
   const accent = "#613BF9";
 
   if (!run) {

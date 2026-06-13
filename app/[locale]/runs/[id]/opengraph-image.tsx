@@ -16,7 +16,7 @@ export const alt = "AMANA orchestration run";
  * "Run not found" plate when the in-memory store has expired.
  */
 export default async function RunOg({ params }: { params: { id: string } }) {
-  const run = runStore.get(params.id);
+  const run = await runStore.get(params.id);
 
   if (!run) {
     return new ImageResponse(

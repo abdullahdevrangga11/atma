@@ -51,34 +51,34 @@ beforeEach(() => {
 });
 
 describe("runStore", () => {
-  it("appends newest-first", () => {
-    runStore.append(mkRun("a"));
-    runStore.append(mkRun("b"));
-    runStore.append(mkRun("c"));
-    expect(runStore.list().map((r) => r.id)).toEqual(["c", "b", "a"]);
+  it("appends newest-first", async () => {
+    await runStore.append(mkRun("a"));
+    await runStore.append(mkRun("b"));
+    await runStore.append(mkRun("c"));
+    expect((await runStore.list()).map((r) => r.id)).toEqual(["c", "b", "a"]);
   });
 
-  it("caps at 50 runs", () => {
-    for (let i = 0; i < 70; i++) runStore.append(mkRun(`r${i}`));
-    expect(runStore.size()).toBe(50);
-    expect(runStore.list(1)[0].id).toBe("r69");
+  it("caps at 50 runs", async () => {
+    for (let i = 0; i < 70; i++) await runStore.append(mkRun(`r${i}`));
+    expect(await runStore.size()).toBe(50);
+    expect((await runStore.list(1))[0].id).toBe("r69");
   });
 
-  it("returns null aggregate when empty", () => {
-    expect(runStore.aggregate()).toBeNull();
+  it("returns null aggregate when empty", async () => {
+    expect(await runStore.aggregate()).toBeNull();
   });
 
-  it("aggregate.latest is the most recent run", () => {
-    runStore.append(mkRun("old", { startedAt: 1 }));
-    runStore.append(mkRun("new", { startedAt: 2 }));
-    const a = runStore.aggregate()!;
+  it("aggregate.latest is the most recent run", async () => {
+    await runStore.append(mkRun("old", { startedAt: 1 }));
+    await runStore.append(mkRun("new", { startedAt: 2 }));
+    const a = (await runStore.aggregate())!;
     expect(a.latest.id).toBe("new");
     expect(a.totalAttestations).toBe(2 * 3);
   });
 
-  it("get() returns by id", () => {
-    runStore.append(mkRun("target"));
-    expect(runStore.get("target")?.id).toBe("target");
-    expect(runStore.get("missing")).toBeUndefined();
+  it("get() returns by id", async () => {
+    await runStore.append(mkRun("target"));
+    expect((await runStore.get("target"))?.id).toBe("target");
+    expect(await runStore.get("missing")).toBeUndefined();
   });
 });

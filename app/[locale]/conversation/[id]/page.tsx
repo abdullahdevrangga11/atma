@@ -13,7 +13,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const run = runStore.get(id);
+  const run = await runStore.get(id);
   if (!run) {
     return pageMetadata({
       title: "Conversation",

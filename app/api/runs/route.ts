@@ -15,11 +15,17 @@ export async function GET(req: NextRequest) {
   const limitRaw = req.nextUrl.searchParams.get("limit");
   const limit = limitRaw ? Math.min(50, Math.max(1, Number(limitRaw))) : 20;
 
+  const [runs, aggregate, total] = await Promise.all([
+    runStore.list(limit),
+    runStore.aggregate(),
+    runStore.size(),
+  ]);
+
   return NextResponse.json({
     data: {
-      runs: runStore.list(limit),
-      aggregate: runStore.aggregate(),
-      total: runStore.size(),
+      runs,
+      aggregate,
+      total,
     },
     error: null,
   });

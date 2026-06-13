@@ -339,7 +339,7 @@ export class Orchestrator {
         debate: debate.length > 0 ? debate : undefined,
         totalCostCents,
       };
-      runStore.append(run);
+      await runStore.append(run);
       onEvent({ type: "done", run });
       return run;
     } catch (err) {
