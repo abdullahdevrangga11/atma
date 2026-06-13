@@ -51,7 +51,7 @@ Production URL: **https://amana-iota.vercel.app**
 
 ## SCENE 4 — The conversation view (1:20–1:50)
 
-**On screen**: Click "Conversation view" button. New page loads.
+**On screen**: After the run finishes, click the "View this run as an agent conversation" button (just above the agent cards). New page loads.
 
 **Say**:
 
@@ -79,11 +79,11 @@ Production URL: **https://amana-iota.vercel.app**
 
 ## SCENE 6 — Policy as data (2:15–2:40)
 
-**On screen**: Navigate to `/skills`. Click Edit on the AllocatorAgent skill. Tighten the compliance cap: change `maxUnregulatedBps: 5000` to `maxUnregulatedBps: 0`. Hit "Run comparison".
+**On screen**: Navigate to `/skills`. Click Edit on the AllocatorAgent skill. Tighten the compliance cap: change `maxUnregulatedBps: 5000` to `maxUnregulatedBps: 0`. Hit "Run baseline".
 
 **Say**:
 
-> Here's the killer demo, and it's the compliance story. I edit the Allocator's skill, just markdown. This cap limits exposure to the permissionless venues, Aave and MI4, the assets outside the regulated USDY and mUSD sleeve. I'll set it to zero. Hit "Run comparison".
+> Here's the killer demo, and it's the compliance story. I edit the Allocator's skill, just markdown. This cap limits exposure to the permissionless venues, Aave and MI4, the assets outside the regulated USDY and mUSD sleeve. I'll set it to zero. Hit "Run baseline".
 
 **On screen**: Two columns appear. The right column allocates entirely within the regulated USDY and mUSD instruments.
 
@@ -101,7 +101,7 @@ Production URL: **https://amana-iota.vercel.app**
 
 **Say**:
 
-> Reports pulls this deployment's real orchestration history. Every row is an ERC-8004 reputation event the vault emitted on Mantle Sepolia. I'll click one. Here it is on Mantlescan: a confirmed transaction, the AmanaVault contract, the SHA-256 reasoning hash logged on chain. That's a real regulated asset managed on-chain, end-to-end, and notice I never connected a wallet: this whole panel is read-only on-chain, no Web3 knowledge required. The loop ran on Mantle, not in a notebook.
+> Reports pulls this deployment's real orchestration history. Every row is a signed agent decision. Now the on-chain proof: back on the vault page, this panel reads live state straight from the deployed AmanaVault contract over RPC, no wallet, no gas. I'll click "View AmanaVault on Mantlescan". Here is the contract on Mantle Sepolia, with the deposit, the allocation, and the ERC-8004 reputation events as confirmed transactions. A real regulated asset managed on-chain, end-to-end, no Web3 knowledge required. The loop ran on Mantle, not in a notebook.
 
 **On screen**: Cut back to `/network`.
 
