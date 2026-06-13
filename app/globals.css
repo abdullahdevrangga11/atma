@@ -572,6 +572,58 @@
     50%      { transform: scale(1.35); opacity: 0.6; }
   }
 
+  /* ── Agent card icon idle loops (FeatureCards) ───────────────────────
+     Each agent's icon breathes on its own loop so the cards feel alive.
+     SVG transforms need fill-box so origins are local to the glyph.    */
+  .agent-anim * { transform-box: fill-box; }
+
+  /* Allocator — aperture: the lens ring breathes, the centre dot pulses
+     like a live allocation signal being acquired. */
+  @keyframes amana-aperture-ring {
+    0%, 100% { transform: scale(1);    opacity: 0.9; }
+    50%      { transform: scale(1.14); opacity: 1;   }
+  }
+  @keyframes amana-aperture-dot {
+    0%, 100% { transform: scale(1);   opacity: 1;   }
+    50%      { transform: scale(1.9); opacity: 0.45; }
+  }
+  .agent-aperture-ring { transform-origin: center; animation: amana-aperture-ring 3.2s ease-in-out infinite; }
+  .agent-aperture-dot  { transform-origin: center; animation: amana-aperture-dot  2.2s ease-in-out infinite; }
+
+  /* Risk — the shield's checkmark draws itself on a loop: always verifying. */
+  @keyframes amana-check-draw {
+    0%   { stroke-dashoffset: 32; }
+    40%  { stroke-dashoffset: 0;  }
+    82%  { stroke-dashoffset: 0;  }
+    100% { stroke-dashoffset: 32; }
+  }
+  @keyframes amana-shield-breathe {
+    0%, 100% { opacity: 1;    }
+    50%      { opacity: 0.82; }
+  }
+  .agent-check  { stroke-dasharray: 32; animation: amana-check-draw 3s ease-in-out infinite; }
+  .agent-shield { transform-origin: center; animation: amana-shield-breathe 3s ease-in-out infinite; }
+
+  /* Reporter — the bars rise and fall like a P&L chart being recomputed. */
+  @keyframes amana-bar-rise {
+    0%, 100% { transform: scaleY(0.5); }
+    50%      { transform: scaleY(1);   }
+  }
+  .agent-bar { transform-origin: bottom; animation: amana-bar-rise 1.8s ease-in-out infinite; }
+
+  /* The agent number ( 0X ) softly pulses in its accent colour. */
+  @keyframes amana-num-pulse {
+    0%, 100% { opacity: 1;   }
+    50%      { opacity: 0.45; }
+  }
+  .agent-num { animation: amana-num-pulse 2.6s ease-in-out infinite; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .agent-aperture-ring, .agent-aperture-dot, .agent-check, .agent-shield,
+    .agent-bar, .agent-num { animation: none; }
+    .agent-check { stroke-dashoffset: 0; }
+  }
+
   /* Split-card mobile fallback — neutralise the GSAP-driven 3D when the
      pinned ScrollTrigger isn't active. */
   @media (max-width: 999px) {

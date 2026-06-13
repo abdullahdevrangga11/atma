@@ -72,25 +72,28 @@ const AGENTS: Agent[] = [
 
 function AllocatorIcon() {
   return (
-    <svg viewBox="0 0 60 60" fill="none" className="w-12 h-12">
+    <svg viewBox="0 0 60 60" fill="none" className="agent-anim w-12 h-12">
       <rect x="6" y="10" width="48" height="40" rx="4" stroke="currentColor" strokeWidth="2" />
-      <circle cx="30" cy="30" r="8" stroke="currentColor" strokeWidth="2" />
-      <circle cx="30" cy="30" r="2.5" fill="currentColor" />
+      <circle className="agent-aperture-ring" cx="30" cy="30" r="8" stroke="currentColor" strokeWidth="2" />
+      <circle className="agent-aperture-dot" cx="30" cy="30" r="2.5" fill="currentColor" />
     </svg>
   );
 }
 function RiskIcon() {
   return (
-    <svg viewBox="0 0 60 60" fill="none" className="w-12 h-12">
-      <path d="M30 4l24 10v18c0 14-10 24-24 28-14-4-24-14-24-28V14L30 4z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M20 30l7 7 13-13" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    <svg viewBox="0 0 60 60" fill="none" className="agent-anim w-12 h-12">
+      <path className="agent-shield" d="M30 4l24 10v18c0 14-10 24-24 28-14-4-24-14-24-28V14L30 4z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <path className="agent-check" d="M20 30l7 7 13-13" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 function ReporterIcon() {
   return (
-    <svg viewBox="0 0 60 60" fill="none" className="w-12 h-12">
-      <path d="M10 52V20M22 52V8M34 52v-22M46 52V32" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+    <svg viewBox="0 0 60 60" fill="none" className="agent-anim w-12 h-12">
+      <line className="agent-bar" style={{ animationDelay: "0ms" }}   x1="11" y1="52" x2="11" y2="20" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+      <line className="agent-bar" style={{ animationDelay: "180ms" }} x1="24" y1="52" x2="24" y2="8"  stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+      <line className="agent-bar" style={{ animationDelay: "360ms" }} x1="36" y1="52" x2="36" y2="30" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+      <line className="agent-bar" style={{ animationDelay: "540ms" }} x1="48" y1="52" x2="48" y2="32" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
       <line x1="6" y1="52" x2="54" y2="52" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
@@ -289,7 +292,7 @@ function CardFront({ agent }: { agent: Agent }) {
         style={{ color: agent.accent, padding: "7% 7% 0" }}
       >
         <span
-          className="font-mono uppercase tracking-[0.08em] opacity-90"
+          className="agent-num font-mono uppercase tracking-[0.08em] opacity-90"
           style={{ fontSize: "clamp(9px, 3cqi, 11px)" }}
         >
           {agent.number}
