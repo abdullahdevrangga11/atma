@@ -784,7 +784,7 @@ function ReasoningHash({ hash }: { hash: string }) {
 }
 
 function AttestationTrail({ steps, riskLevel }: { steps: AgentStep[]; riskLevel: "ok" | "warn" | "trigger" }) {
-  const labels = ["ALLOCATE", riskLevel === "ok" ? "REPORT" : riskLevel === "warn" ? "WARN" : "DEFENSIVE_EXIT", "REPORT"];
+  const labels = ["ALLOCATE", riskLevel === "ok" ? "APPROVE" : riskLevel === "warn" ? "WARN" : "DEFENSIVE_EXIT", "REPORT"];
   return (
     <Card>
       <CardHeader>
@@ -806,7 +806,7 @@ function AttestationTrail({ steps, riskLevel }: { steps: AgentStep[]; riskLevel:
             >
               <span className="font-mono text-[var(--color-text-faint)] tabular-nums">{String(i + 1).padStart(2, "0")}</span>
               <span className="font-mono">{s.agent}</span>
-              <Badge variant={labels[i] === "DEFENSIVE_EXIT" ? "danger" : labels[i] === "WARN" ? "warning" : labels[i] === "ALLOCATE" ? "accent" : "default"}>{labels[i]}</Badge>
+              <Badge className="justify-self-start" variant={labels[i] === "DEFENSIVE_EXIT" ? "danger" : labels[i] === "WARN" ? "warning" : labels[i] === "ALLOCATE" ? "accent" : labels[i] === "APPROVE" ? "success" : "default"}>{labels[i]}</Badge>
               <span className="font-mono text-[var(--color-primary)] truncate text-[11px]">
                 {s.reasoningHash.slice(0, 14)}…{s.reasoningHash.slice(-6)}
               </span>

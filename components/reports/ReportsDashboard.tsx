@@ -103,7 +103,7 @@ export function ReportsDashboard() {
             ? "ALLOCATE"
             : i === 1
               ? r.risk.level === "ok"
-                ? "REPORT"
+                ? "APPROVE"
                 : r.risk.level === "warn"
                   ? "WARN"
                   : "DEFENSIVE_EXIT"
@@ -288,7 +288,7 @@ export function ReportsDashboard() {
                           ? "warning"
                           : s.label === "ALLOCATE"
                             ? "accent"
-                            : "default"
+                            : s.label === "APPROVE" ? "success" : "default"
                     }
                   >
                     {s.label}
@@ -332,7 +332,7 @@ type FlatStep = {
   startedAt: number;
   durationMs: number;
   reasoningHash: `0x${string}`;
-  label: "ALLOCATE" | "REPORT" | "WARN" | "DEFENSIVE_EXIT";
+  label: "ALLOCATE" | "APPROVE" | "REPORT" | "WARN" | "DEFENSIVE_EXIT";
 };
 
 function flattenSteps(runs: Run[]): FlatStep[] {
@@ -345,7 +345,7 @@ function flattenSteps(runs: Run[]): FlatStep[] {
           ? "ALLOCATE"
           : i === 1
             ? r.risk.level === "ok"
-              ? "REPORT"
+              ? "APPROVE"
               : r.risk.level === "warn"
                 ? "WARN"
                 : "DEFENSIVE_EXIT"

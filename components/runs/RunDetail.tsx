@@ -306,7 +306,7 @@ export function RunDetail({ runId }: { runId: string }) {
                   ? "ALLOCATE"
                   : s.agent === "RiskAgent"
                     ? run.risk.level === "ok"
-                      ? "REPORT"
+                      ? "APPROVE"
                       : run.risk.level === "warn"
                         ? "WARN"
                         : "DEFENSIVE_EXIT"
@@ -342,7 +342,7 @@ export function RunDetail({ runId }: { runId: string }) {
                           ? "warning"
                           : label === "ALLOCATE"
                             ? "accent"
-                            : "default"
+                            : label === "APPROVE" ? "success" : "default"
                     }
                   >
                     {label}
