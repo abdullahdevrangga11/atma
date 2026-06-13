@@ -3,9 +3,6 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { InertiaPlugin } from "gsap/InertiaPlugin";
-
-gsap.registerPlugin(InertiaPlugin);
 
 /**
  * Lazy, scroll-reactive 3D logo decoration for the "Where treasury meets RWA"
@@ -72,16 +69,21 @@ export function Logo3DLazy() {
         window.removeEventListener("pointermove", move);
         window.removeEventListener("pointerup", up);
         document.body.style.cursor = "";
-        // Inertia carries the throw, then every channel decays back to 0 (rest).
-        gsap.to(dragRef.current, {
-          inertia: {
-            posX: { velocity: vel.posX, end: 0 },
-            posY: { velocity: vel.posY, end: 0 },
-            rotY: { velocity: vel.rotY, end: 0 },
-            rotX: { velocity: vel.rotX, end: 0 },
-            resistance: 140,
-            duration: { min: 0.6, max: 2.4 },
-          },
+        const d = dragRef.current;
+        // Fling a bit further in the throw direction (honours release velocity),
+        // then spring home with a bouncy elastic overshoot.
+        d.posX += vel.posX * 0.12;
+        d.posY += vel.posY * 0.12;
+        d.rotY += vel.rotY * 0.1;
+        d.rotX += vel.rotX * 0.1;
+        const mag = Math.min(1, (Math.abs(d.posX) + Math.abs(d.posY) + Math.abs(d.rotX) + Math.abs(d.rotY)) / 4);
+        gsap.to(d, {
+          posX: 0,
+          posY: 0,
+          rotX: 0,
+          rotY: 0,
+          duration: 1.15 + mag * 0.7,
+          ease: "elastic.out(1, 0.4)",
         });
       };
 
