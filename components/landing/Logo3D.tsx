@@ -103,8 +103,11 @@ function LogoInstance({
     // a GSAP inertia tween that decays everything back to 0 on release):
     // rotX/rotY tumble it, posX/posY physically shove it.
     const drag = dragRef.current;
+    // Centre the scroll rotation on 0 so when the section sits mid-viewport
+    // (scroll ~0.5) the logo faces us in a 3/4 view, never edge-on (gepeng).
+    // The swing is gentle so it stays a readable face the whole time.
     group.current.rotation.y =
-      baseRotation + scroll * Math.PI * spin + Math.sin(t * 0.4) * 0.16 + px * (0.22 + h * 0.32) + drag.rotY;
+      baseRotation + (scroll - 0.5) * spin + Math.sin(t * 0.4) * 0.16 + px * (0.22 + h * 0.32) + drag.rotY;
     group.current.rotation.x = -0.05 + Math.sin(t * 0.3) * 0.08 - py * (0.16 + h * 0.24) + drag.rotX;
     group.current.position.x = position[0] + drag.posX;
     group.current.position.y = position[1] + Math.sin(t * 0.7) * 0.12 + h * 0.18 + drag.posY;
@@ -185,10 +188,10 @@ export function Logo3D({
         dragRef={dragRefs[0]}
         anchor={[0.7, 0.62]}
         position={[6.4, 3.0, 0]}
-        baseRotation={-0.5}
-        spin={1.0}
+        baseRotation={-0.35}
+        spin={0.7}
         phase={0}
-        scale={1.7}
+        scale={2.1}
       />
       {/* bottom-left, counter-rotating, bigger */}
       <LogoInstance
@@ -198,10 +201,10 @@ export function Logo3D({
         dragRef={dragRefs[1]}
         anchor={[-0.7, -0.64]}
         position={[-6.4, -3.1, -0.5]}
-        baseRotation={0.6}
-        spin={-1.0}
+        baseRotation={0.4}
+        spin={-0.7}
         phase={2.5}
-        scale={1.5}
+        scale={1.9}
       />
 
       <EffectComposer>

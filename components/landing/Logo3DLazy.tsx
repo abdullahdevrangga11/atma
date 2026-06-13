@@ -99,16 +99,18 @@ export function Logo3DLazy() {
       window.innerWidth >= 768 &&
       !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     setEnabled(ok);
+    // Mount (and start loading three.js) immediately so the logo is ready
+    // before the user scrolls to it, instead of popping in a few seconds late.
+    // The dynamic import is async, so this does not block first paint.
+    if (ok) setMounted(true);
   }, []);
 
+  // In-view only gates the render loop (frameloop pause off-screen), not mount.
   useEffect(() => {
     const el = wrapRef.current;
     if (!el || !enabled) return;
     const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setMounted(true);
-        setActive(entry.isIntersecting);
-      },
+      ([entry]) => setActive(entry.isIntersecting),
       { rootMargin: "300px 0px" },
     );
     io.observe(el);
@@ -156,7 +158,8 @@ export function Logo3DLazy() {
     <>
       <div
         ref={wrapRef}
-        className="pointer-events-none absolute inset-0 z-0 select-none"
+        className="pointer-events-none absolute inset-0 z-0 select-none isolate transform-gpu"
+        style={{ contain: "paint" }}
         aria-hidden
       >
         {mounted ? (
