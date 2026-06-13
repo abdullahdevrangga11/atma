@@ -57,13 +57,22 @@ const REDIS_KEY = "amana:runs";
 //  Backend selection — Redis if configured, else in-memory.
 // ───────────────────────────────────────────────────────────
 
+// Resolve REST url/token from whatever names the host provisioned. Vercel's
+// Upstash/KV integration uses the KV_REST_API_* prefix; a direct Upstash setup
+// uses UPSTASH_REDIS_REST_*. Accept both (plus a STORAGE_ prefix variant).
+const REDIS_URL =
+  process.env.UPSTASH_REDIS_REST_URL ||
+  process.env.KV_REST_API_URL ||
+  process.env.STORAGE_REST_API_URL ||
+  null;
+const REDIS_TOKEN =
+  process.env.UPSTASH_REDIS_REST_TOKEN ||
+  process.env.KV_REST_API_TOKEN ||
+  process.env.STORAGE_REST_API_TOKEN ||
+  null;
+
 const redis: Redis | null =
-  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
-    ? new Redis({
-        url: process.env.UPSTASH_REDIS_REST_URL,
-        token: process.env.UPSTASH_REDIS_REST_TOKEN,
-      })
-    : null;
+  REDIS_URL && REDIS_TOKEN ? new Redis({ url: REDIS_URL, token: REDIS_TOKEN }) : null;
 
 declare global {
   // eslint-disable-next-line no-var
