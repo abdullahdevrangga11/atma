@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { TopBanner } from "@/components/landing/TopBanner";
+import { Logo3DMark } from "@/components/landing/Logo3DMark";
 
 /**
  * Locale-scoped 404. Matches the rest of the page chrome (TopBanner +
@@ -15,16 +16,9 @@ export default function NotFound() {
       <Navbar />
       <main className="container-amana py-32 md:py-44">
         <div className="max-w-[720px] mx-auto text-center">
-          <svg
-            viewBox="0 0 648 972"
-            fill="currentColor"
-            preserveAspectRatio="xMidYMid meet"
-            aria-hidden
-            className="h-10 w-[27px] mx-auto mb-8 text-[var(--color-primary)]"
-          >
-            <path fillRule="evenodd" clipRule="evenodd" d="M298 0V243C287.566 313.258 232.258 368.566 162 379V431C232.258 441.434 287.566 496.742 298 567V972H0V162C0 72.5312 72.5312 0 162 0H298Z" />
-            <path fillRule="evenodd" clipRule="evenodd" d="M350 567V810H486C575.469 810 648 737.469 648 648V0H350V243C360.434 313.258 415.742 368.566 486 379V431C415.742 441.434 360.434 496.742 350 567Z" />
-          </svg>
+          {/* Throwable 3D AMANA mark — a small delight for anyone who hits a
+              dead link. Drag it, it springs back. */}
+          <Logo3DMark />
           <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-text-muted)] mb-5">
             // 404 · route not found
           </p>
