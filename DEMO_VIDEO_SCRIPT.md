@@ -17,7 +17,7 @@ Production URL: **https://amana-iota.vercel.app**
 
 **Say**:
 
-> AMANA is treasury orchestration for Mantle. Three AI agents allocate USDC across the RWA stack — USDY, mUSD, Aave, MI4 — under a verifiable policy that lives as markdown, not code. Every decision is signed on-chain via ERC-8004. Here's a 3-minute tour.
+> AMANA is treasury orchestration for Mantle. Three AI agents allocate idle USDC across the Mantle RWA stack (USDY from Ondo, mUSD, Aave V3, and MI4) under a policy that lives as markdown, not code. Every decision is signed on-chain via ERC-8004 on Mantle Sepolia. It's a new primitive: policy-as-data, multi-agent debate, on-chain attestation. Not a yield-aggregator fork, not a chatbot. Here's a 3-minute tour.
 
 ---
 
@@ -27,9 +27,9 @@ Production URL: **https://amana-iota.vercel.app**
 
 **Say**:
 
-> Feeds in. Allocator drafts weights. Risk vetoes if needed. Reporter signs the digest. Each agent is its own ERC-8004 identity with reputation events emitted on Mantle. Click any node and you land on that agent's profile page.
+> Feeds in. Allocator drafts weights. Risk vetoes if needed. Reporter signs the digest. Each agent is its own ERC-8004 identity with reputation events emitted on Mantle Sepolia. Click any node and you land on that agent's profile page.
 
-> Underneath, the architecture is real — 374 lines of vault Solidity, 45 Foundry tests, three TypeScript agents on Claude Sonnet 4.5.
+> Underneath, the architecture is real: a 374-line ERC-4626 vault in Solidity, 45 Foundry tests, three TypeScript agents on Claude Sonnet 4.5. The whole chain runs end-to-end on Mantle.
 
 ---
 
@@ -39,13 +39,13 @@ Production URL: **https://amana-iota.vercel.app**
 
 **Say**:
 
-> Debate mode forces Risk to see a stressed oracle. Hit run, and the state machine animates. Allocator's reasoning streams in live — that's actual Claude output, token by token. Allocator proposes thirty-four percent USDY, thirty percent mUSD, thirty-six percent Aave.
+> Debate mode forces Risk to see a stressed oracle. Hit run, and the state machine animates. Allocator's reasoning streams in live (that's actual Claude output, token by token). Allocator proposes thirty-four percent USDY, thirty percent mUSD, thirty-six percent Aave.
 
 **On screen**: Veto banner pops, Allocator card flips to "attempt 2".
 
 > Risk just vetoed. The exact veto reason gets injected back into Allocator's system prompt as a constraint. Allocator re-drafts, this time with Aave reduced. Risk approves the second pass. Reporter signs the digest.
 
-> The cost meter at the top shows exactly what this orchestration cost in tokens — about three-tenths of a cent per run.
+> The cost meter at the top shows exactly what this orchestration cost in tokens, about three-tenths of a cent per run.
 
 ---
 
@@ -55,9 +55,9 @@ Production URL: **https://amana-iota.vercel.app**
 
 **Say**:
 
-> Here's the same run rendered as a Slack-style chat between the agents. Allocator's first message — the original proposal. Risk replies as a quoted veto, calling out the flagged signal. Allocator's second message — "honoured the veto, here's a revised proposal." Risk approves. Reporter posts the digest.
+> Here's the same run rendered as a Slack-style chat between the agents. Allocator's first message is the original proposal. Risk replies as a quoted veto, calling out the flagged signal. Allocator's second message: "honoured the veto, here's a revised proposal." Risk approves. Reporter posts the digest.
 
-> This is autonomous agent coordination on a public chain. Not a chatbot wrapper. Every message has an ERC-8004 reputation hash you can verify.
+> This is autonomous agent coordination, with a real veto, settled on a public chain. Not a chatbot wrapper, not a yield-aggregator clone. Every message carries an ERC-8004 reputation hash you can verify on Mantle.
 
 ---
 
@@ -71,7 +71,9 @@ Production URL: **https://amana-iota.vercel.app**
 
 **On screen**: Chart fills, summary card lands.
 
-> Plus three hundred twelve basis points cumulative over six weeks. Plus eighty-four versus USDC-Aave-only. One defensive exit triggered. Total cost — six and a half cents.
+> Plus three hundred twelve basis points cumulative over six weeks. Plus eighty-four versus USDC-Aave-only. One defensive exit triggered. Total cost, six and a half cents.
+
+> Who pays us: DAOs and on-chain treasuries sitting on idle stablecoins, on a basis-points fee for the yield we capture above their do-nothing baseline.
 
 ---
 
@@ -81,29 +83,29 @@ Production URL: **https://amana-iota.vercel.app**
 
 **Say**:
 
-> Here's the killer demo. I edit the Allocator's skill — just markdown. I'll cap MI4 at zero. Hit "Run comparison".
+> Here's the killer demo. I edit the Allocator's skill, just markdown. I'll cap MI4 at zero. Hit "Run comparison".
 
 **On screen**: Two columns appear with different allocations.
 
-> Same input. Different policy. Different proposal. No redeploy. No contract upgrade. The skill is in source control — every policy change is a git commit, every git commit is queryable.
+> Same input. Different policy. Different proposal. No redeploy. No contract upgrade. The skill is in source control, so every policy change is a git commit, and every git commit is queryable.
 
 **On screen**: Scroll to system prompt inspector, click "show".
 
-> And here's the exact prompt sent to Claude — with my edit live. Radical transparency.
+> And here's the exact prompt sent to Claude, with my edit live. Radical transparency.
 
 ---
 
-## SCENE 7 — Receipts (2:40–2:55)
+## SCENE 7 — On-chain receipts (2:40–2:55)
 
-**On screen**: Navigate to `/reports`. Then `/network`.
+**On screen**: Navigate to `/reports`. Attestation feed table is visible, each row carrying an ERC-8004 reasoning hash. Click a hash, which opens `sepolia.mantlescan.xyz` in a new tab on the AmanaVault contract's emitted reputation event.
 
 **Say**:
 
-> Reports pulls from this deployment's real orchestration history. Network shows cumulative metrics — fifteen runs, forty-five attestations, four cents total cost, plus two hundred ninety-eight basis points average outperformance.
+> Reports pulls this deployment's real orchestration history. Every row is an ERC-8004 reputation event the vault emitted on Mantle Sepolia. I'll click one. Here it is on Mantlescan: a confirmed transaction, the AmanaVault contract, the SHA-256 reasoning hash logged on chain. That's the proof the whole loop ran end-to-end on Mantle, not in a notebook.
 
-**On screen**: Click any tx in the attestation feed → lands on a run permalink with the OG image.
+**On screen**: Cut back to `/network`.
 
-> Every run gets its own permalink. Paste it into Twitter — it unfurls as a proper card.
+> Network is the cumulative ledger: fifteen runs, forty-five attestations, four cents total cost, plus two hundred ninety-eight basis points average outperformance. Every run gets a permalink that unfurls as a proper Twitter card.
 
 ---
 
@@ -123,7 +125,7 @@ Production URL: **https://amana-iota.vercel.app**
 - The 30-second moment is Scene 4 (conversation view). Practice it five times.
 - If a live Claude call hangs during recording, cut away to the cached browser tab.
 - Total runtime target: 2:58–3:02. Anything over 3:05 reads as undisciplined.
-- Show reasoning hashes on-screen wherever they appear — they're the proof.
+- Show reasoning hashes on-screen wherever they appear. They're the proof.
 
 ---
 
@@ -134,4 +136,34 @@ If the 3-min is too long for some platforms:
 1. (0:00–0:10) Hero + architecture
 2. (0:10–0:30) Vault debate run + conversation view
 3. (0:30–0:50) Skills edit + comparison
-4. (0:50–1:00) Reports + cost meter + share URL
+4. (0:50–1:00) Reports + Mantlescan attestation + share URL
+
+---
+
+<!--
+RUBRIC COVERAGE MAP (for the human to verify before recording, not spoken)
+
+Technical (30%): core functionality runs end-to-end ON MANTLE
+  - Scene 3: live orchestration chain runs (Allocator -> Risk veto -> redraft -> Reporter).
+  - Scene 7: REAL on-chain proof. Click an ERC-8004 reasoning hash, open it on
+    sepolia.mantlescan.xyz, show the confirmed tx + AmanaVault contract + logged hash.
+    Spoken proof line: "the whole loop ran end-to-end on Mantle, not in a notebook."
+
+Ecosystem fit (20%): name the Mantle integrations on screen
+  - Scene 1: "USDY from Ondo, mUSD, Aave V3, and MI4" named out loud.
+  - Scene 2 + Scene 7: ERC-8004 reputation events emitted on Mantle Sepolia.
+
+Business potential (20%): who uses this + revenue model
+  - Scene 5: "DAOs and on-chain treasuries sitting on idle stablecoins, on a
+    basis-points fee for the yield we capture above their do-nothing baseline."
+
+Innovation (20%): framed as a NEW primitive, contrasted vs forks/clones
+  - Scene 1: "a new primitive: policy-as-data plus multi-agent debate plus
+    on-chain attestation. Not a yield-aggregator fork, not a chatbot."
+  - Scene 4: "Not a chatbot wrapper, not a yield-aggregator clone."
+
+UX (10%): slick flow
+  - Scene 1 FiddleHover hero, Scene 3 streaming reasoning + cost meter,
+    Scene 4 conversation view (the wow moment), Cmd+K available throughout.
+-->
+
