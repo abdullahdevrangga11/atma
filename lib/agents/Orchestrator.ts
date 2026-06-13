@@ -70,6 +70,9 @@ export const DEFAULT_POLICY: UserPolicy = {
   maxAaveBps: 5000,
   maxMi4Bps: 1500,
   minLiquidBps: 4000,
+  // Compliance cap: at most 50% of the book in permissionless venues
+  // (Aave + MI4). USDY + mUSD are KYC-bounded regulated instruments.
+  maxUnregulatedBps: 5000,
   riskTolerance: "balanced",
 };
 export const DEFAULT_DEPOSIT_USDC = "10000000000";
@@ -210,6 +213,22 @@ export class Orchestrator {
           proposal,
           attempt: attempt + 1,
         });
+
+        // ─── Compliance guardrail (deterministic, pre-LLM) ────
+        // RiskAgent enforces the unregulated-exposure cap. A breach is a hard
+        // veto routed through the same debate path as an LLM risk trigger.
+        const compliance = RiskAgent.enforceCompliance(
+          proposal.weights,
+          policy.maxUnregulatedBps,
+        );
+        if (compliance && !compliance.compliant && attempt < 1) {
+          attempt += 1;
+          riskVeto = compliance.reason;
+          debate.push({ attempt, vetoReason: riskVeto, level: "trigger" });
+          onEvent({ type: "veto", reason: riskVeto, level: "trigger", attempt });
+          setState("Analyzing");
+          continue;
+        }
 
         // ─── Risk evaluation for this proposal ────────────────
         setState("Attesting");

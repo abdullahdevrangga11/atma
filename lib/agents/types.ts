@@ -20,6 +20,12 @@ export const UserPolicySchema = z.object({
   maxAaveBps: z.number().int().min(0).max(10_000),
   maxMi4Bps: z.number().int().min(0).max(10_000),
   minLiquidBps: z.number().int().min(0).max(10_000),
+  /**
+   * Compliance cap: max combined exposure to permissionless / unregulated
+   * venues (Aave V3 + MI4), in basis points. Omitted = no compliance cap.
+   * USDY and mUSD are KYC-bounded regulated instruments and are not counted.
+   */
+  maxUnregulatedBps: z.number().int().min(0).max(10_000).optional(),
   riskTolerance: RiskToleranceSchema,
 });
 export type UserPolicy = z.infer<typeof UserPolicySchema>;

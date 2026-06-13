@@ -17,7 +17,7 @@ Production URL: **https://amana-iota.vercel.app**
 
 **Say**:
 
-> AMANA is treasury orchestration for Mantle. Three AI agents allocate idle USDC across the Mantle RWA stack (USDY from Ondo, mUSD, Aave V3, and MI4) under a policy that lives as markdown, not code. Every decision is signed on-chain via ERC-8004 on Mantle Sepolia. It's a new primitive: policy-as-data, multi-agent debate, on-chain attestation. Not a yield-aggregator fork, not a chatbot. Here's a 3-minute tour.
+> AMANA is treasury orchestration for Mantle. Three AI agents allocate idle USDC across the Mantle RWA stack: USDY from Ondo, a regulated, KYC-gated tokenized treasury, plus mUSD, Aave V3, and MI4. They run under a policy that lives as markdown, not code, with the compliance limits encoded right in that policy. Every decision is signed on-chain via ERC-8004 on Mantle Sepolia. It's a new primitive: policy-as-data, multi-agent debate, on-chain attestation. Not a yield-aggregator fork, not a chatbot. Here's a 3-minute tour.
 
 ---
 
@@ -43,9 +43,9 @@ Production URL: **https://amana-iota.vercel.app**
 
 **On screen**: Veto banner pops, Allocator card flips to "attempt 2".
 
-> Risk just vetoed. The exact veto reason gets injected back into Allocator's system prompt as a constraint. Allocator re-drafts, this time with Aave reduced. Risk approves the second pass. Reporter signs the digest.
+> Risk just vetoed: this draft breaches a compliance cap in the policy, too much exposure outside the regulated USDY sleeve. The veto reason gets injected back into Allocator's system prompt as a hard constraint. Allocator re-drafts inside the cap. Risk approves. Reporter signs the digest.
 
-> The cost meter at the top shows exactly what this orchestration cost in tokens, about three-tenths of a cent per run.
+> The cost meter shows what this run cost in tokens, about three-tenths of a cent. That's the point of building on Mantle: gas is cheap enough that agents can rebalance this often. On an L1 the gas would eat the alpha.
 
 ---
 
@@ -55,7 +55,7 @@ Production URL: **https://amana-iota.vercel.app**
 
 **Say**:
 
-> Here's the same run rendered as a Slack-style chat between the agents. Allocator's first message is the original proposal. Risk replies as a quoted veto, calling out the flagged signal. Allocator's second message: "honoured the veto, here's a revised proposal." Risk approves. Reporter posts the digest.
+> Here's the same run as a Slack-style chat between the agents. Allocator's first message is the original proposal. Risk replies with a quoted veto, citing the breached compliance cap. Allocator's second message: "honoured the veto, here's a revised proposal." Risk approves. Reporter posts the digest.
 
 > This is autonomous agent coordination, with a real veto, settled on a public chain. Not a chatbot wrapper, not a yield-aggregator clone. Every message carries an ERC-8004 reputation hash you can verify on Mantle.
 
@@ -101,7 +101,7 @@ Production URL: **https://amana-iota.vercel.app**
 
 **Say**:
 
-> Reports pulls this deployment's real orchestration history. Every row is an ERC-8004 reputation event the vault emitted on Mantle Sepolia. I'll click one. Here it is on Mantlescan: a confirmed transaction, the AmanaVault contract, the SHA-256 reasoning hash logged on chain. That's the proof the whole loop ran end-to-end on Mantle, not in a notebook.
+> Reports pulls this deployment's real orchestration history. Every row is an ERC-8004 reputation event the vault emitted on Mantle Sepolia. I'll click one. Here it is on Mantlescan: a confirmed transaction, the AmanaVault contract, the SHA-256 reasoning hash logged on chain. That's a real regulated asset managed on-chain, end-to-end, and notice I never connected a wallet: this whole panel is read-only on-chain, no Web3 knowledge required. The loop ran on Mantle, not in a notebook.
 
 **On screen**: Cut back to `/network`.
 
@@ -134,7 +134,7 @@ Production URL: **https://amana-iota.vercel.app**
 If the 3-min is too long for some platforms:
 
 1. (0:00–0:10) Hero + architecture
-2. (0:10–0:30) Vault debate run + conversation view
+2. (0:10–0:30) Vault debate run (compliance veto) + conversation view
 3. (0:30–0:50) Skills edit + comparison
 4. (0:50–1:00) Reports + Mantlescan attestation + share URL
 
@@ -165,5 +165,37 @@ Innovation (20%): framed as a NEW primitive, contrasted vs forks/clones
 UX (10%): slick flow
   - Scene 1 FiddleHover hero, Scene 3 streaming reasoning + cost meter,
     Scene 4 conversation view (the wow moment), Cmd+K available throughout.
+
+=== PART B: AI & RWA TRACK SCORECARD (Mantle judges) ===
+
+AI x RWA integration depth (15 pts): AI drives real decisions, output is verifiable/auditable
+  - Scene 3: AI agents (real Claude output) draft + veto + redraft the actual
+    on-chain portfolio weights. The decision is the allocation, not a chat reply.
+  - Scene 7: every decision is auditable via ERC-8004 reasoning hash on Mantlescan.
+
+Mantle network integration (10 pts): settlement layer + gas economics + Mantle-native RWA
+  - Scene 1: Mantle-native RWA stack named (USDY/Ondo, mUSD, Aave V3, MI4).
+  - Scene 3 (gas economics): "gas is cheap enough that agents can rebalance this
+    often. On an L1 the gas would eat the alpha." Explicit low-gas-L2 rationale.
+  - Scene 7: Mantle Sepolia is the settlement layer; vault emits events on-chain.
+
+Compliance awareness (10 pts): KYC/regulated assets + policy-encoded caps + Risk veto
+  - Scene 1: "USDY, a regulated, KYC-gated tokenized treasury" + "compliance
+    limits encoded right in that policy."
+  - Scene 3: Risk vetoes a COMPLIANCE BREACH (exposure outside regulated USDY
+    sleeve exceeds the policy cap); Allocator redrafts inside the cap.
+  - Scene 4: conversation view shows Risk citing the breached compliance cap.
+
+Path B RWA Application (10 pts): regulated asset class + treasury users + no-Web3 UX
+  - Scene 1: regulated asset class = USDY (Ondo tokenized treasuries).
+  - Scene 5: treasury users specified = "DAOs and on-chain treasuries sitting on
+    idle stablecoins."
+  - Scene 7: "real regulated asset managed on-chain, end-to-end... never connected
+    a wallet: read-only on-chain, no Web3 knowledge required."
+
+Execution & demo quality (5 pts): MVP deployed on Mantle + real asset + repo/address
+  - Scene 7: live deployment on Mantle Sepolia, confirmed tx, AmanaVault contract
+    address visible on Mantlescan. Production URL + repo in submission.
 -->
+
 

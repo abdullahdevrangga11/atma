@@ -19,6 +19,13 @@ if any asset's risk signal = "warn", reduce its allowed cap by 50%.
 if any asset's risk signal = "trigger", exclude entirely.
 ```
 
+### Step 1b: Apply compliance constraints
+
+See the Compliance constraints section below. The combined Aave + MI4 weight
+(permissionless / unregulated exposure) must not exceed `maxUnregulatedBps`.
+If the optimizer would breach it, cap Aave + MI4 at `maxUnregulatedBps` and
+route the remainder into the regulated, KYC-bounded instruments USDY and mUSD.
+
 ### Step 2: Filter by user risk tolerance
 
 | Tolerance | Allowed assets |
@@ -56,6 +63,39 @@ if liquidBps < userPolicy.minLiquidBps:
 ensure usdy + mUsd + aave + mi4 = 10000 bps (100%)
 if rounding error, adjust largest allocation by ±1 bp
 ```
+
+## Compliance constraints
+
+> Enforced deterministically by the RiskAgent before the LLM risk pass. A breach
+> is a hard veto routed through the normal debate loop, not a soft preference.
+
+Asset regulatory classification:
+
+| Asset | Class | Notes |
+|---|---|---|
+| USDY | regulated / KYC-bounded | Ondo tokenized US Treasury, KYC-gated mint/redeem |
+| mUSD | regulated / KYC-bounded | regulated stable, identity-controlled |
+| Aave V3 | permissionless / unregulated | open DeFi, no KYC perimeter |
+| MI4 | permissionless / unregulated | Mantle index, no KYC perimeter |
+
+Machine-readable fields (same style as the per-asset caps above):
+
+```
+maxUnregulatedBps: 5000   # cap on Aave + MI4 COMBINED (permissionless exposure)
+regulatedAssets:   [USDY, mUSD]   # KYC-bounded, not counted toward the cap
+unregulatedAssets: [Aave, MI4]    # counted toward maxUnregulatedBps
+```
+
+Rule:
+
+```
+unregulatedBps = aaveBps + mi4Bps
+if unregulatedBps > maxUnregulatedBps:
+  COMPLIANCE VETO. Reduce Aave + MI4 to <= maxUnregulatedBps,
+  move the freed weight into USDY / mUSD (regulated, KYC-bounded).
+```
+
+If `maxUnregulatedBps` is absent from the policy, no compliance cap applies.
 
 ## Worked Example
 

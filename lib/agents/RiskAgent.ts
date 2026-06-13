@@ -1,5 +1,6 @@
 import { BaseAgent, type TokenUsage } from "./BaseAgent";
-import { RiskInput, RiskSignal, RiskSignalSchema } from "./types";
+import { RiskInput, RiskSignal, RiskSignalSchema, AllocationWeights } from "./types";
+import { checkCompliance, type ComplianceResult } from "./compliance";
 
 export const SYSTEM = `You are the RiskAgent for AMANA Treasury Protocol on Mantle.
 You monitor the vault for peg drift, oracle deviation, drawdown breach, liquidity shock, and protocol health.
@@ -40,6 +41,21 @@ If composite = "trigger", action="defensive_exit".`;
 export class RiskAgent extends BaseAgent {
   constructor(overrideSkill?: string) {
     super("mantle-risk-monitoring.skill.md", "RiskAgent", overrideSkill);
+  }
+
+  /**
+   * Deterministic compliance guardrail. Runs before/alongside the LLM risk
+   * pass: if a proposal puts more than maxUnregulatedBps into permissionless
+   * venues (Aave + MI4), this is a hard breach the RiskAgent vetoes. Pure and
+   * reproducible (no LLM), so the veto is auditable. Returns null when no cap
+   * is set on the policy.
+   */
+  static enforceCompliance(
+    weights: AllocationWeights,
+    maxUnregulatedBps: number | undefined,
+  ): ComplianceResult | null {
+    if (maxUnregulatedBps === undefined) return null;
+    return checkCompliance(weights, maxUnregulatedBps);
   }
 
   async evaluate(input: RiskInput): Promise<RiskSignal & { usage: TokenUsage }> {
