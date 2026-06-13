@@ -11,6 +11,12 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+// Cache the last successful on-chain read so repeated loads (judges refreshing,
+// multiple tabs) hit the rate-limited public RPC at most once per minute.
+type OkPayload = { data: unknown; error: null };
+let _cache: { at: number; payload: OkPayload } | null = null;
+const CACHE_TTL_MS = 60_000;
+
 /**
  * GET /api/onchain
  *
@@ -20,6 +26,11 @@ export const dynamic = "force-dynamic";
  */
 export async function GET() {
   const vault = AMANA_ADDRESSES.vault;
+
+  // Serve a fresh-enough cached read before touching RPC.
+  if (_cache && Date.now() - _cache.at < CACHE_TTL_MS) {
+    return NextResponse.json({ ..._cache.payload, cached: true });
+  }
 
   try {
     const client = getPublicClient();
@@ -70,7 +81,7 @@ export async function GET() {
     const stateIndex = Number(stateRaw);
     const stateLabel = VAULT_STATE_LABELS[stateIndex] ?? `Unknown(${stateIndex})`;
 
-    return NextResponse.json({
+    const payload: OkPayload = {
       data: {
         chainId: 5003,
         chainName: "Mantle Sepolia",
@@ -100,9 +111,16 @@ export async function GET() {
         assets: { usdc, usdy, mUsd, aavePool, mi4 },
       },
       error: null,
-    });
+    };
+
+    _cache = { at: Date.now(), payload };
+    return NextResponse.json(payload);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to read on-chain state";
+    // If we have any prior successful read, serve it stale rather than fail.
+    if (_cache) {
+      return NextResponse.json({ ..._cache.payload, cached: true, stale: true });
+    }
     return NextResponse.json({
       data: null,
       error: message,

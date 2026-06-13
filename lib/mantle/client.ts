@@ -1,11 +1,23 @@
-import { createPublicClient, http, defineChain, type PublicClient } from "viem";
+import { createPublicClient, http, fallback, defineChain, type PublicClient } from "viem";
+
+// Multiple Mantle Sepolia RPC endpoints. The official one is heavily
+// rate-limited from shared serverless IPs (e.g. Vercel), so we fall through a
+// list and viem retries the next URL on failure. MANTLE_SEPOLIA_RPC (if set)
+// is tried first.
+const MANTLE_SEPOLIA_RPCS = [
+  process.env.MANTLE_SEPOLIA_RPC,
+  "https://mantle-sepolia.drpc.org",
+  "https://endpoints.omniatech.io/v1/mantle/sepolia/public",
+  "https://mantle-sepolia.gateway.tenderly.co",
+  "https://rpc.sepolia.mantle.xyz",
+].filter(Boolean) as string[];
 
 export const mantleSepolia = defineChain({
   id: 5003,
   name: "Mantle Sepolia",
   nativeCurrency: { name: "Mantle", symbol: "MNT", decimals: 18 },
   rpcUrls: {
-    default: { http: ["https://rpc.sepolia.mantle.xyz"] },
+    default: { http: MANTLE_SEPOLIA_RPCS },
   },
   blockExplorers: {
     default: { name: "Mantle Sepolia Explorer", url: "https://sepolia.mantlescan.xyz" },
@@ -28,7 +40,12 @@ export function getPublicClient(): PublicClient {
   if (_publicClient) return _publicClient;
   _publicClient = createPublicClient({
     chain: mantleSepolia,
-    transport: http(process.env.MANTLE_SEPOLIA_RPC ?? "https://rpc.sepolia.mantle.xyz"),
+    // Fallback transport: tries each RPC in order, retries the next on failure
+    // (rate limit, timeout). rank=false keeps the declared priority order.
+    transport: fallback(
+      MANTLE_SEPOLIA_RPCS.map((url) => http(url, { timeout: 8000, retryCount: 1 })),
+      { rank: false },
+    ),
   });
   return _publicClient;
 }
