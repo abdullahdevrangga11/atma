@@ -43,7 +43,7 @@ Production URL: **https://amana-iota.vercel.app**
 
 **On screen**: Veto banner pops, Allocator card flips to "attempt 2".
 
-> Risk just vetoed: this draft breaches a compliance cap in the policy, too much exposure outside the regulated USDY sleeve. The veto reason gets injected back into Allocator's system prompt as a hard constraint. Allocator re-drafts inside the cap. Risk approves. Reporter signs the digest.
+> Risk just vetoed: it flagged the Aave V3 oracle on Mantle as stressed, a protocol-health risk, too risky to allocate there this round. The exact veto reason gets injected back into Allocator's system prompt as a hard constraint. Allocator re-drafts, pulling back from Aave. Risk approves the second pass. Reporter signs the digest.
 
 > The cost meter shows what this run cost in tokens, about three-tenths of a cent. That's the point of building on Mantle: gas is cheap enough that agents can rebalance this often. On an L1 the gas would eat the alpha.
 
@@ -55,7 +55,7 @@ Production URL: **https://amana-iota.vercel.app**
 
 **Say**:
 
-> Here's the same run as a Slack-style chat between the agents. Allocator's first message is the original proposal. Risk replies with a quoted veto, citing the breached compliance cap. Allocator's second message: "honoured the veto, here's a revised proposal." Risk approves. Reporter posts the digest.
+> Here's the same run as a Slack-style chat between the agents. Allocator's first message is the original proposal. Risk replies with a quoted veto, citing the stressed Aave oracle. Allocator's second message: "honoured the veto, here's a revised proposal." Risk approves. Reporter posts the digest.
 
 > This is autonomous agent coordination, with a real veto, settled on a public chain. Not a chatbot wrapper, not a yield-aggregator clone. Every message carries an ERC-8004 reputation hash you can verify on Mantle.
 
@@ -79,15 +79,15 @@ Production URL: **https://amana-iota.vercel.app**
 
 ## SCENE 6 — Policy as data (2:15–2:40)
 
-**On screen**: Navigate to `/skills`. Click Edit on the AllocatorAgent skill. Change `maxMi4Bps: 1500` to `maxMi4Bps: 0`.
+**On screen**: Navigate to `/skills`. Click Edit on the AllocatorAgent skill. Tighten the compliance cap: change `maxUnregulatedBps: 5000` to `maxUnregulatedBps: 0`. Hit "Run comparison".
 
 **Say**:
 
-> Here's the killer demo. I edit the Allocator's skill, just markdown. I'll cap MI4 at zero. Hit "Run comparison".
+> Here's the killer demo, and it's the compliance story. I edit the Allocator's skill, just markdown. This cap limits exposure to the permissionless venues, Aave and MI4, the assets outside the regulated USDY and mUSD sleeve. I'll set it to zero. Hit "Run comparison".
 
-**On screen**: Two columns appear with different allocations.
+**On screen**: Two columns appear. The right column allocates entirely within the regulated USDY and mUSD instruments.
 
-> Same input. Different policy. Different proposal. No redeploy. No contract upgrade. The skill is in source control, so every policy change is a git commit, and every git commit is queryable.
+> Same input, different policy, different proposal. The Allocator read the compliance limit and stayed entirely inside the regulated sleeve. No redeploy, no contract upgrade. The skill is in source control, so every compliance change is a git commit, and every commit is queryable. That is compliance as versioned, attested data.
 
 **On screen**: Scroll to system prompt inspector, click "show".
 
@@ -134,7 +134,7 @@ Production URL: **https://amana-iota.vercel.app**
 If the 3-min is too long for some platforms:
 
 1. (0:00–0:10) Hero + architecture
-2. (0:10–0:30) Vault debate run (compliance veto) + conversation view
+2. (0:10–0:30) Vault debate run (Risk veto on stressed oracle) + conversation view
 3. (0:30–0:50) Skills edit + comparison
 4. (0:50–1:00) Reports + Mantlescan attestation + share URL
 
@@ -179,12 +179,16 @@ Mantle network integration (10 pts): settlement layer + gas economics + Mantle-n
     often. On an L1 the gas would eat the alpha." Explicit low-gas-L2 rationale.
   - Scene 7: Mantle Sepolia is the settlement layer; vault emits events on-chain.
 
-Compliance awareness (10 pts): KYC/regulated assets + policy-encoded caps + Risk veto
+Compliance awareness (10 pts): KYC/regulated assets + policy-encoded caps the AI respects
   - Scene 1: "USDY, a regulated, KYC-gated tokenized treasury" + "compliance
     limits encoded right in that policy."
-  - Scene 3: Risk vetoes a COMPLIANCE BREACH (exposure outside regulated USDY
-    sleeve exceeds the policy cap); Allocator redrafts inside the cap.
-  - Scene 4: conversation view shows Risk citing the breached compliance cap.
+  - Scene 6: edit maxUnregulatedBps to 0 in the policy markdown; the Allocator
+    reads the compliance cap and allocates entirely inside the regulated
+    USDY/mUSD sleeve. Compliance as versioned, attested data. The RiskAgent
+    also enforces the cap as a hard backstop (vetoes any breach).
+  - Note: Scene 3's veto is a risk/oracle veto (stressed Aave oracle), which is
+    what Debate mode reliably triggers. Do not call it a compliance veto on
+    camera; the compliance story is Scene 6.
 
 Path B RWA Application (10 pts): regulated asset class + treasury users + no-Web3 UX
   - Scene 1: regulated asset class = USDY (Ondo tokenized treasuries).
