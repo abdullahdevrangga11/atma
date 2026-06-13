@@ -40,8 +40,11 @@ APIS=(
   "/robots.txt"
 )
 
+# Unmatched locale routes render the branded 404 page (200, styled, with
+# navbar + quick links) rather than Next's bare default. API misses still 404.
+PAGES+=("/en/does-not-exist")
+
 EXPECT_404=(
-  "/en/does-not-exist"
   "/api/runs/notreal"
   "/api/marketplace/notreal"
 )

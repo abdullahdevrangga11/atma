@@ -1,13 +1,14 @@
-import { notFound } from "next/navigation";
+import NotFound from "../not-found";
 
 export const dynamic = "force-dynamic";
 
 /**
  * Catch-all for any unmatched route under a locale (e.g. /en/does-not-exist).
- * Without this, Next.js falls back to its bare default 404 instead of the
- * branded app/[locale]/not-found.tsx. Calling notFound() here renders that
- * custom boundary inside the locale layout (navbar + footer + chrome).
+ * With next-intl's middleware, calling notFound() here resolves to Next's bare
+ * default 404 rather than the branded app/[locale]/not-found.tsx boundary, so
+ * we render the branded component directly. It carries the navbar, footer, and
+ * quick links so a bad URL stays on-brand instead of dropping to a black page.
  */
 export default function CatchAllNotFound() {
-  notFound();
+  return <NotFound />;
 }
