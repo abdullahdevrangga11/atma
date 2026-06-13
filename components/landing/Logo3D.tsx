@@ -60,6 +60,7 @@ function LogoInstance({
   phase,
   scale,
   pointerRef,
+  dragRef,
   anchor,
 }: {
   geometry: THREE.BufferGeometry;
@@ -70,6 +71,7 @@ function LogoInstance({
   phase: number;
   scale: number;
   pointerRef: MutableRefObject<{ x: number; y: number }>;
+  dragRef: MutableRefObject<{ x: number; y: number }>;
   anchor: [number, number];
 }) {
   const group = useRef<THREE.Group>(null);
@@ -95,9 +97,12 @@ function LogoInstance({
     const h = hover.current;
 
     // Spin a touch faster + lean toward the cursor when hovered.
+    // dragRef is the throwable offset (driven directly while dragging, then by
+    // a GSAP inertia tween that decays back to 0 on release).
+    const drag = dragRef.current;
     group.current.rotation.y =
-      baseRotation + scroll * Math.PI * spin + Math.sin(t * 0.4) * 0.16 + px * (0.22 + h * 0.32);
-    group.current.rotation.x = -0.05 + Math.sin(t * 0.3) * 0.08 - py * (0.16 + h * 0.24);
+      baseRotation + scroll * Math.PI * spin + Math.sin(t * 0.4) * 0.16 + px * (0.22 + h * 0.32) + drag.y;
+    group.current.rotation.x = -0.05 + Math.sin(t * 0.3) * 0.08 - py * (0.16 + h * 0.24) + drag.x;
     group.current.position.y = position[1] + Math.sin(t * 0.7) * 0.12 + h * 0.18;
     group.current.scale.setScalar(scale * (1 + h * 0.14));
 
@@ -146,10 +151,15 @@ function StudioEnv() {
 export function Logo3D({
   scrollRef,
   pointerRef,
+  dragRefs,
   active,
 }: {
   scrollRef: MutableRefObject<number>;
   pointerRef: MutableRefObject<{ x: number; y: number }>;
+  dragRefs: [
+    MutableRefObject<{ x: number; y: number }>,
+    MutableRefObject<{ x: number; y: number }>,
+  ];
   active: boolean;
 }) {
   const geometry = useLogoGeometry();
@@ -171,6 +181,7 @@ export function Logo3D({
         geometry={geometry}
         scrollRef={scrollRef}
         pointerRef={pointerRef}
+        dragRef={dragRefs[0]}
         anchor={[0.7, 0.62]}
         position={[6.4, 3.0, 0]}
         baseRotation={-0.5}
@@ -183,6 +194,7 @@ export function Logo3D({
         geometry={geometry}
         scrollRef={scrollRef}
         pointerRef={pointerRef}
+        dragRef={dragRefs[1]}
         anchor={[-0.7, -0.64]}
         position={[-6.4, -3.1, -0.5]}
         baseRotation={0.6}
