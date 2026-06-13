@@ -19,6 +19,8 @@ import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
  * One Canvas, two meshes (shared geometry) = a single WebGL context.
  */
 
+export type DragState = { rotX: number; rotY: number; posX: number; posY: number };
+
 const LOGO_SVG = `<svg width="648" height="972" viewBox="0 0 648 972" xmlns="http://www.w3.org/2000/svg">
 <path d="M298 0V243C287.566 313.258 232.258 368.566 162 379V431C232.258 441.434 287.566 496.742 298 567V972H0V162C0 72.5312 72.5312 0 162 0H298Z"/>
 <path d="M350 567V810H486C575.469 810 648 737.469 648 648V0H350V243C360.434 313.258 415.742 368.566 486 379V431C415.742 441.434 360.434 496.742 350 567Z"/>
@@ -71,7 +73,7 @@ function LogoInstance({
   phase: number;
   scale: number;
   pointerRef: MutableRefObject<{ x: number; y: number }>;
-  dragRef: MutableRefObject<{ x: number; y: number }>;
+  dragRef: MutableRefObject<DragState>;
   anchor: [number, number];
 }) {
   const group = useRef<THREE.Group>(null);
@@ -98,12 +100,14 @@ function LogoInstance({
 
     // Spin a touch faster + lean toward the cursor when hovered.
     // dragRef is the throwable offset (driven directly while dragging, then by
-    // a GSAP inertia tween that decays back to 0 on release).
+    // a GSAP inertia tween that decays everything back to 0 on release):
+    // rotX/rotY tumble it, posX/posY physically shove it.
     const drag = dragRef.current;
     group.current.rotation.y =
-      baseRotation + scroll * Math.PI * spin + Math.sin(t * 0.4) * 0.16 + px * (0.22 + h * 0.32) + drag.y;
-    group.current.rotation.x = -0.05 + Math.sin(t * 0.3) * 0.08 - py * (0.16 + h * 0.24) + drag.x;
-    group.current.position.y = position[1] + Math.sin(t * 0.7) * 0.12 + h * 0.18;
+      baseRotation + scroll * Math.PI * spin + Math.sin(t * 0.4) * 0.16 + px * (0.22 + h * 0.32) + drag.rotY;
+    group.current.rotation.x = -0.05 + Math.sin(t * 0.3) * 0.08 - py * (0.16 + h * 0.24) + drag.rotX;
+    group.current.position.x = position[0] + drag.posX;
+    group.current.position.y = position[1] + Math.sin(t * 0.7) * 0.12 + h * 0.18 + drag.posY;
     group.current.scale.setScalar(scale * (1 + h * 0.14));
 
     // Glow harder when hovered (bloom amplifies this into a real flare).
@@ -156,10 +160,7 @@ export function Logo3D({
 }: {
   scrollRef: MutableRefObject<number>;
   pointerRef: MutableRefObject<{ x: number; y: number }>;
-  dragRefs: [
-    MutableRefObject<{ x: number; y: number }>,
-    MutableRefObject<{ x: number; y: number }>,
-  ];
+  dragRefs: [MutableRefObject<DragState>, MutableRefObject<DragState>];
   active: boolean;
 }) {
   const geometry = useLogoGeometry();

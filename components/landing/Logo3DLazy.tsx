@@ -21,16 +21,20 @@ gsap.registerPlugin(InertiaPlugin);
  *   - scroll progress tracked in a ref (no per-frame React re-render).
  */
 
+import type { DragState } from "./Logo3D";
+
 const Logo3D = dynamic(() => import("./Logo3D").then((m) => m.Logo3D), {
   ssr: false,
 });
+
+const restState = (): DragState => ({ rotX: 0, rotY: 0, posX: 0, posY: 0 });
 
 export function Logo3DLazy() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef(0);
   const pointerRef = useRef({ x: 0, y: 0 });
-  const dragA = useRef({ x: 0, y: 0 });
-  const dragB = useRef({ x: 0, y: 0 });
+  const dragA = useRef<DragState>(restState());
+  const dragB = useRef<DragState>(restState());
   const [mounted, setMounted] = useState(false);
   const [active, setActive] = useState(false);
   const [enabled, setEnabled] = useState(false);
@@ -42,28 +46,39 @@ export function Logo3DLazy() {
       e.preventDefault();
       gsap.killTweensOf(dragRef.current);
       let lastT = performance.now();
-      let velX = 0;
-      let velY = 0;
+      const vel = { rotX: 0, rotY: 0, posX: 0, posY: 0 };
 
       const move = (ev: PointerEvent) => {
         const now = performance.now();
         const dt = Math.max(16, now - lastT) / 1000;
         lastT = now;
-        const dyaw = (ev.movementX || 0) * 0.012;
-        const dpitch = (ev.movementY || 0) * 0.012;
-        dragRef.current.y += dyaw;
-        dragRef.current.x += dpitch;
-        velY = dyaw / dt;
-        velX = dpitch / dt;
+        const dx = ev.movementX || 0;
+        const dy = ev.movementY || 0;
+        // Shove the logo (translate, world units) and tumble it (rotate).
+        const dPosX = dx * 0.011;
+        const dPosY = -dy * 0.011;
+        const dRotY = dx * 0.006;
+        const dRotX = dy * 0.006;
+        dragRef.current.posX += dPosX;
+        dragRef.current.posY += dPosY;
+        dragRef.current.rotY += dRotY;
+        dragRef.current.rotX += dRotX;
+        vel.posX = dPosX / dt;
+        vel.posY = dPosY / dt;
+        vel.rotY = dRotY / dt;
+        vel.rotX = dRotX / dt;
       };
       const up = () => {
         window.removeEventListener("pointermove", move);
         window.removeEventListener("pointerup", up);
         document.body.style.cursor = "";
+        // Inertia carries the throw, then every channel decays back to 0 (rest).
         gsap.to(dragRef.current, {
           inertia: {
-            y: { velocity: velY, end: 0 },
-            x: { velocity: velX, end: 0 },
+            posX: { velocity: vel.posX, end: 0 },
+            posY: { velocity: vel.posY, end: 0 },
+            rotY: { velocity: vel.rotY, end: 0 },
+            rotX: { velocity: vel.rotX, end: 0 },
             resistance: 140,
             duration: { min: 0.6, max: 2.4 },
           },
