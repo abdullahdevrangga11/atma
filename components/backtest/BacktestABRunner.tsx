@@ -75,16 +75,12 @@ export function BacktestABRunner({ baselineSkill }: { baselineSkill: string }) {
     const res = await fetch("/api/backtest/stream", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      // The backtest endpoint reads the committed skill at runtime and its body
+      // schema is strict (weeks / policy / targetAmountUsdc only). The A/B
+      // variance comes from policy tolerance, so we send only accepted keys.
       body: JSON.stringify({
         weeks,
         targetAmountUsdc: String(Math.floor(entry * 1_000_000)),
-        // The backtest endpoint reads the committed skill at runtime; for the
-        // A/B comparison we let it use committed for A and we'd need an
-        // overrideSkill if we wanted B with a different skill at the chain
-        // level. The current API doesn't take that field on backtest, so
-        // we simulate variant outcomes via the policy tolerance instead.
-        // Skill bytes are kept for completeness + future wiring.
-        skillForReference: skill.slice(0, 0),
       }),
       signal: ctrl.signal,
     });
