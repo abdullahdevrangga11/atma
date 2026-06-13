@@ -42,3 +42,23 @@ NEXT_PUBLIC_MUSD=0x7c35F56Fe7610E38D3e0A021425f2860aB586234
 NEXT_PUBLIC_AAVE_POOL=0xAE62959704f07EC09c661105176794D0C0F0F346
 NEXT_PUBLIC_MI4=0xa653e5113c6a6eD1f222D9a4713b8b0654F72917
 ```
+
+## Live on-chain orchestration loop (2026-06-13)
+
+A full agent loop was driven on-chain. State is now Allocated, NAV 1000 USDC,
+allocation 34% USDY / 30% mUSD / 36% Aave. These are the ERC-8004 attestation
+and allocation transactions judges can click through on Mantlescan:
+
+| Step | Tx hash |
+|---|---|
+| approve USDC | `0xac37a7926843327e40c777b40210a6665aaeee6ac13790cc3d849d2d40cfb240` |
+| deposit 1000 USDC | `0x010e9819e86295828149435a519ea96c7804bc4c8e345f450d1c08d1b1005d85` |
+| propose (ALLOCATE attestation) | `0xcba7b76066067b14124a41bc6934c91ac1b5c264faf4277e752cdc0e9a62635c` |
+| executeAllocation (routes funds + attests) | `0xc0e8bc405cbef6ad0668e4fcf504a9690f5382f34a248f094fbb2db698042601` |
+| recordReport (REPORT attestation) | `0xc592f0e8e7d358df24fa2d9227876f54c81366b56fb92e041cdd2f9b637670d8` |
+
+Allocator reasoning hash on-chain: `0x6ad4e305b8c3058bb3feed004cc213ed1f5082870b8774d10158b28233a21efe`
+Reporter report hash on-chain: `0x92cde2878d56177af23c159c30b31f1781474605eecb016091fa4d387cb551c7`
+
+Demo proof line: open the executeAllocation tx on Mantlescan and show the
+ReputationEvent log. The whole loop ran end-to-end on Mantle, not in a notebook.

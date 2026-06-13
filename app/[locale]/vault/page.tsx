@@ -3,6 +3,7 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { TopBanner } from "@/components/landing/TopBanner";
 import { VaultDemo } from "@/components/vault/VaultDemo";
+import { OnChainProof } from "@/components/vault/OnChainProof";
 import { pageMetadata } from "@/lib/seo/pageMetadata";
 
 export const metadata = pageMetadata({
@@ -37,6 +38,10 @@ export default async function VaultPage({
             calls Claude, and proposes weights. Every decision returns a reasoning hash
             ready to attest on-chain.
           </p>
+
+          <div className="mb-10">
+            <OnChainProof />
+          </div>
 
           <VaultDemo />
         </div>
