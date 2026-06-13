@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -21,6 +22,7 @@ import {
   Coins,
   Zap,
   GitBranch,
+  MessagesSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { StateMachineViz, STATE_LIST } from "./StateMachineViz";
@@ -143,6 +145,7 @@ export function VaultDemo() {
   const [risk, setRisk] = useState<AgentBucket>(empty);
   const [reporter, setReporter] = useState<AgentBucket>(empty);
   const [streaming, setStreaming] = useState(false);
+  const [runId, setRunId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [cost, setCost] = useState<TotalCost | null>(null);
   const [veto, setVeto] = useState<{ reason: string; level: string; attempt: number } | null>(null);
@@ -223,6 +226,7 @@ export function VaultDemo() {
   function handleEvent(evt: ServerEvent) {
     switch (evt.type) {
       case "start":
+        setRunId(evt.runId);
         return;
       case "state":
         setCurrentState(evt.state);
@@ -381,7 +385,7 @@ export function VaultDemo() {
                 onClick={() => setForceDebate((b) => !b)}
                 type="button"
                 disabled={streaming}
-                className="w-full justify-start"
+                className="w-fit justify-start"
               >
                 <Zap className="w-3 h-3" />
                 {forceDebate ? "ON — force trigger" : "OFF"}
@@ -450,6 +454,24 @@ export function VaultDemo() {
             </p>
           </div>
         </div>
+      )}
+
+      {/* Conversation view — the run rendered as an agent chat (the wow view) */}
+      {runId && !streaming && reporter.step && (
+        <Link
+          href={`/conversation/${runId}`}
+          className="group flex items-center justify-between rounded-lg border border-[var(--color-primary-edge)] bg-[var(--color-primary-tint)] px-4 py-3 transition-colors hover:bg-[var(--color-primary-soft)]"
+        >
+          <span className="flex items-center gap-2.5">
+            <MessagesSquare className="w-4 h-4 text-[var(--color-primary)]" />
+            <span className="text-[13px] font-medium text-[var(--color-text)]">
+              View this run as an agent conversation
+            </span>
+          </span>
+          <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-primary)] group-hover:translate-x-0.5 transition-transform">
+            Open →
+          </span>
+        </Link>
       )}
 
       {/* Three agent cards */}
@@ -756,7 +778,7 @@ function KV({ label, value, variant }: { label: string; value: string; variant?:
   return (
     <div className="rounded-md p-2 bg-[var(--color-bg-soft)] border border-[var(--color-border)]">
       <p className="font-mono text-[9px] uppercase tracking-[0.06em] text-[var(--color-text-muted)] mb-1">{label}</p>
-      {variant ? <Badge variant={variant}>{value}</Badge> : <p className="text-[11px] font-mono">{value}</p>}
+      {variant ? <Badge variant={variant}>{value}</Badge> : <p className="text-[11px] font-mono break-all leading-snug">{value}</p>}
     </div>
   );
 }

@@ -281,6 +281,7 @@ export function ReportsDashboard() {
                     <span className="font-mono">{s.agent}</span>
                   </span>
                   <Badge
+                    className="justify-self-start"
                     variant={
                       s.label === "DEFENSIVE_EXIT"
                         ? "danger"
